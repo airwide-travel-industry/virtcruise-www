@@ -4,6 +4,7 @@
   const next = document.querySelector('.service-next');
   const quoteForm = document.getElementById('quoteForm');
   const dateInputs = document.querySelectorAll('.date-input');
+  const newsletterForm = document.getElementById('newsletterForm');
 
   function scrollAmount(){
     const firstCard = track && track.querySelector('.service-card');
@@ -23,6 +24,10 @@
   quoteForm?.addEventListener('submit', function(event){
     event.preventDefault();
     window.open('https://wa.me/263779680336', '_blank', 'noopener');
+  });
+
+  newsletterForm?.addEventListener('submit', function(event){
+    event.preventDefault();
   });
 
   dateInputs.forEach(function(input){
