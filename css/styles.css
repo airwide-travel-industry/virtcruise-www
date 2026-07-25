@@ -1,0 +1,365 @@
+:root{--navy:#031a38;--navy2:#07264e;--gold:#e4b340;--gold2:#c98b20;--white:#fff;--muted:#dbe2ec;}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:Inter,Arial,sans-serif;color:#fff;background:#f8f5ef;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+img{display:block;max-width:100%}
+
+/* top utility bar */
+.utility{height:45px;background:#03162e;border-bottom:1px solid rgba(255,255,255,.08)}
+.utility-inner{max-width:1536px;height:100%;margin:auto;padding:0 38px;display:grid;grid-template-columns:1.1fr 1.2fr 1fr 1.15fr;align-items:center;gap:20px;font-size:13px;white-space:nowrap}
+.utility-item{display:flex;align-items:center;gap:10px;color:#f3f6fb}
+.utility-item svg{width:15px;height:15px;fill:var(--gold);flex:0 0 auto}
+.utility-item:last-child{justify-content:flex-end}
+
+/* gradient header — same layout, only lower border is curved */
+.nav-shell{height:101px;position:absolute;left:0;right:0;top:45px;z-index:20;background:linear-gradient(95deg,#fff 0%,#fff 18%,#d4d7df 41%,#6d7891 59%,#102c54 84%,#021a39 100%);clip-path:polygon(0 0,100% 0,100% 75%,94% 70%,88% 69%,82% 71%,76% 74%,70% 76%,64% 76%,58% 74%,52% 70%,46% 66%,40% 64%,34% 65%,28% 69%,22% 74%,16% 78%,10% 79%,5% 77%,0 70%);filter:drop-shadow(0 4px 0 #d7a62d) drop-shadow(0 6px 1px rgba(255,224,119,.72)) drop-shadow(0 9px 7px rgba(2,15,35,.24))}
+/* The first two drop-shadows follow the clipped curve and create a metallic gold border without changing the header layout. */
+.nav-inner{max-width:1536px;height:72px;margin:auto;padding:0 55px;display:flex;align-items:center;position:relative;z-index:2}
+.brand{width:300px;display:flex;align-items:center}
+.brand-logo{display:flex;align-items:center;gap:14px;width:100%}
+.brand-icon{width:68px;height:68px;object-fit:contain;flex:0 0 auto;mix-blend-mode:multiply}
+.brand-text{width:205px;height:58px;object-fit:contain;object-position:left center;mix-blend-mode:multiply}
+.links{margin-left:auto;display:flex;align-items:center;gap:38px;font-size:15px;font-weight:600}
+.links a{color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.18)}
+.links a.active{color:var(--gold)}
+.whatsapp{margin-left:28px;background:linear-gradient(135deg,#efbe4f,#d79b2f);color:#06172e;border-radius:6px;padding:10px 16px;font-weight:700;display:flex;align-items:center;gap:11px;box-shadow:0 5px 13px rgba(0,0,0,.17)}
+.whatsapp svg{width:20px;height:20px;fill:none;stroke:#06172e;stroke-width:2}
+.mobile-btn{display:none;margin-left:auto;background:none;border:0;color:#fff;font-size:29px}
+
+/* hero */
+.hero{height:512px;position:relative;background-image:url("../images/hero-victoria-falls-final.jpg");background-size:cover;background-position:center center;overflow:hidden;isolation:isolate}
+.hero::before{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,rgba(2,10,22,.58) 0%,rgba(2,10,22,.30) 34%,rgba(2,10,22,.08) 58%,rgba(2,10,22,.02) 100%)}
+.hero::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(180deg,rgba(3,13,28,.04) 0%,rgba(3,13,28,0) 60%,rgba(3,13,28,.20) 100%)}
+.hero-content{max-width:1536px;height:100%;margin:auto;padding:88px 61px 4px;position:relative;z-index:3;display:grid;grid-template-columns:58% 42%;gap:25px;visibility:visible}
+.hero-copy{padding-top:82px}
+.hero-copy h1{font-family:'Cormorant Garamond',serif;font-size:70px;line-height:1.01;font-weight:600;letter-spacing:.3px;text-shadow:0 2px 7px rgba(0,0,0,.35)}
+.hero-copy h1 span{display:block;color:var(--gold);margin-top:8px}
+.hero-copy p{font-size:19px;font-weight:600;line-height:1.65;margin-top:28px;text-shadow:0 2px 4px rgba(0,0,0,.55)}
+.hero-copy .cta{display:inline-block;margin-top:25px;background:linear-gradient(135deg,#efbe4f,#d99f31);padding:14px 27px;border-radius:5px;color:#07172d;font-weight:700;font-size:15px;box-shadow:0 4px 10px rgba(0,0,0,.23)}
+
+.quote{align-self:start;background:linear-gradient(145deg,#071f42,#001631);border-radius:17px;padding:26px 23px 21px;margin-top:4px;box-shadow:0 16px 31px rgba(0,0,0,.38)}
+.quote h2{font-family:'Cormorant Garamond',serif;font-size:29px;text-align:center}
+.quote .sub{text-align:center;color:#e2e8f1;margin:2px 0 19px;font-size:14px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.field{position:relative}
+.field.full{grid-column:1/-1}
+.field input,.field select{height:52px;width:100%;border:none;border-radius:7px;background:#fff;padding:0 18px 0 43px;color:#6d727b;font:14px Inter,Arial,sans-serif;outline:none}
+.field select{appearance:none}
+.field svg{position:absolute;left:16px;top:50%;transform:translateY(-50%);width:16px;height:16px;fill:#09224a;z-index:2}
+.field .chev{left:auto;right:13px;width:14px;height:14px}
+.quote button{width:100%;height:53px;margin-top:14px;border:0;border-radius:6px;background:linear-gradient(135deg,#efbe4f,#d99f31);color:#07172d;font-weight:800;font-size:16px}
+
+/* services carousel — replaces only the former holiday package cards */
+.packages{
+  background:#fbf8f2;
+  padding:22px 52px 34px;
+  color:#091d3d;
+}
+.packages h2{
+  font-family:'Cormorant Garamond',serif;
+  text-align:center;
+  font-size:36px;
+  font-weight:700;
+  margin-bottom:22px;
+  position:relative;
+}
+.packages h2::after{
+  content:"";
+  position:absolute;
+  width:73px;
+  height:3px;
+  background:var(--gold);
+  left:50%;
+  transform:translateX(-50%);
+  bottom:-8px;
+}
+.services-carousel{
+  max-width:1432px;
+  margin:auto;
+  display:grid;
+  grid-template-columns:42px minmax(0,1fr) 42px;
+  align-items:center;
+  gap:10px;
+}
+.services-viewport{
+  min-width:0;
+  overflow:hidden;
+}
+.services-track{
+  display:flex;
+  gap:14px;
+  overflow-x:auto;
+  overflow-y:hidden;
+  scroll-behavior:smooth;
+  scroll-snap-type:x mandatory;
+  scrollbar-width:none;
+  overscroll-behavior-inline:contain;
+  padding:2px 1px 5px;
+}
+.services-track::-webkit-scrollbar{display:none}
+.service-card{
+  flex:1 0 210px;
+  min-width:210px;
+  height:260px;
+  position:relative;
+  overflow:hidden;
+  border-radius:10px;
+  scroll-snap-align:start;
+  background:
+    radial-gradient(circle at 85% 10%,rgba(255,210,112,.22),transparent 30%),
+    linear-gradient(145deg,#0b315f 0%,#061d3d 58%,#03152f 100%);
+  border:1px solid rgba(228,179,64,.30);
+  box-shadow:0 5px 13px rgba(3,26,56,.13);
+  color:#fff;
+  transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease;
+}
+.service-card::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,.08),transparent 42%);
+  pointer-events:none;
+}
+.service-card:hover{
+  transform:translateY(-3px);
+  border-color:rgba(228,179,64,.72);
+  box-shadow:0 10px 22px rgba(3,26,56,.20);
+}
+.service-icon{
+  position:absolute;
+  top:17px;
+  left:18px;
+  width:43px;
+  height:43px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:linear-gradient(135deg,#f0c45a,#c98b20);
+  box-shadow:0 5px 12px rgba(0,0,0,.22);
+}
+.service-icon svg{
+  width:24px;
+  height:24px;
+  fill:none;
+  stroke:#071a34;
+  stroke-width:1.9;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+.service-card h3{
+  position:absolute;
+  left:18px;
+  right:15px;
+  top:92px;
+  font-family:'Cormorant Garamond',serif;
+  font-size:21px;
+  line-height:1;
+  font-weight:700;
+}
+.service-card p{
+  position:absolute;
+  left:18px;
+  right:15px;
+  top:130px;
+  color:#dbe4ef;
+  font-size:11.5px;
+  line-height:1.35;
+}
+.service-link{
+  position:absolute;
+  left:18px;
+  bottom:22px;
+  display:flex;
+  align-items:center;
+  gap:7px;
+  color:var(--gold);
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:.35px;
+  text-transform:uppercase;
+}
+.service-link svg{
+  width:14px;
+  height:14px;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:2;
+}
+.carousel-arrow{
+  width:39px;
+  height:39px;
+  border:1px solid rgba(7,31,66,.15);
+  border-radius:50%;
+  background:#fff;
+  color:#082345;
+  display:grid;
+  place-items:center;
+  cursor:pointer;
+  box-shadow:0 5px 14px rgba(3,26,56,.14);
+  transition:transform .2s ease,background .2s ease,color .2s ease;
+}
+.carousel-arrow:hover{
+  transform:scale(1.06);
+  background:#082345;
+  color:var(--gold);
+}
+.carousel-arrow:focus-visible{
+  outline:3px solid rgba(228,179,64,.55);
+  outline-offset:3px;
+}
+.carousel-arrow svg{
+  width:18px;
+  height:18px;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:2.3;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+@media(min-width:1450px){
+  .service-card{flex-basis:calc((100% - 70px)/6);min-width:0}
+}
+@media(max-width:1050px){
+  .packages{padding:18px 22px 22px}
+  .services-carousel{grid-template-columns:38px minmax(0,1fr) 38px;gap:8px}
+  .service-card{flex-basis:220px}
+}
+@media(max-width:640px){
+  .packages{padding:18px 12px 22px}
+  .packages h2{font-size:31px;margin-bottom:20px}
+  .services-carousel{grid-template-columns:34px minmax(0,1fr) 34px;gap:6px}
+  .carousel-arrow{width:33px;height:33px}
+  .service-card{flex-basis:214px;height:164px}
+}
+
+/* Pixel-match refinements for the approved desktop sample */
+@media(min-width:1051px){
+  .utility-inner{max-width:none;padding:0 62px;font-size:14px;grid-template-columns:1.05fr 1.22fr 1fr 1.15fr}
+  .nav-shell{height:102px;clip-path:polygon(0 0,100% 0,100% 76%,94% 71%,88% 69%,82% 70%,76% 73%,70% 76%,64% 77%,58% 75%,52% 71%,46% 67%,40% 65%,34% 66%,28% 70%,22% 75%,16% 79%,10% 80%,5% 77%,0 69%)}
+  .nav-inner{max-width:none;height:73px;padding:0 72px}
+  .brand{width:315px}
+  .brand-logo{gap:10px}
+  .brand-icon{width:76px;height:76px;mix-blend-mode:normal}
+  .brand-text{width:220px;height:63px;mix-blend-mode:normal}
+  .links{gap:30px;font-size:14px}
+  .whatsapp{margin-left:28px;padding:10px 17px;font-size:14px}
+
+  .hero{height:calc(100vh - 446px);min-height:512px;background-size:cover;background-position:center 49%}
+  .hero::before{background:linear-gradient(90deg,rgba(2,10,22,.54) 0%,rgba(2,10,22,.28) 31%,rgba(2,10,22,.08) 56%,rgba(2,10,22,.02) 100%)}
+  .hero-content{max-width:none;padding:80px 73px 4px;grid-template-columns:minmax(0,1fr) 520px;gap:52px}
+  .hero-copy{padding-top:78px}
+  .hero-copy h1{font-size:76px;line-height:.99}
+  .hero-copy h1 span{margin-top:10px}
+  .hero-copy p{font-size:18px;line-height:1.62;margin-top:25px}
+  .hero-copy .cta{margin-top:28px;padding:15px 30px}
+  .quote{width:510px;justify-self:end;margin-top:0;padding:22px 22px 18px}
+  .quote h2{font-size:28px}
+  .quote .sub{font-size:13px;margin-bottom:14px}
+  .field input,.field select{height:46px}
+  .quote button{height:48px}
+
+  .packages{padding:22px 67px 12px}
+  .packages h2{font-size:35px;margin-bottom:25px}
+  .cards{max-width:none;gap:18px}
+  .card{height:216px}
+}
+
+@media(max-width:1050px){
+.hero{background-image:url("../images/hero-victoria-falls-final.jpg");background-size:cover;background-position:center 48%;min-height:850px}
+.hero::before{background:linear-gradient(90deg,rgba(2,8,18,.48) 0%,rgba(4,12,24,.20) 42%,rgba(4,12,24,.04) 72%,rgba(4,12,24,.02) 100%)}
+.hero::after{background:radial-gradient(circle at 56% 18%,rgba(255,205,105,.20) 0%,rgba(255,135,45,.10) 22%,transparent 46%)}
+.hero-content{visibility:visible}
+
+.utility-inner{grid-template-columns:1fr 1fr;padding:0 18px} .utility-item:nth-child(2),.utility-item:nth-child(3){display:none}
+.nav-shell{height:84px} .nav-inner{height:58px;padding:0 20px} .brand{width:225px} .brand-logo{gap:5px} .brand-icon{width:50px;height:50px} .brand-text{width:160px;height:45px}
+.links{display:none} .whatsapp{display:none} .mobile-btn{display:block;color:#08213f}
+.hero{height:auto;min-height:850px} .hero-content{padding:128px 25px 55px;grid-template-columns:1fr} .hero-copy{padding-top:20px} .hero-copy h1{font-size:54px} .quote{max-width:620px}
+.cards{grid-template-columns:repeat(3,1fr)}
+}
+@media(max-width:640px){
+.utility{height:auto} .utility-inner{height:auto;padding:8px 14px;display:flex;flex-wrap:wrap;font-size:11px} .utility-item:last-child{justify-content:flex-start}
+.nav-shell{top:58px;height:72px;clip-path:polygon(0 0,100% 0,100% 77%,84% 72%,67% 77%,50% 68%,32% 78%,15% 84%,0 73%)} .nav-inner{height:48px;padding:0 12px} .brand{width:185px} .brand-logo{gap:5px} .brand-icon{width:40px;height:40px} .brand-text{width:135px;height:38px}
+.hero-content{padding-top:96px} .hero-copy h1{font-size:43px} .hero-copy p{font-size:16px}
+.form-grid{grid-template-columns:1fr} .field.full{grid-column:auto}
+.packages{padding:20px 15px} .cards{grid-template-columns:1fr 1fr} .card{height:190px}
+}
+
+
+/* Floating WhatsApp action button */
+.whatsapp-fab{
+  position:fixed;
+  right:24px;
+  bottom:24px;
+  z-index:9999;
+  width:62px;
+  height:62px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:#25D366;
+  color:#fff;
+  border:3px solid rgba(255,255,255,.95);
+  box-shadow:0 10px 28px rgba(0,0,0,.28),0 0 0 0 rgba(37,211,102,.45);
+  transition:transform .2s ease,box-shadow .2s ease,background .2s ease;
+  animation:whatsappPulse 2.4s infinite;
+}
+.whatsapp-fab:hover{
+  transform:translateY(-4px) scale(1.05);
+  background:#1ebe5d;
+  box-shadow:0 14px 34px rgba(0,0,0,.34),0 0 0 8px rgba(37,211,102,.14);
+}
+.whatsapp-fab:focus-visible{
+  outline:3px solid #f2bd43;
+  outline-offset:4px;
+}
+.whatsapp-fab svg{
+  width:34px;
+  height:34px;
+  display:block;
+  fill:currentColor;
+}
+.whatsapp-fab-label{
+  position:absolute;
+  right:72px;
+  top:50%;
+  transform:translateY(-50%);
+  padding:9px 13px;
+  border-radius:7px;
+  background:#071f42;
+  color:#fff;
+  font-size:13px;
+  font-weight:700;
+  white-space:nowrap;
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  box-shadow:0 7px 20px rgba(0,0,0,.25);
+  transition:opacity .2s ease,visibility .2s ease,transform .2s ease;
+}
+.whatsapp-fab:hover .whatsapp-fab-label,
+.whatsapp-fab:focus-visible .whatsapp-fab-label{
+  opacity:1;
+  visibility:visible;
+  transform:translate(-3px,-50%);
+}
+@keyframes whatsappPulse{
+  0%,100%{box-shadow:0 10px 28px rgba(0,0,0,.28),0 0 0 0 rgba(37,211,102,.38)}
+  55%{box-shadow:0 10px 28px rgba(0,0,0,.28),0 0 0 13px rgba(37,211,102,0)}
+}
+@media(max-width:640px){
+  .whatsapp-fab{right:16px;bottom:16px;width:56px;height:56px}
+  .whatsapp-fab svg{width:31px;height:31px}
+  .whatsapp-fab-label{display:none}
+}
+@media(prefers-reduced-motion:reduce){
+  .whatsapp-fab{animation:none;transition:none}
+}
+
+
+/* Compact curved navigation bar */
+.nav-shell{transform-origin:top center}
+.nav-inner{overflow:visible}
+@media(min-width:1051px){
+  .nav-shell{filter:drop-shadow(0 3px 0 #d7a62d) drop-shadow(0 4px 1px rgba(255,224,119,.72)) drop-shadow(0 7px 6px rgba(2,15,35,.22))}
+}
