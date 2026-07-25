@@ -236,12 +236,12 @@ img{display:block;max-width:100%}
 /* Pixel-match refinements for the approved desktop sample */
 @media(min-width:1051px){
   .utility-inner{max-width:none;padding:0 62px;font-size:14px;grid-template-columns:1.05fr 1.22fr 1fr 1.15fr}
-  .nav-shell{height:102px;clip-path:polygon(0 0,100% 0,100% 76%,94% 71%,88% 69%,82% 70%,76% 73%,70% 76%,64% 77%,58% 75%,52% 71%,46% 67%,40% 65%,34% 66%,28% 70%,22% 75%,16% 79%,10% 80%,5% 77%,0 69%)}
+  .nav-shell{height:102px;clip-path:polygon(0 0,100% 0,100% 76%,94% 71%,88% 69%,82% 70%,76% 73%,70% 76%,64% 77%,58% 75%,52% 71%,46% 67%,40% 77%,34% 78%,28% 70%,22% 75%,16% 79%,10% 80%,5% 77%,0 69%)}
   .nav-inner{max-width:none;height:73px;padding:0 72px}
   .brand{width:315px}
   .brand-logo{gap:10px}
-  .brand-icon{width:76px;height:76px;mix-blend-mode:normal}
-  .brand-text{width:220px;height:63px;mix-blend-mode:normal}
+  .brand-icon{width:82px;height:82px;mix-blend-mode:normal}
+  .brand-text{width:223px;height:65px;mix-blend-mode:normal}
   .links{gap:30px;font-size:14px}
   .whatsapp{margin-left:28px;padding:10px 17px;font-size:14px}
 
