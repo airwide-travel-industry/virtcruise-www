@@ -230,7 +230,7 @@ img{display:block;max-width:100%}
   .packages h2{font-size:31px;margin-bottom:20px}
   .services-carousel{grid-template-columns:34px minmax(0,1fr) 34px;gap:6px}
   .carousel-arrow{width:33px;height:33px}
-  .service-card{flex-basis:214px;height:164px}
+  .service-card{flex-basis:214px;height:250px}
 }
 
 /* Pixel-match refinements for the approved desktop sample */
@@ -523,6 +523,7 @@ img{display:block;max-width:100%}
 .newsletter-form button{height:46px;padding:0 23px;border:0;border-radius:999px;background:linear-gradient(135deg,#efbe4f,#cf9228);color:#06172e;font:800 13px Inter,Arial,sans-serif;cursor:pointer;transition:transform .2s ease,filter .2s ease,box-shadow .2s ease}
 .newsletter-form button:hover{transform:translateY(-1px);filter:brightness(1.07);box-shadow:0 6px 14px rgba(0,0,0,.2)}
 .newsletter-form button:focus-visible{outline:3px solid #071f42;outline-offset:2px}
+.newsletter-form button:disabled{cursor:not-allowed;opacity:.72;transform:none;filter:none;box-shadow:none}
 .footer-columns{display:grid;grid-template-columns:1.35fr .72fr .82fr 1.05fr;gap:52px;padding:65px 0 58px}
 .footer-logo{display:flex;align-items:center;gap:8px;width:max-content}
 .footer-logo-icon{width:58px;height:58px;object-fit:contain;filter:brightness(0) saturate(100%) invert(78%) sepia(65%) saturate(662%) hue-rotate(356deg) brightness(93%)}
@@ -575,3 +576,55 @@ img{display:block;max-width:100%}
   .footer-mobile-break{display:block}
 }
 @media(prefers-reduced-motion:reduce){.newsletter-form button,.footer-social a,.footer-links a,.footer-contact a,.footer-bottom a{transition:none}}
+
+/* Testimonials */
+.section-heading{text-align:center;margin:0 auto}
+.section-kicker{color:#c9d4e2;font-size:10px;font-weight:800;letter-spacing:1.8px;text-transform:uppercase}
+.testimonials{padding:78px 52px 84px;background:linear-gradient(180deg,#061f42 0%,#041a37 100%);color:#fff}
+.testimonials-inner{max-width:1320px;margin:0 auto}
+.testimonials-heading h2,.partners-heading h2{margin-top:8px;color:var(--gold);font-family:'Cormorant Garamond',serif;font-size:47px;line-height:1.08}
+.testimonials-heading>p:last-child,.partners-heading>p:last-child{max-width:720px;margin:13px auto 0;color:#d3dce8;font-size:15px;line-height:1.65}
+.testimonial-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;margin-top:39px}
+.testimonial-card{display:flex;min-height:270px;flex-direction:column;padding:29px 29px 27px;border:1px solid rgba(228,179,64,.2);border-radius:14px;background:linear-gradient(145deg,rgba(11,46,86,.95),rgba(4,25,53,.98));box-shadow:0 16px 32px rgba(0,8,22,.27);transition:transform .24s ease,border-color .24s ease,box-shadow .24s ease}
+.testimonial-card:hover{transform:translateY(-5px);border-color:rgba(228,179,64,.52);box-shadow:0 21px 38px rgba(0,8,22,.36)}
+.testimonial-rating{color:var(--gold);font-size:14px;letter-spacing:3px}
+.testimonial-card blockquote{margin-top:20px;color:#edf1f6;font-family:'Cormorant Garamond',serif;font-size:22px;line-height:1.45}
+.testimonial-card figcaption{display:flex;align-items:center;gap:12px;margin-top:auto;padding-top:23px}
+.testimonial-card figcaption>span{width:42px;height:42px;display:grid;place-items:center;border:1px solid rgba(228,179,64,.5);border-radius:50%;background:rgba(228,179,64,.1);color:#f2ce75;font-size:12px;font-weight:800}
+.testimonial-card figcaption strong,.testimonial-card figcaption small{display:block}
+.testimonial-card figcaption strong{color:#fff4d7;font-size:13px}
+.testimonial-card figcaption small{margin-top:3px;color:#aebccc;font-size:11px}
+.testimonials-cta{display:table;margin:34px auto 0;padding:13px 25px;border-radius:999px;background:linear-gradient(135deg,#efbe4f,#cf9228);color:#06172e;font-size:13px;font-weight:800;box-shadow:0 8px 19px rgba(0,0,0,.24);transition:transform .2s ease,filter .2s ease}
+.testimonials-cta:hover{transform:translateY(-2px);filter:brightness(1.06)}
+.testimonials-cta:focus-visible{outline:3px solid #fff;outline-offset:4px}
+
+/* Travel partners */
+.travel-partners{padding:65px 52px 72px;border-top:1px solid rgba(228,179,64,.14);background:#f8f5ef;color:#071a34}
+.travel-partners-inner{max-width:1320px;margin:0 auto}
+.partners-heading .section-kicker{color:#627087}
+.partners-heading h2{color:#09244a}
+.partners-heading>p:last-child{color:#5e6878}
+.partner-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:14px;margin-top:34px;list-style:none}
+.partner-grid li{min-height:122px;padding:20px 12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;border:1px solid rgba(7,31,66,.12);border-radius:11px;background:#fff;box-shadow:0 8px 19px rgba(3,26,56,.07);text-align:center;transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease}
+.partner-grid li:hover{transform:translateY(-4px);border-color:rgba(201,139,32,.5);box-shadow:0 13px 24px rgba(3,26,56,.11)}
+.partner-grid svg{width:29px;height:29px;fill:none;stroke:#c98b20;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.partner-grid span{color:#10294a;font-family:'Cormorant Garamond',serif;font-size:17px;line-height:1.15;font-weight:700}
+@media(max-width:1050px){
+  .testimonials{padding:68px 28px 74px}
+  .testimonial-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .testimonial-card:last-child{grid-column:1/-1;width:calc(50% - 12px);justify-self:center}
+  .travel-partners{padding:58px 28px 64px}
+  .partner-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+}
+@media(max-width:640px){
+  .testimonials{padding:54px 16px 60px}
+  .testimonials-heading h2,.partners-heading h2{font-size:38px}
+  .testimonial-grid{grid-template-columns:1fr;gap:18px;margin-top:30px}
+  .testimonial-card,.testimonial-card:last-child{grid-column:auto;width:auto;min-height:245px;padding:25px 22px}
+  .testimonial-card blockquote{font-size:21px}
+  .travel-partners{padding:50px 16px 55px}
+  .partner-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin-top:29px}
+  .partner-grid li{min-height:112px;padding:17px 8px}
+  .partner-grid span{font-size:16px}
+}
+@media(prefers-reduced-motion:reduce){.testimonial-card,.testimonials-cta,.partner-grid li{transition:none}}

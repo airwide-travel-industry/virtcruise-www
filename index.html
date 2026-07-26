@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Virtcruise Travels</title>
 <meta name="description" content="Holiday packages, flights, hotels and visa services from Harare.">
+<link rel="icon" type="image/png" href="images/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -14,7 +15,7 @@
 <div class="utility">
   <div class="utility-inner">
     <div class="utility-item"><svg viewBox="0 0 24 24"><path d="M2 16.5V19l8-2 5 5 2-1-3-6 6-7c1-1 1-2 0-3s-2-1-3 0l-7 6-6-3-1 2 5 5-2 8z"/></svg>Trusted Travel Experts in Harare</div>
-    <div class="utility-item"><svg viewBox="0 0 24 24"><path d="M7 2h10l2 5v15H5V7l2-5zm2 3v3h6V5H9zm-1 7v7h8v-7H8z"/></svg>134 Samora Machel Ave, Eastlea, Harare</div>
+    <div class="utility-item"><svg viewBox="0 0 24 24"><path d="M7 2h10l2 5v15H5V7l2-5zm2 3v3h6V5H9zm-1 7v7h8v-7H8z"/></svg>No. 5 Abel Rd, Greendale, Harare</div>
     <div class="utility-item"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 5v5.4l3.8 2.2-1 1.7L11 13.5V7h2z"/></svg>Mon - Fri: 08:00 - 17:00 | Sat: 09:00 - 13:00</div>
     <div class="utility-item"><svg viewBox="0 0 24 24"><path d="M6.6 10.8c1.6 3.1 3.5 5 6.6 6.6l2.2-2.2c.3-.3.7-.4 1.1-.2 1.2.4 2.5.6 3.8.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.8 21 3 13.2 3 3.7c0-.6.4-1 1-1h3.4c.6 0 1 .4 1 1 0 1.3.2 2.6.6 3.8.1.4 0 .8-.2 1.1l-2.2 2.2z"/></svg>+263 772 463 284 / +263 242 257 891</div>
   </div>
@@ -22,15 +23,15 @@
 
 <header class="nav-shell">
   <div class="nav-inner">
-    <a class="brand brand-logo" href="#" aria-label="Virtcruise Travels home">
+    <a class="brand brand-logo" href="index.html" aria-label="Virtcruise Travels home">
       <img class="brand-icon" src="images/logo-img.png" alt="Virtcruise travel emblem">
       <img class="brand-text" src="images/logo-text.png" alt="Virtcruise Travels">
     </a>
-    <nav class="links" aria-label="Main navigation">
-      <a class="active" href="#">Home</a><a href="#packages">Packages⌄</a><a href="#">Flights</a><a href="#">Hotels</a><a href="#">Visa Services⌄</a><a href="#">About Us</a><a href="#">Contact</a>
+    <nav class="links" id="mainNavigation" aria-label="Main navigation">
+      <a class="active" href="index.html">Home</a><a href="#packages">Packages⌄</a><a href="#service-flights">Flights</a><a href="#service-accommodation">Hotels</a><a href="#service-visa">Visa Services⌄</a><a href="#aboutVirtcruiseTitle">About Us</a><a href="#footerContact">Contact</a>
     </nav>
-    <a class="whatsapp" href="https://wa.me/263779680336" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M20 11.5a8 8 0 01-11.9 7L4 20l1.5-4A8 8 0 1120 11.5z"/><path d="M9 8.5c.6 2 2.1 3.5 4 4l1-1c.3-.3.6-.3.9-.2l2 .9c.3.1.5.4.5.7 0 1.4-1.2 2.5-2.6 2.5-4.3 0-7.8-3.5-7.8-7.8C7 6.2 8.1 5 9.5 5c.3 0 .6.2.7.5l.9 2c.1.3.1.6-.2.9l-1 1z"/></svg>WHATSAPP US</a>
-    <button class="mobile-btn" aria-label="Open menu">☰</button>
+    <a class="whatsapp" href="https://wa.me/263772463284?text=Hello%20Virtcruise%20Travels%2C%20I%20would%20like%20help%20planning%20a%20trip." target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M20 11.5a8 8 0 01-11.9 7L4 20l1.5-4A8 8 0 1120 11.5z"/><path d="M9 8.5c.6 2 2.1 3.5 4 4l1-1c.3-.3.6-.3.9-.2l2 .9c.3.1.5.4.5.7 0 1.4-1.2 2.5-2.6 2.5-4.3 0-7.8-3.5-7.8-7.8C7 6.2 8.1 5 9.5 5c.3 0 .6.2.7.5l.9 2c.1.3.1.6-.2.9l-1 1z"/></svg>WHATSAPP US</a>
+    <a class="mobile-btn" href="#footerQuickLinks" aria-label="Jump to site navigation">☰</a>
   </div>
 </header>
 
@@ -44,14 +45,14 @@
     <form class="quote" id="quoteForm">
       <h2>Get a Quick Quote</h2><p class="sub">Our travel experts will get back to you shortly.</p>
       <div class="form-grid">
-        <label class="field"><svg viewBox="0 0 24 24"><path d="M12 12a4 4 0 100-8 4 4 0 000 8zm-7 9a7 7 0 0114 0H5z"/></svg><input placeholder="Your Name"></label>
-        <label class="field"><svg viewBox="0 0 24 24"><path d="M3 5h18v14H3V5zm2 2v.5l7 5 7-5V7H5zm14 10V10l-7 5-7-5v7h14z"/></svg><input type="email" placeholder="Email Address"></label>
-        <label class="field full"><svg viewBox="0 0 24 24"><path d="M6.6 10.8c1.6 3.1 3.5 5 6.6 6.6l2.2-2.2c.3-.3.7-.4 1.1-.2 1.2.4 2.5.6 3.8.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.8 21 3 13.2 3 3.7c0-.6.4-1 1-1h3.4c.6 0 1 .4 1 1 0 1.3.2 2.6.6 3.8.1.4 0 .8-.2 1.1l-2.2 2.2z"/></svg><input placeholder="Mobile Number"></label>
-        <label class="field full"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 00-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 00-7-7zm0 9.5A2.5 2.5 0 1112 6a2.5 2.5 0 010 5.5z"/></svg><input placeholder="Where are you going?"></label>
-        <label class="field"><svg viewBox="0 0 24 24"><path d="M7 2h2v2h6V2h2v2h3v18H4V4h3V2zm11 8H6v10h12V10z"/></svg><input type="text" placeholder="Departure Date" class="date-input"></label>
-        <label class="field"><svg viewBox="0 0 24 24"><path d="M7 2h2v2h6V2h2v2h3v18H4V4h3V2zm11 8H6v10h12V10z"/></svg><input type="text" placeholder="Return Date" class="date-input"></label>
-        <label class="field"><svg viewBox="0 0 24 24"><path d="M7 11a3 3 0 100-6 3 3 0 000 6zm10 0a3 3 0 100-6 3 3 0 000 6zM7 13c-4 0-6 2-6 5v2h12v-2c0-3-2-5-6-5zm10 0c-1 0-2 .1-3 .5 1.3 1.1 2 2.6 2 4.5v2h7v-2c0-3-2-5-6-5z"/></svg><select><option>Travellers</option><option>1</option><option>2</option><option>3-4</option><option>5+</option></select></label>
-        <label class="field"><svg viewBox="0 0 24 24"><path d="M13 2v2.1c2.7.4 4 2 4 4h-3c0-.8-.7-1.5-2-1.5s-2 .6-2 1.4c0 .9.8 1.3 2.7 1.8 3 .7 4.6 1.9 4.6 4.4 0 2.2-1.5 3.7-4.3 4.1V21h-2v-2.6c-3-.3-4.7-2-4.7-4.5h3c0 1.2 1 2 2.7 2 1.4 0 2.2-.6 2.2-1.5 0-.8-.7-1.3-2.8-1.8-2.8-.7-4.4-1.8-4.4-4.3 0-2.1 1.5-3.7 4-4.1V2h2z"/></svg><select><option>Budget (USD)</option><option>Below $500</option><option>$500-$1,000</option><option>$1,000+</option></select></label>
+        <label class="field"><svg viewBox="0 0 24 24"><path d="M12 12a4 4 0 100-8 4 4 0 000 8zm-7 9a7 7 0 0114 0H5z"/></svg><input name="name" placeholder="Your Name"></label>
+        <label class="field"><svg viewBox="0 0 24 24"><path d="M3 5h18v14H3V5zm2 2v.5l7 5 7-5V7H5zm14 10V10l-7 5-7-5v7h14z"/></svg><input name="email" type="email" placeholder="Email Address"></label>
+        <label class="field full"><svg viewBox="0 0 24 24"><path d="M6.6 10.8c1.6 3.1 3.5 5 6.6 6.6l2.2-2.2c.3-.3.7-.4 1.1-.2 1.2.4 2.5.6 3.8.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.8 21 3 13.2 3 3.7c0-.6.4-1 1-1h3.4c.6 0 1 .4 1 1 0 1.3.2 2.6.6 3.8.1.4 0 .8-.2 1.1l-2.2 2.2z"/></svg><input name="mobile" placeholder="Mobile Number"></label>
+        <label class="field full"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 00-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 00-7-7zm0 9.5A2.5 2.5 0 1112 6a2.5 2.5 0 010 5.5z"/></svg><input name="destination" placeholder="Where are you going?"></label>
+        <label class="field"><svg viewBox="0 0 24 24"><path d="M7 2h2v2h6V2h2v2h3v18H4V4h3V2zm11 8H6v10h12V10z"/></svg><input name="departure" type="text" placeholder="Departure Date" class="date-input"></label>
+        <label class="field"><svg viewBox="0 0 24 24"><path d="M7 2h2v2h6V2h2v2h3v18H4V4h3V2zm11 8H6v10h12V10z"/></svg><input name="return" type="text" placeholder="Return Date" class="date-input"></label>
+        <label class="field"><svg viewBox="0 0 24 24"><path d="M7 11a3 3 0 100-6 3 3 0 000 6zm10 0a3 3 0 100-6 3 3 0 000 6zM7 13c-4 0-6 2-6 5v2h12v-2c0-3-2-5-6-5zm10 0c-1 0-2 .1-3 .5 1.3 1.1 2 2.6 2 4.5v2h7v-2c0-3-2-5-6-5z"/></svg><select name="travellers" aria-label="Number of travellers"><option>Travellers</option><option>1</option><option>2</option><option>3-4</option><option>5+</option></select></label>
+        <label class="field"><svg viewBox="0 0 24 24"><path d="M13 2v2.1c2.7.4 4 2 4 4h-3c0-.8-.7-1.5-2-1.5s-2 .6-2 1.4c0 .9.8 1.3 2.7 1.8 3 .7 4.6 1.9 4.6 4.4 0 2.2-1.5 3.7-4.3 4.1V21h-2v-2.6c-3-.3-4.7-2-4.7-4.5h3c0 1.2 1 2 2.7 2 1.4 0 2.2-.6 2.2-1.5 0-.8-.7-1.3-2.8-1.8-2.8-.7-4.4-1.8-4.4-4.3 0-2.1 1.5-3.7 4-4.1V2h2z"/></svg><select name="budget" aria-label="Travel budget in US dollars"><option>Budget (USD)</option><option>Below $500</option><option>$500-$1,000</option><option>$1,000+</option></select></label>
       </div>
       <button type="submit">REQUEST QUOTE</button>
     </form>
@@ -73,9 +74,9 @@
           <span class="service-icon">
             <svg viewBox="0 0 24 24"><path d="M2 16.5l8-2 5 5 2-1-3-6 6-7c1-1 1-2 0-3s-2-1-3 0l-7 6-6-3-1 2 5 5-2 8z"/></svg>
           </span>
-          <h3>Flight Reservations</h3>
+          <h3 id="service-flights">Flight Reservations</h3>
           <p>Domestic, regional and international flights with expert booking support.</p>
-          <a class="service-link" href="#">Book flights <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <a class="service-link" href="https://wa.me/263772463284?text=Hello%20Virtcruise%20Travels%2C%20I%20would%20like%20a%20flight%20quotation." target="_blank" rel="noopener noreferrer">Book flights <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
         </article>
 
         <article class="service-card">
@@ -84,25 +85,25 @@
           </span>
           <h3>Car Rental</h3>
           <p>Reliable self-drive, chauffeur and airport-transfer vehicle options.</p>
-          <a class="service-link" href="#">Rent a car <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <a class="service-link" href="https://wa.me/263772463284?text=Hello%20Virtcruise%20Travels%2C%20I%20would%20like%20a%20car%20rental%20quotation." target="_blank" rel="noopener noreferrer">Rent a car <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
         </article>
 
         <article class="service-card">
           <span class="service-icon">
             <svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 7h6M9 11h6M9 15h4"/></svg>
           </span>
-          <h3>Visa Services</h3>
+          <h3 id="service-visa">Visa Services</h3>
           <p>Guidance with applications, documentation and appointment preparation.</p>
-          <a class="service-link" href="#">Visa assistance <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <a class="service-link" href="https://wa.me/263772463284?text=Hello%20Virtcruise%20Travels%2C%20I%20need%20help%20with%20a%20visa%20application." target="_blank" rel="noopener noreferrer">Visa assistance <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
         </article>
 
         <article class="service-card">
           <span class="service-icon">
             <svg viewBox="0 0 24 24"><path d="M4 20V8l8-5 8 5v12M8 20v-6h8v6M7 10h2M15 10h2"/></svg>
           </span>
-          <h3>Accommodation</h3>
+          <h3 id="service-accommodation">Accommodation</h3>
           <p>Hotels, resorts, lodges and apartments selected for your trip and budget.</p>
-          <a class="service-link" href="#">Find a stay <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <a class="service-link" href="https://wa.me/263772463284?text=Hello%20Virtcruise%20Travels%2C%20I%20would%20like%20an%20accommodation%20quotation." target="_blank" rel="noopener noreferrer">Find a stay <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
         </article>
 
         <article class="service-card">
@@ -111,7 +112,7 @@
           </span>
           <h3>Holiday Packages</h3>
           <p>Curated escapes combining flights, accommodation, transfers and experiences.</p>
-          <a class="service-link" href="#">Explore packages <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <a class="service-link" href="#featuredToursTitle">Explore packages <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
         </article>
 
         <article class="service-card">
@@ -120,7 +121,7 @@
           </span>
           <h3>Cruises</h3>
           <p>Ocean and river voyages from leading cruise lines around the world.</p>
-          <a class="service-link" href="#">View cruises <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <a class="service-link" href="https://wa.me/263772463284?text=Hello%20Virtcruise%20Travels%2C%20I%20would%20like%20information%20about%20cruise%20packages." target="_blank" rel="noopener noreferrer">View cruises <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
         </article>
 
       </div>
@@ -142,29 +143,29 @@
 
     <div class="tour-grid">
       <article class="tour-card">
-        <div class="tour-image"><img src="images/tour-zimbabwe-safari.jpg" alt="Elephants crossing Zimbabwean savanna at golden hour"></div>
+        <div class="tour-image"><img src="images/tour-zimbabwe-safari.webp" width="960" height="640" loading="lazy" decoding="async" alt="Elephants crossing Zimbabwean savanna at golden hour"></div>
         <div class="tour-content">
           <h3>Zimbabwean Safari</h3>
           <p>Experience the wild heart of Africa with our luxury safari tour.</p>
-          <a class="tour-button" href="#">Learn More</a>
+          <a class="tour-button" href="https://wa.me/263772463284?text=Hello%20Virtcruise%20Travels%2C%20I%20would%20like%20to%20learn%20more%20about%20the%20Zimbabwean%20Safari." target="_blank" rel="noopener noreferrer" aria-label="Enquire about the Zimbabwean Safari">Enquire About Safari</a>
         </div>
       </article>
 
       <article class="tour-card">
-        <div class="tour-image"><img src="images/tour-europe-city.jpg" alt="Grand historic architecture on a European city boulevard"></div>
+        <div class="tour-image"><img src="images/tour-europe-city.webp" width="960" height="640" loading="lazy" decoding="async" alt="Grand historic architecture on a European city boulevard"></div>
         <div class="tour-content">
           <h3>European City Break</h3>
           <p>Discover the history and culture of Europe’s most iconic cities.</p>
-          <a class="tour-button" href="#">Learn More</a>
+          <a class="tour-button" href="https://wa.me/263772463284?text=Hello%20Virtcruise%20Travels%2C%20I%20would%20like%20to%20learn%20more%20about%20the%20European%20City%20Break." target="_blank" rel="noopener noreferrer" aria-label="Enquire about the European City Break">Enquire About Europe</a>
         </div>
       </article>
 
       <article class="tour-card">
-        <div class="tour-image"><img src="images/tour-tropical-paradise.jpg" alt="Pristine tropical beach with turquoise water and palm trees"></div>
+        <div class="tour-image"><img src="images/tour-tropical-paradise.webp" width="960" height="640" loading="lazy" decoding="async" alt="Pristine tropical beach with turquoise water and palm trees"></div>
         <div class="tour-content">
           <h3>Tropical Paradise</h3>
           <p>Relax on pristine beaches and enjoy the crystal-clear waters of the tropics.</p>
-          <a class="tour-button" href="#">Learn More</a>
+          <a class="tour-button" href="https://wa.me/263772463284?text=Hello%20Virtcruise%20Travels%2C%20I%20would%20like%20to%20learn%20more%20about%20the%20Tropical%20Paradise%20tour." target="_blank" rel="noopener noreferrer" aria-label="Enquire about the Tropical Paradise tour">Enquire About Paradise</a>
         </div>
       </article>
     </div>
@@ -180,7 +181,7 @@
 
     <article class="falls-package-card">
       <div class="falls-package-image">
-        <img src="images/victoria-falls-package.jpg" alt="Panoramic view of Victoria Falls cascading into its misty gorge">
+        <img src="images/victoria-falls-package.webp" width="1600" height="699" loading="lazy" decoding="async" alt="Panoramic view of Victoria Falls cascading into its misty gorge">
         <h3>Victoria Falls Holiday Package</h3>
       </div>
 
@@ -231,7 +232,7 @@
 <section class="about-virtcruise" aria-labelledby="aboutVirtcruiseTitle">
   <div class="about-virtcruise-inner">
     <div class="about-virtcruise-image">
-      <img src="images/about-virtcruise-office.jpg" alt="Virtcruise travel consultants assisting customers in the office">
+      <img src="images/about-virtcruise-office.webp" width="1200" height="800" loading="lazy" decoding="async" alt="Virtcruise travel consultants assisting customers in the office">
     </div>
 
     <div class="about-virtcruise-content">
@@ -240,6 +241,54 @@
       <p>We are a team of passionate and experienced travel consultants dedicated to curating the perfect journey for you. With our deep knowledge of destinations and our commitment to exceptional service, we are your trusted partners in travel. Our offices are located at:</p>
       <p class="about-address"><strong>Visit our office</strong><span>No. 5 Abel Rd, Greendale, Harare, Zimbabwe</span></p>
     </div>
+  </div>
+</section>
+
+<section class="testimonials" id="testimonials" aria-labelledby="testimonialsTitle">
+  <div class="testimonials-inner">
+    <header class="section-heading testimonials-heading">
+      <p class="section-kicker">Traveller stories</p>
+      <h2 id="testimonialsTitle">Journeys Our Clients Remember</h2>
+      <p>Thoughtful planning, responsive support and travel experiences shaped around every client.</p>
+    </header>
+
+    <div class="testimonial-grid">
+      <figure class="testimonial-card">
+        <div class="testimonial-rating" aria-label="5 out of 5 stars">★★★★★</div>
+        <blockquote>“Virtcruise made our Victoria Falls getaway effortless—from transport to activities, everything was handled with care.”</blockquote>
+        <figcaption><span>TM</span><div><strong>T. Moyo</strong><small>Harare, Zimbabwe</small></div></figcaption>
+      </figure>
+      <figure class="testimonial-card">
+        <div class="testimonial-rating" aria-label="5 out of 5 stars">★★★★★</div>
+        <blockquote>“Our consultant listened to our budget and built a European itinerary that felt completely personal.”</blockquote>
+        <figcaption><span>RN</span><div><strong>R. Ncube</strong><small>Bulawayo, Zimbabwe</small></div></figcaption>
+      </figure>
+      <figure class="testimonial-card">
+        <div class="testimonial-rating" aria-label="5 out of 5 stars">★★★★★</div>
+        <blockquote>“Fast responses, clear guidance and excellent support throughout our family holiday.”</blockquote>
+        <figcaption><span>KD</span><div><strong>K. Dube</strong><small>Johannesburg, South Africa</small></div></figcaption>
+      </figure>
+    </div>
+
+    <a class="testimonials-cta" href="https://wa.me/263772463284?text=Hello%20Virtcruise%20Travels%2C%20I%20would%20like%20help%20planning%20my%20next%20trip." target="_blank" rel="noopener noreferrer">Plan Your Journey</a>
+  </div>
+</section>
+
+<section class="travel-partners" id="partners" aria-labelledby="partnersTitle">
+  <div class="travel-partners-inner">
+    <header class="section-heading partners-heading">
+      <p class="section-kicker">Connected worldwide</p>
+      <h2 id="partnersTitle">Our Travel Partner Network</h2>
+      <p>Trusted connections across every stage of your journey.</p>
+    </header>
+    <ul class="partner-grid" aria-label="Virtcruise travel partner categories">
+      <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 16.5l8-2 5 5 2-1-3-6 6-7c1-1 1-2 0-3s-2-1-3 0l-7 6-6-3-1 2 5 5-2 8z"/></svg><span>Airline<br>Partners</span></li>
+      <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V8l8-5 8 5v12M8 20v-6h8v6M7 10h2M15 10h2"/></svg><span>Hotel &amp; Lodge<br>Partners</span></li>
+      <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 15h16l-2 4H7zM8 15V8h8v7M10 8V5h4v3"/></svg><span>Cruise Line<br>Partners</span></li>
+      <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 16l1.5-6h11L19 16M7 10l1-3h8l1 3M4 16h16v4h-2v-2H6v2H4z"/></svg><span>Ground Transport<br>Partners</span></li>
+      <li><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 7h6M9 11h6M9 15h4"/></svg><span>Visa Support<br>Network</span></li>
+      <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 3v6c0 5-3.4 8-8 9-4.6-1-8-4-8-9V6zM8 12l2.5 2.5L16 9"/></svg><span>Travel Insurance<br>Partners</span></li>
+    </ul>
   </div>
 </section>
 
@@ -254,7 +303,7 @@
       <form class="newsletter-form" id="newsletterForm">
         <label class="sr-only" for="newsletterEmail">Email address</label>
         <input id="newsletterEmail" name="email" type="email" autocomplete="email" placeholder="Your email address" aria-describedby="newsletterStatus">
-        <button type="submit">Coming Soon</button>
+        <button type="button" disabled aria-disabled="true">Coming Soon</button>
         <span class="sr-only" id="newsletterStatus">Newsletter subscriptions are coming soon.</span>
       </form>
     </section>
@@ -262,9 +311,9 @@
     <div class="footer-columns">
       <section class="footer-company" aria-labelledby="footerCompanyTitle">
         <h2 class="sr-only" id="footerCompanyTitle">Virtcruise Travels</h2>
-        <a class="footer-logo" href="#" aria-label="Virtcruise Travels home">
-          <img class="footer-logo-icon" src="images/logo-img.png" alt="">
-          <img class="footer-logo-text" src="images/logo-text.png" alt="Virtcruise Travels">
+        <a class="footer-logo" href="index.html" aria-label="Virtcruise Travels home">
+          <img class="footer-logo-icon" src="images/footer-logo-icon.webp" width="116" height="108" loading="lazy" decoding="async" alt="">
+          <img class="footer-logo-text" src="images/footer-logo-text.webp" width="352" height="95" loading="lazy" decoding="async" alt="Virtcruise Travels">
         </a>
         <p>Virtcruise Travels is your trusted travel partner, creating unforgettable journeys across Zimbabwe, Africa and the world through carefully curated holiday experiences.</p>
         <nav class="footer-social" aria-label="Social media">
@@ -272,14 +321,14 @@
           <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer" aria-label="Virtcruise on Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
           <a href="https://www.linkedin.com/" target="_blank" rel="noopener noreferrer" aria-label="Virtcruise on LinkedIn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9v10M5 5.5v.01M10 19V9m0 4c1-3 7-4 7 1v5M3 5.5a2 2 0 104 0 2 2 0 00-4 0z"/></svg></a>
           <a href="https://www.tiktok.com/" target="_blank" rel="noopener noreferrer" aria-label="Virtcruise on TikTok"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4v11a5 5 0 11-4-4.9M15 4c.7 2.4 2.2 3.8 4.5 4"/></svg></a>
-          <a href="https://wa.me/263772463284" target="_blank" rel="noopener noreferrer" aria-label="Chat with Virtcruise on WhatsApp"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.5a8 8 0 01-11.9 7L4 20l1.5-4A8 8 0 1120 11.5z"/><path d="M9 8.5c.6 2 2.1 3.5 4 4l1-1c.3-.3.6-.3.9-.2l2 .9c.3.1.5.4.5.7 0 1.4-1.2 2.5-2.6 2.5-4.3 0-7.8-3.5-7.8-7.8C7 6.2 8.1 5 9.5 5"/></svg></a>
+          <a href="https://wa.me/263772463284?text=Hello%20Virtcruise%20Travels%2C%20I%20would%20like%20help%20planning%20a%20trip." target="_blank" rel="noopener noreferrer" aria-label="Chat with Virtcruise on WhatsApp"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.5a8 8 0 01-11.9 7L4 20l1.5-4A8 8 0 1120 11.5z"/><path d="M9 8.5c.6 2 2.1 3.5 4 4l1-1c.3-.3.6-.3.9-.2l2 .9c.3.1.5.4.5.7 0 1.4-1.2 2.5-2.6 2.5-4.3 0-7.8-3.5-7.8-7.8C7 6.2 8.1 5 9.5 5"/></svg></a>
         </nav>
       </section>
 
-      <nav class="footer-links" aria-labelledby="quickLinksTitle">
+      <nav class="footer-links" id="footerQuickLinks" aria-labelledby="quickLinksTitle">
         <h2 id="quickLinksTitle">Quick Links</h2>
         <ul>
-          <li><a href="#">Home</a></li>
+          <li><a href="index.html">Home</a></li>
           <li><a href="#packages">Packages</a></li>
           <li><a href="#featuredToursTitle">Featured Tours</a></li>
           <li><a href="#fallsPackageTitle">Victoria Falls Package</a></li>
@@ -292,12 +341,12 @@
         <h2 id="travelServicesTitle">Travel Services</h2>
         <ul>
           <li><a href="#packages">Holiday Packages</a></li>
-          <li><a href="#packages">Flights</a></li>
-          <li><a href="#packages">Hotels</a></li>
-          <li><a href="#packages">Visa Services</a></li>
-          <li><a href="#packages">Car Rental</a></li>
-          <li><a href="#packages">Travel Insurance</a></li>
-          <li><a href="#packages">Corporate Travel</a></li>
+          <li><a href="#service-flights">Flights</a></li>
+          <li><a href="#service-accommodation">Hotels</a></li>
+          <li><a href="#service-visa">Visa Services</a></li>
+          <li><a href="https://wa.me/263772463284?text=Hello%20Virtcruise%20Travels%2C%20I%20would%20like%20a%20car%20rental%20quotation." target="_blank" rel="noopener noreferrer">Car Rental</a></li>
+          <li><a href="https://wa.me/263772463284?text=Hello%20Virtcruise%20Travels%2C%20I%20would%20like%20information%20about%20travel%20insurance." target="_blank" rel="noopener noreferrer">Travel Insurance</a></li>
+          <li><a href="https://wa.me/263772463284?text=Hello%20Virtcruise%20Travels%2C%20I%20would%20like%20to%20discuss%20corporate%20travel%20services." target="_blank" rel="noopener noreferrer">Corporate Travel</a></li>
         </ul>
       </nav>
 
@@ -315,9 +364,9 @@
     <div class="footer-bottom">
       <p>© 2026 Virtcruise Travels.<br class="footer-mobile-break"> All Rights Reserved.</p>
       <nav aria-label="Legal">
-        <a href="#">Privacy Policy</a>
-        <a href="#">Terms &amp; Conditions</a>
-        <a href="#">Cookie Policy</a>
+        <a href="https://wa.me/263772463284?text=Hello%20Virtcruise%20Travels%2C%20please%20send%20me%20your%20Privacy%20Policy." target="_blank" rel="noopener noreferrer">Privacy Policy</a>
+        <a href="https://wa.me/263772463284?text=Hello%20Virtcruise%20Travels%2C%20please%20send%20me%20your%20Terms%20and%20Conditions." target="_blank" rel="noopener noreferrer">Terms &amp; Conditions</a>
+        <a href="https://wa.me/263772463284?text=Hello%20Virtcruise%20Travels%2C%20please%20send%20me%20your%20Cookie%20Policy." target="_blank" rel="noopener noreferrer">Cookie Policy</a>
       </nav>
     </div>
   </div>
