@@ -103,6 +103,13 @@ function setHash(hash) {
   applyRoute();
 }
 
+function openQuoteBuilderService(service, trigger = document.activeElement) {
+  lastFocus = trigger;
+  const hash = `#service=${service}`;
+  if (location.hash === hash) builder.openService(service);
+  else setHash(hash);
+}
+
 function closeViaHistory() {
   if (location.hash.startsWith('#service=') || location.hash === '#cart') history.back();
   else closeShell();
@@ -132,8 +139,7 @@ function applyRoute() {
 document.querySelectorAll('[data-service]').forEach(action => {
   action.addEventListener('click', event => {
     event.preventDefault();
-    lastFocus = action;
-    setHash(`#service=${action.dataset.service}`);
+    openQuoteBuilderService(action.dataset.service, action);
   });
 });
 document.querySelectorAll('.service-card').forEach(card => {
@@ -146,11 +152,14 @@ document.querySelectorAll('.service-card').forEach(card => {
     if (event.type === 'click' && event.target.closest('a,button')) return;
     if (event.type === 'keydown' && !['Enter', ' '].includes(event.key)) return;
     event.preventDefault();
-    lastFocus = card;
-    setHash(`#service=${action.dataset.service}`);
+    openQuoteBuilderService(action.dataset.service, card);
   };
   card.addEventListener('click', open);
   card.addEventListener('keydown', open);
+});
+document.addEventListener('virtcruise:open-service', event => {
+  const { service, trigger } = event.detail || {};
+  if (service) openQuoteBuilderService(service, trigger);
 });
 tripButton.addEventListener('click', () => {
   lastFocus = tripButton;

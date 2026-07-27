@@ -10,6 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/styles.css">
+<link rel="stylesheet" href="css/navigation.css">
 <link rel="stylesheet" href="css/shop.css">
 <link rel="stylesheet" href="css/quote-builder.css">
 </head>
@@ -30,10 +31,8 @@
       <img class="brand-icon" src="images/logo-img.png" alt="Virtcruise travel emblem">
       <img class="brand-text" src="images/logo-text.png" alt="Virtcruise Travels">
     </a>
-    <nav class="links" id="mainNavigation" aria-label="Main navigation">
-      <a class="active" href="index.html">Home</a><a href="#packages">Packages⌄</a><a href="#service-flights">Flights</a><a href="#service-accommodation">Hotels</a><a href="#service-visa">Visa Services⌄</a><a href="#aboutVirtcruiseTitle">About Us</a><a href="#footerContact">Contact</a>
-    </nav>
-    <a class="mobile-btn" href="#footerQuickLinks" aria-label="Jump to site navigation">☰</a>
+    <nav class="links" id="mainNavigation" data-site-navigation aria-label="Main navigation"></nav>
+    <button class="mobile-btn" type="button" data-mobile-navigation-toggle aria-label="Open main navigation" aria-controls="mobileNavigation" aria-expanded="false">☰</button>
   </div>
 </header>
 </div>
@@ -422,6 +421,7 @@
 <button class="my-enquiry-button" id="myEnquiryButton" type="button" aria-haspopup="dialog" aria-label="My Enquiry, 0 items">
   <span>My Enquiry</span><strong data-cart-count>0</strong>
 </button>
+<script type="module" src="js/navigation.js"></script>
 <script type="module" src="js/main.js"></script>
 
 </body>
