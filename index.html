@@ -10,6 +10,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/styles.css">
+<link rel="stylesheet" href="css/shop.css">
+<link rel="stylesheet" href="css/quote-builder.css">
 </head>
 <body>
 <div class="utility">
@@ -30,11 +32,11 @@
     <nav class="links" id="mainNavigation" aria-label="Main navigation">
       <a class="active" href="index.html">Home</a><a href="#packages">Packages⌄</a><a href="#service-flights">Flights</a><a href="#service-accommodation">Hotels</a><a href="#service-visa">Visa Services⌄</a><a href="#aboutVirtcruiseTitle">About Us</a><a href="#footerContact">Contact</a>
     </nav>
-    <a class="whatsapp" href="https://wa.me/263772463284?text=Hello%20Virtcruise%20Travels%2C%20I%20would%20like%20help%20planning%20a%20trip." target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M20 11.5a8 8 0 01-11.9 7L4 20l1.5-4A8 8 0 1120 11.5z"/><path d="M9 8.5c.6 2 2.1 3.5 4 4l1-1c.3-.3.6-.3.9-.2l2 .9c.3.1.5.4.5.7 0 1.4-1.2 2.5-2.6 2.5-4.3 0-7.8-3.5-7.8-7.8C7 6.2 8.1 5 9.5 5c.3 0 .6.2.7.5l.9 2c.1.3.1.6-.2.9l-1 1z"/></svg>WHATSAPP US</a>
     <a class="mobile-btn" href="#footerQuickLinks" aria-label="Jump to site navigation">☰</a>
   </div>
 </header>
 
+<div class="hero-services-stage">
 <section class="hero">
   <div class="hero-content">
     <div class="hero-copy">
@@ -63,7 +65,7 @@
   <h2>Our Services</h2>
 
   <div class="services-carousel" aria-label="Virtcruise travel services">
-    <button class="carousel-arrow service-prev" type="button" aria-label="Show previous services">
+    <button class="carousel-arrow service-prev is-unavailable" type="button" aria-label="Show previous services" aria-hidden="true" tabindex="-1">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
     </button>
 
@@ -76,7 +78,7 @@
           </span>
           <h3 id="service-flights">Flight Reservations</h3>
           <p>Domestic, regional and international flights with expert booking support.</p>
-          <a class="service-link" href="https://wa.me/263772463284?text=Hello%20Virtcruise%20Travels%2C%20I%20would%20like%20a%20flight%20quotation." target="_blank" rel="noopener noreferrer">Book flights <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <a class="service-link" href="#service=flights" data-service="flights">Book flights <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
         </article>
 
         <article class="service-card">
@@ -85,7 +87,7 @@
           </span>
           <h3>Car Rental</h3>
           <p>Reliable self-drive, chauffeur and airport-transfer vehicle options.</p>
-          <a class="service-link" href="https://wa.me/263772463284?text=Hello%20Virtcruise%20Travels%2C%20I%20would%20like%20a%20car%20rental%20quotation." target="_blank" rel="noopener noreferrer">Rent a car <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <a class="service-link" href="#service=car-rental" data-service="car-rental">Rent a car <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
         </article>
 
         <article class="service-card">
@@ -94,7 +96,7 @@
           </span>
           <h3 id="service-visa">Visa Services</h3>
           <p>Guidance with applications, documentation and appointment preparation.</p>
-          <a class="service-link" href="https://wa.me/263772463284?text=Hello%20Virtcruise%20Travels%2C%20I%20need%20help%20with%20a%20visa%20application." target="_blank" rel="noopener noreferrer">Visa assistance <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <a class="service-link" href="#service=visa-services" data-service="visa-services">Visa assistance <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
         </article>
 
         <article class="service-card">
@@ -103,7 +105,7 @@
           </span>
           <h3 id="service-accommodation">Accommodation</h3>
           <p>Hotels, resorts, lodges and apartments selected for your trip and budget.</p>
-          <a class="service-link" href="https://wa.me/263772463284?text=Hello%20Virtcruise%20Travels%2C%20I%20would%20like%20an%20accommodation%20quotation." target="_blank" rel="noopener noreferrer">Find a stay <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <a class="service-link" href="#service=accommodation" data-service="accommodation">Find a stay <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
         </article>
 
         <article class="service-card">
@@ -112,7 +114,7 @@
           </span>
           <h3>Holiday Packages</h3>
           <p>Curated escapes combining flights, accommodation, transfers and experiences.</p>
-          <a class="service-link" href="#featuredToursTitle">Explore packages <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <a class="service-link" href="#service=holiday-packages" data-service="holiday-packages">Explore packages <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
         </article>
 
         <article class="service-card">
@@ -121,17 +123,18 @@
           </span>
           <h3>Cruises</h3>
           <p>Ocean and river voyages from leading cruise lines around the world.</p>
-          <a class="service-link" href="https://wa.me/263772463284?text=Hello%20Virtcruise%20Travels%2C%20I%20would%20like%20information%20about%20cruise%20packages." target="_blank" rel="noopener noreferrer">View cruises <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <a class="service-link" href="#service=cruises" data-service="cruises">View cruises <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
         </article>
 
       </div>
     </div>
 
-    <button class="carousel-arrow service-next" type="button" aria-label="Show more services">
+    <button class="carousel-arrow service-next is-unavailable" type="button" aria-label="Show more services" aria-hidden="true" tabindex="-1">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
     </button>
   </div>
 </section>
+</div>
 
 
 <section class="featured-tours" aria-labelledby="featuredToursTitle">
@@ -141,92 +144,122 @@
       <p>Take a look at some of our most popular and unforgettable tour packages.</p>
     </header>
 
-    <div class="tour-grid">
-      <article class="tour-card">
+    <div class="tour-grid" id="featuredToursGrid">
+      <article class="tour-card" data-package-id="pkg-zimbabwe-safari">
         <div class="tour-image"><img src="images/tour-zimbabwe-safari.webp" width="960" height="640" loading="lazy" decoding="async" alt="Elephants crossing Zimbabwean savanna at golden hour"></div>
         <div class="tour-content">
           <h3>Zimbabwean Safari</h3>
           <p>Experience the wild heart of Africa with our luxury safari tour.</p>
-          <a class="tour-button" href="https://wa.me/263772463284?text=Hello%20Virtcruise%20Travels%2C%20I%20would%20like%20to%20learn%20more%20about%20the%20Zimbabwean%20Safari." target="_blank" rel="noopener noreferrer" aria-label="Enquire about the Zimbabwean Safari">Enquire About Safari</a>
+          <div class="tour-actions"><a class="tour-button tour-button-secondary" href="packages/zimbabwe-safari.html">View Details</a><button class="tour-button" type="button" data-featured-add="pkg-zimbabwe-safari">Add to My Trip</button></div>
         </div>
       </article>
 
-      <article class="tour-card">
+      <article class="tour-card" data-package-id="pkg-europe-city">
         <div class="tour-image"><img src="images/tour-europe-city.webp" width="960" height="640" loading="lazy" decoding="async" alt="Grand historic architecture on a European city boulevard"></div>
         <div class="tour-content">
           <h3>European City Break</h3>
           <p>Discover the history and culture of Europe’s most iconic cities.</p>
-          <a class="tour-button" href="https://wa.me/263772463284?text=Hello%20Virtcruise%20Travels%2C%20I%20would%20like%20to%20learn%20more%20about%20the%20European%20City%20Break." target="_blank" rel="noopener noreferrer" aria-label="Enquire about the European City Break">Enquire About Europe</a>
+          <div class="tour-actions"><a class="tour-button tour-button-secondary" href="packages/european-city-break.html">View Details</a><button class="tour-button" type="button" data-featured-add="pkg-europe-city">Add to My Trip</button></div>
         </div>
       </article>
 
-      <article class="tour-card">
+      <article class="tour-card" data-package-id="pkg-tropical-paradise">
         <div class="tour-image"><img src="images/tour-tropical-paradise.webp" width="960" height="640" loading="lazy" decoding="async" alt="Pristine tropical beach with turquoise water and palm trees"></div>
         <div class="tour-content">
           <h3>Tropical Paradise</h3>
           <p>Relax on pristine beaches and enjoy the crystal-clear waters of the tropics.</p>
-          <a class="tour-button" href="https://wa.me/263772463284?text=Hello%20Virtcruise%20Travels%2C%20I%20would%20like%20to%20learn%20more%20about%20the%20Tropical%20Paradise%20tour." target="_blank" rel="noopener noreferrer" aria-label="Enquire about the Tropical Paradise tour">Enquire About Paradise</a>
+          <div class="tour-actions"><a class="tour-button tour-button-secondary" href="packages/tropical-paradise.html">View Details</a><button class="tour-button" type="button" data-featured-add="pkg-tropical-paradise">Add to My Trip</button></div>
         </div>
       </article>
     </div>
+    <p class="sr-only" id="featuredTourStatus" role="status" aria-live="polite"></p>
+  </div>
+</section>
+
+<section class="shop-section" id="allPackages" aria-labelledby="allPackagesTitle">
+  <div class="shop-inner">
+    <header class="shop-heading">
+      <p class="shop-eyebrow">Build your next journey</p>
+      <h2 id="allPackagesTitle">Explore All Packages</h2>
+      <p>Compare curated escapes, open the full details and save everything you need to one trip enquiry.</p>
+    </header>
+    <form class="shop-filters" id="packageFilters" aria-label="Filter travel packages">
+      <div class="shop-filter-row">
+        <label class="filter-field">Destination<select id="destinationFilter"><option value="all">All destinations</option></select></label>
+        <label class="filter-field">Budget<select id="budgetFilter"><option value="all">Any budget</option><option value="under-750">Under USD 750</option><option value="750-1200">USD 750–1,200</option><option value="over-1200">Over USD 1,200</option></select></label>
+        <label class="filter-field">Duration<select id="durationFilter"><option value="all">Any duration</option><option value="short">Up to 4 days</option><option value="medium">5–6 days</option><option value="long">7+ days</option></select></label>
+        <button class="filter-reset" id="resetFilters" type="button">Reset filters</button>
+      </div>
+      <fieldset class="filter-chips" id="categoryFilters"><legend>Travel style</legend></fieldset>
+    </form>
+    <div class="shop-results-bar" aria-live="polite"><p><strong id="packageResultCount">Loading packages…</strong></p><p>Prices are indicative and confirmed in your final quotation.</p></div>
+    <div class="package-grid" id="packageGrid"><p class="shop-empty">Loading travel packages…</p></div>
   </div>
 </section>
 
 <section class="falls-package" aria-labelledby="fallsPackageTitle">
-  <div class="falls-package-inner">
-    <header class="falls-package-header">
-      <h2 id="fallsPackageTitle">Exclusive Victoria Falls Package!</h2>
-      <p>Experience one of the Seven Natural Wonders of the World with our special holiday package, crafted for an unforgettable adventure.</p>
-    </header>
-
-    <article class="falls-package-card">
-      <div class="falls-package-image">
-        <img src="images/victoria-falls-package.webp" width="1600" height="699" loading="lazy" decoding="async" alt="Panoramic view of Victoria Falls cascading into its misty gorge">
-        <h3>Victoria Falls Holiday Package</h3>
+  <article class="falls-package-card">
+      <div class="falls-package-inner">
+        <header class="falls-package-header">
+          <h2 id="fallsPackageTitle">Exclusive Victoria Falls Package!</h2>
+          <p>Experience one of the Seven Natural Wonders of the World with our special holiday package, crafted for an unforgettable adventure.</p>
+        </header>
       </div>
 
-      <div class="falls-package-content">
+      <div class="falls-package-image">
+        <img src="images/victoria-falls-package.webp" width="1600" height="699" loading="lazy" decoding="async" alt="Panoramic view of Victoria Falls cascading into its misty gorge">
+        <span class="falls-package-badge">Victoria Falls <small>Zimbabwe</small></span>
+      </div>
+
+      <form class="falls-package-content" id="featuredFallsPackage">
+        <p class="falls-summary-label">Exclusive Offer</p>
+        <h3>Victoria Falls Holiday Package</h3>
+        <p class="falls-package-summary">3 nights accommodation for two people with transfers included.</p>
         <section class="package-inclusions" aria-labelledby="packageInclusionsTitle">
           <h4 id="packageInclusionsTitle">What’s Included?</h4>
           <ul>
-            <li>3 nights accommodation for 2 people sharing</li>
-            <li>All transfers included</li>
-            <li>Choice of bus or flight travel options</li>
-            <li>Option to add more custom activities</li>
+            <li>3 nights accommodation</li>
+            <li>Return transfers</li>
+            <li>Bus or flight travel options</li>
+            <li>Custom activities available</li>
           </ul>
         </section>
 
         <div class="activity-options">
-          <section class="activity-option" aria-labelledby="activityOptionA">
+          <label class="activity-option">
+            <input type="radio" name="activityOption" value="OPTION_A" checked>
+            <span class="activity-selection" aria-hidden="true">✓</span>
             <p class="activity-label">Activity Option</p>
-            <h4 id="activityOptionA">Option A</h4>
+            <h4>Option A</h4>
             <ul>
               <li>Chobe Day Trip</li>
               <li>Standard Sunset Cruise</li>
-              <li>Guided Tour of the Rainforest</li>
+              <li>Guided Rainforest Tour</li>
             </ul>
-          </section>
+          </label>
 
-          <section class="activity-option" aria-labelledby="activityOptionB">
+          <label class="activity-option">
+            <input type="radio" name="activityOption" value="OPTION_B">
+            <span class="activity-selection" aria-hidden="true">✓</span>
             <p class="activity-label">Activity Option</p>
-            <h4 id="activityOptionB">Option B</h4>
+            <h4>Option B</h4>
             <ul>
               <li>Game Drive</li>
               <li>Helicopter Flight</li>
             </ul>
-          </section>
+          </label>
         </div>
 
         <div class="package-price" aria-label="Fixed package price: 250 dollars per person">
-          <h4>Fixed Package Price</h4>
+          <h4>From</h4>
           <p class="price"><span aria-hidden="true">$</span>250 <small>per person</small></p>
-          <p class="discount">Includes a 25% limited-time discount!</p>
+          <p class="discount">25% Limited-Time Discount</p>
         </div>
 
-        <a class="package-cta" href="https://wa.me/263772463284?text=Hello%20Virtcruise%20Travels%2C%20I%20would%20like%20to%20book%20the%20Victoria%20Falls%20Holiday%20Package%20at%20%24250%20per%20person." target="_blank" rel="noopener noreferrer">Book Your Package Now!</a>
-      </div>
-    </article>
-  </div>
+        <button class="package-cta" type="submit">Book Your Package</button>
+        <a class="falls-details-link" href="packages/victoria-falls-escape.html">View Full Itinerary</a>
+      </form>
+  </article>
 </section>
 
 <section class="about-virtcruise" aria-labelledby="aboutVirtcruiseTitle">
@@ -240,6 +273,7 @@
       <h2 id="aboutVirtcruiseTitle">About Virtcruise Travels</h2>
       <p>We are a team of passionate and experienced travel consultants dedicated to curating the perfect journey for you. With our deep knowledge of destinations and our commitment to exceptional service, we are your trusted partners in travel. Our offices are located at:</p>
       <p class="about-address"><strong>Visit our office</strong><span>No. 5 Abel Rd, Greendale, Harare, Zimbabwe</span></p>
+      <a class="about-cta" href="#footerContact">Start Planning Your Journey</a>
     </div>
   </div>
 </section>
@@ -372,19 +406,21 @@
   </div>
 </footer>
 
-<a class="whatsapp-fab"
-   href="https://wa.me/263772463284?text=Hello%20Virtcruise%20Travels%2C%20I%20would%20like%20help%20planning%20a%20trip."
-   target="_blank"
-   rel="noopener noreferrer"
-   aria-label="Chat with Virtcruise Travels on WhatsApp">
-  <span class="whatsapp-fab-label">Chat with us</span>
-  <!-- WhatsApp brand mark -->
-  <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
-    <path d="M19.11 17.22c-.28-.14-1.65-.81-1.91-.91-.26-.09-.45-.14-.64.14-.19.28-.73.91-.9 1.1-.17.19-.33.21-.61.07-.28-.14-1.18-.43-2.25-1.39-.83-.74-1.39-1.66-1.55-1.94-.16-.28-.02-.43.12-.57.13-.13.28-.33.42-.5.14-.16.19-.28.28-.47.09-.19.05-.35-.02-.5-.07-.14-.64-1.54-.87-2.11-.23-.55-.46-.48-.64-.49h-.54c-.19 0-.5.07-.76.35-.26.28-1  .98-1 2.39s1.03 2.77 1.17 2.96c.14.19 2.02 3.09 4.9 4.33.68.3 1.22.47 1.63.6.69.22 1.31.19 1.81.12.55-.08 1.65-.68 1.88-1.33.23-.66.23-1.22.16-1.33-.07-.12-.26-.19-.54-.33z"/>
-    <path d="M16.05 3C8.88 3 3.05 8.83 3.05 16c0 2.29.6 4.52 1.73 6.48L3 29l6.68-1.75A12.95 12.95 0 0 0 16.05 29C23.22 29 29.05 23.17 29.05 16S23.22 3 16.05 3zm0 23.8a10.8 10.8 0 0 1-5.51-1.51l-.39-.23-3.96 1.04 1.06-3.86-.25-.4A10.79 10.79 0 0 1 5.26 16c0-5.95 4.84-10.8 10.79-10.8S26.84 10.05 26.84 16 22 26.8 16.05 26.8z"/>
-  </svg>
-</a>
-<script src="js/main.js"></script>
+<dialog class="package-dialog" id="packageModal" aria-labelledby="packageModalTitle">
+  <button class="dialog-close" id="closePackageModal" type="button" aria-label="Close package details">×</button>
+  <div id="packageModalContent"></div>
+</dialog>
+<div class="enquiry-app" id="enquiryApp" hidden>
+  <section class="enquiry-panel" id="enquiryPanel" role="dialog" aria-modal="true" aria-labelledby="appPanelTitle">
+    <button class="enquiry-close" id="closeEnquiryApp" type="button" aria-label="Close service panel"><span aria-hidden="true">×</span> Close</button>
+    <div class="enquiry-content" id="enquiryContent"></div>
+    <div class="sr-only" id="quoteBuilderStatus" role="status" aria-live="polite"></div>
+  </section>
+</div>
+<button class="my-enquiry-button" id="myEnquiryButton" type="button" aria-haspopup="dialog" aria-label="My Enquiry, 0 items">
+  <span>My Enquiry</span><strong data-cart-count>0</strong>
+</button>
+<script type="module" src="js/main.js"></script>
 
 </body>
 </html>

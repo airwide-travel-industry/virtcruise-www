@@ -1,3 +1,6 @@
+# Validation artifacts
+artifacts/screenshots/
+
 # Logs
 logs
 *.log
@@ -31,3 +34,8 @@ coverage/
 Thumbs.db
 .idea/
 .vscode/
+
+# Common temporary files
+*.tmp
+*.swp
+*~
