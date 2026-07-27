@@ -357,27 +357,81 @@ export function createQuoteBuilder({ root, countButton, statusNode, onRequestOpe
   }
 
   function applyQuickQuote(values) {
+    return populateQuoteBuilderFromQuickQuote(values);
+  }
+
+  function populateQuoteBuilderFromQuickQuote(values) {
+    const clean = value => String(value || '').trim();
+    const travellerSelection = clean(values.travellers);
+    const travellerCount = travellerSelection === '3-4'
+      ? 3
+      : travellerSelection === '5+'
+        ? 5
+        : Math.max(1, Number(travellerSelection) || 1);
+    const destination = clean(values.destination);
+    const departureDate = clean(values.departureDate);
+    const returnDate = clean(values.returnDate);
+    const budget = clean(values.budget) === 'Budget (USD)' ? '' : clean(values.budget);
     const conflicts = [];
-    if (state.destination && values.destination && state.destination !== values.destination) conflicts.push('destination');
-    if (state.tripStartDate && values.departureDate && state.tripStartDate !== values.departureDate) conflicts.push('travel dates');
-    if (conflicts.length) pendingQuickQuote = values;
-    state.destination ||= values.destination || '';
-    state.tripStartDate ||= values.departureDate || '';
-    state.tripEndDate ||= values.returnDate || '';
-    state.customer.fullName ||= values.fullName || '';
-    state.customer.email ||= values.email || '';
-    state.customer.mobile ||= values.mobile || '';
-    if (!state.serviceRequests.length) {
+    if (state.destination && destination && state.destination !== destination) conflicts.push('destination');
+    if ((state.tripStartDate && departureDate && state.tripStartDate !== departureDate)
+      || (state.tripEndDate && returnDate && state.tripEndDate !== returnDate)) conflicts.push('travel dates');
+    const mappedValues = {
+      ...values,
+      destination,
+      departureDate,
+      returnDate,
+      travellers: travellerSelection,
+      travellerCount,
+      budget
+    };
+    pendingQuickQuote = conflicts.length ? mappedValues : null;
+    state.destination ||= destination;
+    state.tripStartDate ||= departureDate;
+    state.tripEndDate ||= returnDate;
+    state.customer.fullName ||= clean(values.fullName);
+    state.customer.email ||= clean(values.email);
+    state.customer.mobile ||= clean(values.mobile);
+    state.travellerCounts = { ...state.travellerCounts, adults: travellerCount };
+    if (state.tripTitle === 'My Virtcruise Trip' && state.destination) state.tripTitle = `${state.destination} Trip`;
+
+    const effectiveDestination = conflicts.includes('destination') ? state.destination : destination;
+    const effectiveDeparture = conflicts.includes('travel dates') ? state.tripStartDate : departureDate;
+    const effectiveReturn = conflicts.includes('travel dates') ? state.tripEndDate : returnDate;
+    const start = effectiveDeparture ? new Date(`${effectiveDeparture}T12:00:00`) : null;
+    const end = effectiveReturn ? new Date(`${effectiveReturn}T12:00:00`) : null;
+    const numberOfNights = start && end && end > start
+      ? Math.round((end - start) / 86400000)
+      : '';
+    const quickQuoteRequest = state.serviceRequests.find(request => request.details?.requestSource === 'QUICK_QUOTE');
+    const quickQuoteDetails = {
+      ...(quickQuoteRequest?.details || {}),
+      destination: effectiveDestination,
+      departureDate: effectiveDeparture,
+      returnDate: effectiveReturn,
+      numberOfNights,
+      adults: travellerCount,
+      travellerSelection,
+      budgetRange: budget,
+      requestSource: 'QUICK_QUOTE'
+    };
+    if (quickQuoteRequest) {
+      quickQuoteRequest.details = quickQuoteDetails;
+      quickQuoteRequest.updatedAt = new Date().toISOString();
+    } else {
       state.serviceRequests.push({
         id: uid('service'),
         serviceType: 'HOLIDAY_PACKAGE',
         serviceSlug: 'holiday-packages',
         serviceTitle: 'Holiday Packages',
         status: 'DRAFT',
-        details: { destination: values.destination, departureDate: values.departureDate, adults: values.travellers, budgetRange: values.budget, requestSource: 'QUICK_QUOTE' }
+        createdAt: new Date().toISOString(),
+        details: quickQuoteDetails
       });
     }
-    persist(conflicts.length ? `Choose whether to keep your existing ${conflicts.join(' and ')}.` : 'Quick Quote added to your trip draft.');
+    persist(conflicts.length
+      ? `Your trip has been started. Choose whether to keep your existing ${conflicts.join(' and ')}.`
+      : 'Your trip has been started. Complete your itinerary below.');
     openReview();
   }
 
@@ -438,9 +492,25 @@ export function createQuoteBuilder({ root, countButton, statusNode, onRequestOpe
       render();
     }
     if (event.target.closest('[data-quick-use]')) {
+      const previousDestination = state.destination;
       state.destination = pendingQuickQuote.destination || state.destination;
       state.tripStartDate = pendingQuickQuote.departureDate || state.tripStartDate;
       state.tripEndDate = pendingQuickQuote.returnDate || state.tripEndDate;
+      if (state.tripTitle === `${previousDestination} Trip` && state.destination !== previousDestination) {
+        state.tripTitle = `${state.destination} Trip`;
+      }
+      const quickQuoteRequest = state.serviceRequests.find(request => request.details?.requestSource === 'QUICK_QUOTE');
+      if (quickQuoteRequest) {
+        const start = pendingQuickQuote.departureDate ? new Date(`${pendingQuickQuote.departureDate}T12:00:00`) : null;
+        const end = pendingQuickQuote.returnDate ? new Date(`${pendingQuickQuote.returnDate}T12:00:00`) : null;
+        quickQuoteRequest.details = {
+          ...quickQuoteRequest.details,
+          destination: pendingQuickQuote.destination || quickQuoteRequest.details.destination,
+          departureDate: pendingQuickQuote.departureDate || quickQuoteRequest.details.departureDate,
+          returnDate: pendingQuickQuote.returnDate || quickQuoteRequest.details.returnDate,
+          numberOfNights: start && end && end > start ? Math.round((end - start) / 86400000) : ''
+        };
+      }
       pendingQuickQuote = null;
       persist('Quick Quote trip details applied.');
       render();
@@ -523,6 +593,7 @@ export function createQuoteBuilder({ root, countButton, statusNode, onRequestOpe
     openReview,
     openCheckout,
     applyQuickQuote,
+    populateQuoteBuilderFromQuickQuote,
     openPackage,
     addPackageToTrip,
     hasPackage: packageId => state.serviceRequests.some(request => request.serviceType === 'HOLIDAY_PACKAGE' && (request.packageId === packageId || request.details?.packageId === packageId || request.details?.preferredPackage === packageId)),

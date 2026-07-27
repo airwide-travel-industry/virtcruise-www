@@ -58,7 +58,9 @@ img{display:block;max-width:100%}
   background:transparent;
   padding:34px 52px 48px;
   color:#fff;
+  pointer-events:none;
 }
+.services-carousel{pointer-events:auto}
 .packages h2{
   font-family:'Cormorant Garamond',serif;
   text-align:center;

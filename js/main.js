@@ -216,7 +216,7 @@ quoteForm?.addEventListener('submit', event => {
     invalid.focus();
     return;
   }
-  builder.applyQuickQuote({
+  builder.populateQuoteBuilderFromQuickQuote({
     fullName: data.get('name'),
     email: data.get('email'),
     mobile: data.get('mobile'),
