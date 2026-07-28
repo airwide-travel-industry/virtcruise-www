@@ -65,6 +65,50 @@
 .qb-trip-fields input,.qb-custom-form input{width:100%;height:39px;padding:0 9px;border:1px solid #cbd3dd;border-radius:7px;color:#17314f;font:11px var(--font-body)}
 .qb-trip-facts{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:7px;padding-top:13px;border-top:1px solid #e2e6eb}
 .qb-trip-facts span{padding:6px 9px;border-radius:999px;background:#f4f0e7;color:#536177;font-size:8px;font-weight:700}
+.qb-overall-notes{grid-column:1/-1;margin-top:-4px;padding:10px;border-radius:7px;background:#fff8e8;color:#5d6878;font-size:9px;line-height:1.5}
+.qb-backend-actions{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin-top:10px;padding:10px 12px;border:1px solid #c8d7ca;border-radius:9px;background:#f3faf4}
+.qb-backend-actions span{margin-right:auto;color:#315b3b;font-size:9px;font-weight:800}
+.qb-backend-actions button{min-height:30px;padding:6px 9px;border:1px solid #b9c7be;border-radius:6px;background:#fff;color:#294d33;font:800 8px var(--font-body);cursor:pointer}
+.qb-backend-actions button:last-child{border-color:#d7b9b4;color:#913a31}
+.qb-backend-actions button:focus-visible{outline:3px solid #d5a52f;outline-offset:2px}
+.qb-service-review{margin-top:18px}
+.qb-review-section-head{display:flex;align-items:end;justify-content:space-between;gap:16px;margin-bottom:10px}
+.qb-review-section-head>span{color:#687588;font-size:9px;font-weight:700}
+.qb-service-review-list{display:grid;gap:9px}
+.qb-service-review-item{overflow:hidden;border:1px solid #d7dee7;border-radius:11px;background:#fff}
+.qb-service-review-item summary{display:grid;grid-template-columns:30px minmax(0,1fr) auto auto;gap:10px;align-items:center;min-height:62px;padding:11px 14px;cursor:pointer;list-style:none}
+.qb-service-review-item summary::-webkit-details-marker{display:none}
+.qb-service-review-item summary:focus-visible{outline:3px solid #d5a52f;outline-offset:-3px}
+.qb-service-order{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:#09244a;color:#efc156;font-size:9px;font-weight:800}
+.qb-service-review-item summary small{display:block;color:#a16f17;font-size:7px;font-weight:800;letter-spacing:.7px;text-transform:uppercase}
+.qb-service-review-item summary b{display:block;margin-top:3px;color:#17314f;font-size:12px}
+.qb-service-review-item summary>strong{color:#9a6915;font:700 15px var(--font-display)}
+.qb-service-review-item summary>strong small{display:inline;color:#7a8491;font:700 7px var(--font-body);text-transform:uppercase}
+.qb-expand-label{color:#526278;font-size:8px;font-weight:800;text-transform:uppercase}
+.qb-expand-label::after{content:" +";color:#a16f17}
+.qb-service-review-item[open] .qb-expand-label::after{content:" −"}
+.qb-service-review-body{padding:0 14px 14px 54px;border-top:1px solid #edf0f3}
+.qb-service-review-body>p{margin:12px 0;color:#5d6c7e;font-size:10px;line-height:1.5}
+.qb-service-review-body dl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:#e1e6ec}
+.qb-service-review-body dl div{min-width:0;padding:8px 9px;background:#f8f9fa}
+.qb-service-review-body dt{color:#7a8491;font-size:7px;font-weight:800;text-transform:uppercase}
+.qb-service-review-body dd{overflow-wrap:anywhere;margin-top:2px;color:#29435f;font-size:9px}
+.qb-service-notes{padding:9px;border-radius:7px;background:#fff8e8}
+.qb-service-review-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:11px}
+.qb-service-review-actions button,.qb-service-review-actions a{min-height:30px;padding:6px 9px;border:1px solid #c8d0da;border-radius:6px;background:#fff;color:#294762;font:800 8px var(--font-body);cursor:pointer}
+.qb-service-review-actions button:disabled{opacity:.35;cursor:not-allowed}
+.qb-service-review-actions button:nth-last-of-type(1){color:#9d3a30}
+.qb-service-review-actions :focus-visible{outline:3px solid #d5a52f;outline-offset:2px}
+.qb-trip-empty{margin-top:18px;padding:28px;border:1px dashed #bbc6d3;border-radius:12px;background:#fff;text-align:center}
+.qb-trip-empty h2{color:#17314f;font:700 24px var(--font-display)}
+.qb-trip-empty p{margin:7px 0 14px;color:#697587;font-size:10px}
+.qb-confirm-backdrop{position:fixed;inset:0;z-index:20;display:grid;place-items:center;padding:20px;background:rgba(4,19,40,.68)}
+.qb-confirm{width:min(420px,100%);padding:24px;border:1px solid #d8bf7d;border-radius:12px;background:#fff;box-shadow:0 24px 60px rgba(3,20,44,.32)}
+.qb-confirm h2{color:#09244a;font:700 25px/1.15 var(--font-display)}
+.qb-confirm p{margin:9px 0 20px;color:#5d6b7d;font-size:11px;line-height:1.55}
+.qb-confirm>div{display:flex;justify-content:flex-end;gap:8px}
+.qb-confirm button{min-height:40px;padding:8px 13px;border:1px solid #c8d0da;border-radius:7px;background:#fff;color:#294762;font:800 9px var(--font-body);text-transform:uppercase}
+.qb-confirm .app-primary{border-color:#b77b18;background:#c99125;color:#09244a}
 .qb-days{display:grid;gap:16px;margin-top:18px}
 .qb-day,.qb-itinerary-group{overflow:hidden;border:1px solid #d7dde5;border-radius:12px;background:#fff}
 .qb-day>header{display:flex;gap:13px;align-items:center;padding:14px 16px;background:#09244a;color:#fff}
@@ -138,6 +182,11 @@
   .qb-conflict>div{grid-column:1/-1}
   .qb-trip-fields{grid-template-columns:1fr}
   .qb-trip-facts{grid-column:auto}
+  .qb-service-review-item summary{grid-template-columns:28px minmax(0,1fr) auto}
+  .qb-service-review-item summary>strong{grid-column:2}
+  .qb-expand-label{grid-column:3;grid-row:1/3}
+  .qb-service-review-body{padding-left:12px}
+  .qb-service-review-body dl{grid-template-columns:1fr}
   .qb-custom-form>div{grid-template-columns:1fr 1fr}
   .qb-custom-form>div label:first-child{grid-column:1/-1}
   .qb-custom-form button{grid-column:1/-1}

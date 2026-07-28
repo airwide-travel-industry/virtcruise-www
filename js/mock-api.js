@@ -1,5 +1,6 @@
 const SUBMISSIONS_KEY = 'virtcruise.mock.enquiries';
 const COUNTER_KEY = 'virtcruise.mock.counter';
+let memoryCounter = 122;
 
 const delay = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds));
 
@@ -16,9 +17,19 @@ function validate(payload) {
 
 function nextReference() {
   const year = new Date().getFullYear();
-  const current = Number(localStorage.getItem(COUNTER_KEY)) || 122;
+  let current = memoryCounter;
+  try {
+    current = Number(localStorage.getItem(COUNTER_KEY)) || memoryCounter;
+  } catch {
+    // In-memory references keep mock submissions usable when storage is blocked.
+  }
   const next = current + 1;
-  localStorage.setItem(COUNTER_KEY, String(next));
+  memoryCounter = next;
+  try {
+    localStorage.setItem(COUNTER_KEY, String(next));
+  } catch {
+    // The response remains a truthful browser-local mock.
+  }
   return `VCT-${year}-${String(next).padStart(6, '0')}`;
 }
 

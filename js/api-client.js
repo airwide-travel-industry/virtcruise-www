@@ -1,144 +1,158 @@
-import {
-  calculateItinerary as calculateMockItinerary,
-  createQuoteDraft as createMockQuoteDraft,
-  submitEnquiry as submitMockEnquiry,
-  submitQuote as submitMockQuote,
-  updateQuoteDraft as updateMockQuoteDraft
-} from './mock-api.js';
+import { RepositoryError, withRetry } from './repositories/base-repository.js';
+import { createCustomerRepository } from './repositories/customer-repository.js';
+import { createOfflineQuoteQueue } from './repositories/offline-quote-queue.js';
+import { createPackageRepository } from './repositories/package-repository.js';
+import { createQuoteRepository } from './repositories/quote-repository.js';
 
 const PRODUCTION_API_BASE_URL = 'https://api.virtcruise.airwide.co.uk';
-const LOCAL_API_BASE_URL = 'http://localhost:8080';
+const DEFAULT_LOCAL_API_BASE_URL = 'http://localhost:8080';
 const requestedMode = new URLSearchParams(window.location.search).get('api');
-const apiMode = requestedMode === 'mock' || requestedMode === 'local' ? requestedMode : 'production';
-const apiBaseUrl = apiMode === 'local' ? LOCAL_API_BASE_URL : PRODUCTION_API_BASE_URL;
+const runtimeConfig = globalThis.VIRTCRUISE_CONFIG || {};
 
-function splitCustomerName(fullName) {
-  const names = String(fullName || '').trim().split(/\s+/).filter(Boolean);
-  if (names.length < 2) {
-    throw new Error('Please provide both your first name and surname.');
+const apiMode = requestedMode === 'mock'
+  ? 'mock'
+  : requestedMode === 'local'
+    ? 'local'
+    : 'production';
+const apiBaseUrl = apiMode === 'production'
+  ? PRODUCTION_API_BASE_URL
+  : apiMode === 'local'
+    ? String(runtimeConfig.localApiBaseUrl || DEFAULT_LOCAL_API_BASE_URL).replace(/\/+$/, '')
+    : '';
+
+function userMessage(status, error, path) {
+  const violations = error?.violations?.map(entry => entry.message).filter(Boolean) || [];
+  if (status === 400 || status === 422) {
+    return violations.length
+      ? `Please review your quote: ${violations.join(' ')}`
+      : 'Please review the highlighted quote details and try again.';
   }
-  return {
-    firstName: names.shift(),
-    lastName: names.join(' ')
-  };
-}
-
-function futureDate(daysFromToday) {
-  const date = new Date();
-  date.setUTCDate(date.getUTCDate() + daysFromToday);
-  return date.toISOString().slice(0, 10);
-}
-
-function travellerCount(quote) {
-  const counts = quote.travellerCounts || {};
-  return Math.max(1,
-    Number(counts.adults || 0) + Number(counts.children || 0) + Number(counts.infants || 0));
-}
-
-function quoteCurrency(quote) {
-  const requestWithCurrency = quote.serviceRequests?.find(request => request.details?.currency);
-  return String(requestWithCurrency?.details?.currency || 'USD').toUpperCase().slice(0, 3);
-}
-
-function quoteNotes(quote) {
-  const summary = {
-    source: quote.source || 'VIRTCRUISE_WWW',
-    tripTitle: quote.tripTitle,
-    tripEndDate: quote.tripEndDate || null,
-    origin: quote.origin || null,
-    destination: quote.destination || null,
-    preferredContactMethod: quote.customer?.preferredContactMethod || null,
-    consent: quote.consent === true,
-    overallNotes: quote.overallNotes || null,
-    services: (quote.serviceRequests || []).map(request => ({
-      type: request.serviceType,
-      title: request.serviceTitle,
-      details: request.details
-    }))
-  };
-  const serialized = JSON.stringify(summary);
-  if (serialized.length > 5000) {
-    throw new Error('Your trip details are too extensive to submit. Please remove some notes and try again.');
+  if (status === 404 && path === '/api/v1/quotes') {
+    return 'The Virtcruise quote service is not available. Your trip remains saved in this browser and was not submitted.';
   }
-  return serialized;
+  if (status === 404) return 'The requested Virtcruise record could not be found. It may have been removed.';
+  if (status === 409) return error?.message || 'This record changed while you were editing it. Refresh and try again.';
+  if (status >= 500) return 'Virtcruise is temporarily unable to process this request. Your trip remains saved in this browser.';
+  return error?.message || `Virtcruise returned HTTP ${status}.`;
 }
 
-async function request(path, options = {}) {
-  const response = await fetch(`${apiBaseUrl}${path}`, {
-    ...options,
-    headers: {
-      Accept: 'application/json',
-      ...(options.body ? { 'Content-Type': 'application/json' } : {}),
-      ...options.headers
+export async function apiRequest(path, options = {}) {
+  if (!apiBaseUrl) {
+    throw new RepositoryError('The production API is disabled in explicit mock mode.', {
+      code: 'MOCK_MODE',
+      retryable: false
+    });
+  }
+  const method = String(options.method || 'GET').toUpperCase();
+  return withRetry(async () => {
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 12000);
+    const requestId = globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random()}`;
+    try {
+      const response = await fetch(`${apiBaseUrl}${path}`, {
+        ...options,
+        signal: options.signal || controller.signal,
+        headers: {
+          Accept: 'application/json',
+          'X-Request-Id': requestId,
+          ...(options.body ? { 'Content-Type': 'application/json' } : {}),
+          ...options.headers
+        }
+      });
+      const body = response.status === 204 ? null : await response.json().catch(() => null);
+      if (!response.ok || body?.success === false) {
+        const apiError = body?.error || {};
+        throw new RepositoryError(userMessage(response.status, apiError, path), {
+          code: apiError.code || `HTTP_${response.status}`,
+          status: response.status,
+          violations: apiError.violations || [],
+          requestId: response.headers.get('X-Request-Id') || requestId,
+          retryable: method === 'GET' && response.status >= 500
+        });
+      }
+      return body?.data ?? body;
+    } catch (cause) {
+      if (cause instanceof RepositoryError) throw cause;
+      const timedOut = cause?.name === 'AbortError';
+      throw new RepositoryError(
+        timedOut
+          ? 'The request timed out. Your trip remains saved; please try again.'
+          : 'The network request could not be completed. Check your connection and try again.',
+        {
+          cause,
+          code: timedOut ? 'TIMEOUT' : 'NETWORK_UNAVAILABLE',
+          requestId,
+          retryable: method === 'GET'
+        }
+      );
+    } finally {
+      window.clearTimeout(timeout);
     }
+  }, {
+    retries: method === 'GET' ? 2 : 0,
+    baseDelay: 300
   });
-  const body = response.status === 204 ? null : await response.json().catch(() => null);
-  if (!response.ok || body?.success === false) {
-    const message = body?.error?.message || `Virtcruise returned HTTP ${response.status}.`;
-    throw new Error(message);
-  }
-  return body?.data ?? body;
 }
 
-async function submitRealQuote(quote) {
-  const customerName = splitCustomerName(quote.customer?.fullName);
-  let customer;
-  try {
-    customer = await request('/api/v1/customers', {
-      method: 'POST',
-      body: JSON.stringify({
-        ...customerName,
-        email: quote.customer.email,
-        phoneNumber: quote.customer.mobile
-      })
-    });
-
-    const createdQuote = await request('/api/v1/quotes', {
-      method: 'POST',
-      body: JSON.stringify({
-        customerId: customer.id,
-        travelDate: quote.tripStartDate || null,
-        travellerCount: travellerCount(quote),
-        currency: quoteCurrency(quote),
-        validUntil: futureDate(14),
-        notes: quoteNotes(quote)
-      })
-    });
-
-    return {
-      success: true,
-      quoteId: createdQuote.quoteNumber,
-      backendQuoteId: createdQuote.id,
-      status: createdQuote.status,
-      receivedAt: createdQuote.createdAt,
-      deliveryMode: 'BACKEND',
-      message: 'Your quote request has been sent to Virtcruise. Keep this reference for follow-up.'
-    };
-  } catch (error) {
-    if (customer?.id) {
-      await request(`/api/v1/customers/${customer.id}`, { method: 'DELETE' }).catch(() => {});
-    }
-    throw error;
-  }
-}
+const offlineQueue = createOfflineQuoteQueue();
+const packageRepository = createPackageRepository({
+  apiBaseUrl,
+  source: apiMode === 'mock' ? 'mock' : apiMode
+});
+const quoteRepository = createQuoteRepository({
+  request: apiRequest,
+  mode: apiMode,
+  offlineQueue
+});
+const customerRepository = createCustomerRepository({
+  request: apiRequest,
+  mode: apiMode
+});
 
 export const apiClient = {
   mode: apiMode,
   baseUrl: apiBaseUrl,
+  packages: packageRepository,
+  quotes: quoteRepository,
+  customers: customerRepository,
+  offlineQueue,
   submitEnquiry(payload) {
-    if (apiMode === 'mock') return submitMockEnquiry(payload);
-    throw new Error('Please submit this request through the Quote Builder.');
+    if (apiMode !== 'mock') throw new Error('Please submit this request through the Quote Builder.');
+    return import('./mock-api.js').then(api => api.submitEnquiry(payload));
   },
   createQuoteDraft(payload) {
-    return createMockQuoteDraft(payload);
+    return quoteRepository.createDraft(payload);
   },
   updateQuoteDraft(payload) {
-    return updateMockQuoteDraft(payload);
+    return quoteRepository.updateDraft(payload);
   },
   calculateItinerary(payload) {
-    return calculateMockItinerary(payload);
+    return quoteRepository.calculateItinerary(payload);
   },
   submitQuote(payload) {
-    return apiMode === 'mock' ? submitMockQuote(payload) : submitRealQuote(payload);
+    return quoteRepository.submit(payload);
+  },
+  loadQuote(backendQuoteId, currentDraft) {
+    return quoteRepository.get(backendQuoteId, currentDraft);
+  },
+  refreshQuote(backendQuoteId, currentDraft) {
+    return quoteRepository.refresh(backendQuoteId, currentDraft);
+  },
+  updateQuote(payload) {
+    return quoteRepository.update(payload);
+  },
+  deleteQuote(backendQuoteId) {
+    return quoteRepository.remove(backendQuoteId);
   }
 };
+
+window.addEventListener('online', async () => {
+  packageRepository.clearCache();
+  const results = await quoteRepository.flushOfflineQueue();
+  results.forEach(result => {
+    document.dispatchEvent(new CustomEvent(
+      result.response ? 'virtcruise:offline-quote-sent' : 'virtcruise:offline-quote-failed',
+      { detail: result }
+    ));
+  });
+});

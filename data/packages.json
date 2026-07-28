@@ -21,6 +21,7 @@
   },
   {
     "id": "pkg-zimbabwe-safari",
+    "featured": true,
     "slug": "zimbabwe-safari",
     "name": "Zimbabwe Safari",
     "destination": "Hwange, Zimbabwe",
@@ -41,6 +42,7 @@
   },
   {
     "id": "pkg-europe-city",
+    "featured": true,
     "slug": "european-city-break",
     "name": "European City Break",
     "destination": "Paris & Amsterdam",
@@ -61,6 +63,7 @@
   },
   {
     "id": "pkg-tropical-paradise",
+    "featured": true,
     "slug": "tropical-paradise",
     "name": "Tropical Paradise",
     "destination": "Mauritius",

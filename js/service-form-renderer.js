@@ -136,13 +136,13 @@ export function renderServiceForm(root, slug, request = null) {
   const field = config => {
     const id = `qb-${config.name}`;
     const value = values[config.name] ?? config.value ?? '';
-    const attrs = `${config.required ? ' required aria-required="true"' : ''}${config.min !== undefined ? ` min="${config.min}"` : ''}${config.readonly ? ' readonly' : ''}`;
+    const attrs = `${config.required ? ' required aria-required="true"' : ''}${config.min !== undefined ? ` min="${config.min}"` : ''}${config.readonly ? ' readonly' : ''} aria-describedby="${id}-error"`;
     let control = '';
     if (config.type === 'select') control = `<select id="${id}" name="${config.name}"${attrs}>${config.options.map(item => `<option value="${escapeHtml(item.value)}"${String(item.value) === String(value) ? ' selected' : ''}>${escapeHtml(item.label)}</option>`).join('')}</select>`;
     else if (config.type === 'textarea') control = `<textarea id="${id}" name="${config.name}" rows="3"${attrs}>${escapeHtml(value)}</textarea>`;
     else if (config.type === 'checkbox') return `<label class="app-check qb-checkbox${config.full ? ' app-field-full' : ''}" data-field="${config.name}"><input id="${id}" name="${config.name}" type="checkbox"${value === true || value === 'on' ? ' checked' : ''}> <span>${escapeHtml(config.label)}</span></label>`;
     else control = `<input id="${id}" name="${config.name}" type="${config.type || 'text'}" value="${escapeHtml(value)}"${attrs}>`;
-    return `<div class="app-field${config.full ? ' app-field-full' : ''}" data-field="${config.name}"><label for="${id}">${escapeHtml(config.label)}${config.required ? ' <span aria-hidden="true">*</span>' : ''}</label>${control}<p class="field-error" id="${id}-error"></p></div>`;
+    return `<div class="app-field${config.full ? ' app-field-full' : ''}" data-field="${config.name}"><label for="${id}">${escapeHtml(config.label)}${config.required ? ' <span aria-hidden="true">*</span>' : ''}</label>${control}<p class="field-error" id="${id}-error" aria-live="polite"></p></div>`;
   };
   root.innerHTML = `<form class="qb-service-form" id="serviceRequestForm" novalidate><div class="qb-form-heading"><span class="app-service-icon" aria-hidden="true">${definition.icon}</span><div><p class="qb-kicker">Currently editing</p><h2>${definition.title}</h2></div></div><div class="service-form-grid">${definition.fields.map(field).join('')}</div></form>`;
   const form = root.querySelector('form');

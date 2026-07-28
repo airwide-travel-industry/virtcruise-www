@@ -1,3 +1,4 @@
+import { apiClient } from './api-client.js';
 import { createQuoteBuilder } from './quote-builder.js';
 import { setPackageChoices } from './service-form-renderer.js';
 import { initPackageShop } from './shop.js';
@@ -248,8 +249,14 @@ function syncFeaturedTourButtons() {
 
 function hydrateFeaturedTours() {
   featuredToursGrid?.querySelectorAll('[data-package-id]').forEach(card => {
-    const packageData = packageCatalog.find(pkg => pkg.id === card.dataset.packageId);
+    const currentSlug = card.querySelector('.tour-button-secondary')?.getAttribute('href')
+      ?.split('/').pop()?.replace(/\.html$/, '');
+    const packageData = packageCatalog.find(pkg =>
+      pkg.id === card.dataset.packageId || pkg.slug === currentSlug);
     if (!packageData) return;
+    card.dataset.packageId = packageData.id;
+    const addButton = card.querySelector('[data-featured-add]');
+    if (addButton) addButton.dataset.featuredAdd = packageData.id;
     card.querySelector('h3').textContent = packageData.name;
     card.querySelector('.tour-content>p').textContent = packageData.summary;
     const image = card.querySelector('img');
@@ -304,7 +311,8 @@ document.addEventListener('virtcruise:quote-updated', syncFeaturedTourButtons);
 
 featuredFallsPackage?.addEventListener('submit', event => {
   event.preventDefault();
-  const pkg = packageCatalog.find(entry => entry.id === 'pkg-victoria-falls');
+  const pkg = packageCatalog.find(entry =>
+    entry.id === 'pkg-victoria-falls' || entry.slug === 'victoria-falls-escape');
   if (!pkg) return;
   lastFocus = event.submitter || featuredFallsPackage.querySelector('[type=submit]');
   const activityOption = new FormData(featuredFallsPackage).get('activityOption') || 'OPTION_A';
@@ -313,7 +321,17 @@ featuredFallsPackage?.addEventListener('submit', event => {
 });
 
 async function init() {
-  packageCatalog = await initPackageShop();
+  const [catalog, featured] = await Promise.all([
+    initPackageShop(),
+    apiClient.packages.featured().catch(error => {
+      console.error('Virtcruise featured packages failed to load:', error);
+      return [];
+    })
+  ]);
+  packageCatalog = [...catalog];
+  featured.forEach(pkg => {
+    if (!packageCatalog.some(entry => entry.id === pkg.id)) packageCatalog.push(pkg);
+  });
   setPackageChoices(packageCatalog);
   hydrateFeaturedTours();
   syncFeaturedTourButtons();
