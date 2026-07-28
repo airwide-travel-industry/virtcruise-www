@@ -225,7 +225,8 @@ export function createQuoteBuilder({ root, countButton, statusNode, onRequestOpe
   }
 
   function successView() {
-    return `<section class="success-panel qb-success"><span class="success-icon" aria-hidden="true">✓</span><p class="qb-kicker">Prototype quote saved</p><h2>Your trip draft is ready</h2><p>${escapeHtml(success.message)}</p><div class="reference-card"><span>Prototype reference</span><strong>${escapeHtml(success.quoteId)}</strong><small>Status: ${escapeHtml(success.status)}</small></div><p>This static prototype has not sent the request to Virtcruise.</p><div class="success-actions"><button class="app-secondary" type="button" data-qb-close>Close</button><button class="app-primary" type="button" data-qb-new>Start New Trip</button></div></section>`;
+    const isMock = success.deliveryMode !== 'BACKEND';
+    return `<section class="success-panel qb-success"><span class="success-icon" aria-hidden="true">✓</span><p class="qb-kicker">${isMock ? 'Development preview' : 'Quote request received'}</p><h2>${isMock ? 'Your local trip draft is ready' : 'Thank you — your request is with Virtcruise'}</h2><p>${escapeHtml(success.message)}</p><div class="reference-card"><span>${isMock ? 'Mock reference' : 'Virtcruise reference'}</span><strong>${escapeHtml(success.quoteId)}</strong><small>Status: ${escapeHtml(success.status)}</small></div>${isMock ? '<p>Mock mode is active; this request was not sent to Virtcruise.</p>' : '<p>A Virtcruise consultant will use these details to prepare your quotation.</p>'}<div class="success-actions"><button class="app-secondary" type="button" data-qb-close>Close</button><button class="app-primary" type="button" data-qb-new>Start New Trip</button></div></section>`;
   }
 
   function render() {
@@ -325,7 +326,7 @@ export function createQuoteBuilder({ root, countButton, statusNode, onRequestOpe
     if (submitting) return;
     const form = captureCustomer();
     const errors = {};
-    if (!state.customer.fullName) errors.fullName = 'Full name is required.';
+    if (state.customer.fullName.trim().split(/\s+/).length < 2) errors.fullName = 'Enter your first name and surname.';
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(state.customer.email)) errors.email = 'Enter a valid email address.';
     if (!state.customer.mobile) errors.mobile = 'Mobile number is required.';
     if (!state.consent) errors.consent = 'Consent is required.';

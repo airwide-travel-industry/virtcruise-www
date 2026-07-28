@@ -24,20 +24,29 @@ The site is deployed directly as static files by `.github/workflows/deploy-pages
 
 The workflow creates a temporary `_pages/` staging directory on the Actions runner and publishes only `index.html`, `.nojekyll`, and the public `css/`, `js/`, `images/`, `data/`, and `packages/` directories. `_pages/` is not committed. Relative URLs make the site compatible with a project URL such as `https://airwide-travel-industry.github.io/virtcruise-www/`.
 
-GitHub Pages provides static hosting only. The Quote Builder currently uses `sessionStorage`, while mock submissions and development references may be stored in `localStorage`; no enquiry is transmitted to Virtcruise. A future Spring Boot backend must be deployed separately, then connected by replacing the mock delegate in `js/api-client.js` without changing the frontend contract.
+The production deployment is also served from `https://virtcruise.airwide.co.uk`. Quote drafts remain
+in `sessionStorage`, but completed production submissions are sent to
+`https://api.virtcruise.airwide.co.uk`. Add `?api=mock` to the page URL for an explicitly local mock
+submission, or `?api=local` to use a backend at `http://localhost:8080`.
 
 ## Enquiry API contract
 
-The homepage is a lightweight one-page application built with native ES modules. Service forms are rendered by `js/service-modal.js`, the shared session cart and checkout live in `js/enquiry-cart.js`, and UI code calls `js/api-client.js`. The API client currently delegates to `js/mock-api.js`, which simulates latency, validates enquiries, returns a generated reference, and optionally records successful submissions in `localStorage` under `virtcruise.mock.enquiries`. Draft cart and customer details use `sessionStorage`.
+The homepage is a lightweight one-page application built with native ES modules. Service forms are rendered by `js/service-modal.js`, the shared session cart and checkout live in `js/enquiry-cart.js`, and UI code calls `js/api-client.js`. The API client is the single adapter between the rich browser model and the current customer/quote REST contracts. `js/mock-api.js` remains available only when mock mode is explicitly requested.
 
-The future backend endpoint is:
+Production submission creates the customer and then the quote:
 
 ```http
-POST /api/v1/enquiries
+POST /api/v1/customers
+POST /api/v1/quotes
 Content-Type: application/json
 ```
 
-The stable request contract is:
+The API adapter maps the browser model to the backend DTOs and stores the current service summary in
+the quote notes until the full Quote Builder backend is delivered. A successful response displays
+the real backend quote number. A failed quote creation triggers best-effort cleanup of the customer
+created during that request.
+
+The browser-side model remains:
 
 ```json
 {
@@ -62,25 +71,11 @@ The stable request contract is:
 }
 ```
 
-The expected response contract is:
-
-```json
-{
-  "success": true,
-  "enquiryId": "VCT-2026-000123",
-  "status": "RECEIVED",
-  "receivedAt": "2026-07-26T12:00:00.000Z",
-  "message": "Your enquiry has been received."
-}
-```
-
-When Spring Boot 3, Java 21 and PostgreSQL are introduced, replace the delegate in `js/api-client.js` with an HTTP `fetch` implementation and remove `js/mock-api.js`. The UI modules and the request/response contract should remain unchanged.
-
 ## Quote Builder
 
 The active browser-session draft is stored as one versioned document under `virtcruise.quoteBuilder.v1`. It contains the quote identity, trip facts, stable service-request IDs, customer details, generated itinerary days, pre-travel requirements, unallocated items, and manual itinerary overrides. `js/quote-builder.js` owns draft mutations and persistence; `js/service-form-renderer.js` renders and validates the service schemas; `js/itinerary-builder.js` contains deterministic date and sequencing rules.
 
-The mock API exposes draft, calculation, and submission methods through `js/api-client.js`. The future Spring Boot API is expected to provide:
+Draft and itinerary calculation remain browser-local in RC1. Sprint 2 is expected to provide:
 
 ```text
 POST   /api/v1/quotes
