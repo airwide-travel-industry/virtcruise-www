@@ -1,6 +1,23 @@
-# Virtcruise
+# Virtcruise Frontend
 
-Landing page for Virtcruise Travels.
+Production static frontend for Virtcruise Travels.
+
+- Production: https://virtcruise.airwide.co.uk
+- API: https://api.virtcruise.airwide.co.uk
+- Current release: `v0.2.0`
+- Matching backend: [`airwide-travel-industry/virtcruise-backend`](https://github.com/airwide-travel-industry/virtcruise-backend), `v0.2.0`
+
+Native HTML, CSS and ES modules provide the homepage, package catalogue/pages, Quick Quote,
+Quote Builder and My Trip. Production is served by NGINX and sends one aggregate, idempotent
+`POST /api/v1/quotes` to the Spring Boot backend.
+
+## Documentation
+
+- [Architecture v0.2.0](docs/ARCHITECTURE-v0.2.0.md)
+- [Quote Builder v0.2.0](docs/QUOTE-BUILDER-v0.2.0.md)
+- [Deployment v0.2.0](docs/DEPLOYMENT-v0.2.0.md)
+- [Operations v0.2.0](docs/OPERATIONS-v0.2.0.md)
+- [Release notes v0.2.0](docs/RELEASE-NOTES-v0.2.0.md)
 
 ## Development
 
@@ -12,17 +29,25 @@ python3 -m http.server 8000
 
 Then open `http://localhost:8000/`.
 
+Use `?api=mock` for the explicit browser mock or `?api=local` for a backend at
+`http://localhost:8080`. There is no build step. A basic quality gate is:
+
+```sh
+for file in js/*.js js/repositories/*.js js/quote-domains/*.js; do
+  node --check "$file"
+done
+```
+
 ## GitHub Pages Deployment
 
-The site is deployed directly as static files by `.github/workflows/deploy-pages.yml`. During the
-Sprint 2.5 coordinated cutover, deployment is manual through **Run workflow** so a release push cannot
-publish the frontend before the matching backend contract is live.
+GitHub Pages is a manually published preview artifact. It is not the production custom-domain host.
+Production uses the versioned NGINX process in
+[Deployment v0.2.0](docs/DEPLOYMENT-v0.2.0.md).
 
 1. Push the repository to GitHub.
 2. Open **Settings → Pages**.
 3. Under **Build and deployment**, select **Source: GitHub Actions**.
-4. Open **Actions → Deploy Virtcruise to GitHub Pages** and run the workflow manually after the
-   production backend cutover is confirmed.
+4. Open **Actions → Deploy Virtcruise to GitHub Pages** and run the workflow manually.
 5. Open the deployment URL shown by the workflow or in Pages settings.
 
 The workflow creates a temporary `_pages/` staging directory on the Actions runner and publishes only `index.html`, `.nojekyll`, and the public `css/`, `js/`, `images/`, `data/`, and `packages/` directories. `_pages/` is not committed. Relative URLs make the site compatible with a project URL such as `https://airwide-travel-industry.github.io/virtcruise-www/`.
@@ -110,3 +135,10 @@ flush one at a time when connectivity returns; a success state appears only afte
 The production reverse proxy must expose `/api/v1/quotes` and the package catalogue routes, and its
 CORS allow-list must include every production frontend origin. The frontend deliberately does not
 fall back to the legacy two-step customer/quote flow when the aggregate route is unavailable.
+
+## Known limitations
+
+v0.2.0 provides quote requests, not confirmed bookings. It has no authentication, payments, real-time
+supplier availability, customer account history or staff portal. Offline submissions remain on the
+originating device until delivered. JavaScript and CSS currently use a one-day cache lifetime; see
+[Operations v0.2.0](docs/OPERATIONS-v0.2.0.md).
