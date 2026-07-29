@@ -1,0 +1,13 @@
+{
+  "name": "virtcruise-www",
+  "version": "0.5.0-rc3",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/*.test.mjs",
+    "test:navigation": "node --test tests/navigation-visibility.test.mjs"
+  },
+  "devDependencies": {
+    "playwright-core": "1.54.1"
+  }
+}
