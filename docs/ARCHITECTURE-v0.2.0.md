@@ -84,6 +84,23 @@ The offline queue stores the aggregate payload, idempotency key, client referenc
 time. It flushes serially. Queued work is explicitly described as not delivered until a real API
 confirmation arrives.
 
+## Authentication and customer portal
+
+Sprint 3 authentication is the single security boundary for the customer portal. Access tokens
+remain memory-only, refresh tokens remain secure HttpOnly cookies, and cookie-authenticated
+operations use the backend CSRF contract. Portal pages reuse that provider through the authenticated
+HTTP adapter.
+
+`js/portal/portal-repository.js` is the only portal data gateway. It loads owned quote history and
+details, loads owned bookings, projects travel-stage bookings into My Trips, normalizes errors,
+coalesces requests and applies a short memory cache. Pending dedicated backend resources for
+travellers, notifications, preferences and expanded profile data are isolated behind
+customer-scoped browser adapters.
+
+Presentation is divided between `js/portal/portal-page.js` and reusable shell, state, badge, dialog
+and announcement components in `js/portal/portal-components.js`. See
+[Customer Travel Portal](CUSTOMER-PORTAL.md) for routes and the Sprint 3.4 migration boundary.
+
 ## UX, accessibility and presentation
 
 The responsive interface uses CSS breakpoints and fluid sizing for desktop, tablet and mobile.
@@ -99,4 +116,7 @@ itinerary ordering.
 - [Deployment](DEPLOYMENT-v0.2.0.md)
 - [Operations](OPERATIONS-v0.2.0.md)
 - [Release notes](RELEASE-NOTES-v0.2.0.md)
-- Backend repository: `airwide-travel-industry/virtcruise-backend`, tag `v0.2.0`
+- [Customer Travel Portal](CUSTOMER-PORTAL.md)
+- Backend repository: `airwide-travel-industry/virtcruise-backend`; production baseline `v0.2.0`,
+  release-candidate contract `v0.5.0-rc1`
+- [Release candidate notes](RELEASE-NOTES-v0.5.0-rc1.md)

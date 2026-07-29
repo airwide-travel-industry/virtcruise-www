@@ -4,12 +4,13 @@ Production static frontend for Virtcruise Travels.
 
 - Production: https://virtcruise.airwide.co.uk
 - API: https://api.virtcruise.airwide.co.uk
-- Current release: `v0.2.0`
-- Matching backend: [`airwide-travel-industry/virtcruise-backend`](https://github.com/airwide-travel-industry/virtcruise-backend), `v0.2.0`
+- Release candidate: `v0.5.0-rc1` (not deployed)
+- Current production release: `v0.2.0`
+- Matching backend RC: [`airwide-travel-industry/virtcruise-backend`](https://github.com/airwide-travel-industry/virtcruise-backend), `v0.5.0-rc1`
 
 Native HTML, CSS and ES modules provide the homepage, package catalogue/pages, Quick Quote,
-Quote Builder and My Trip. Production is served by NGINX and sends one aggregate, idempotent
-`POST /api/v1/quotes` to the Spring Boot backend.
+Quote Builder, My Trip, authentication and the customer travel portal. Production is served by
+NGINX and sends one aggregate, idempotent `POST /api/v1/quotes` to the Spring Boot backend.
 
 ## Documentation
 
@@ -18,6 +19,11 @@ Quote Builder and My Trip. Production is served by NGINX and sends one aggregate
 - [Deployment v0.2.0](docs/DEPLOYMENT-v0.2.0.md)
 - [Operations v0.2.0](docs/OPERATIONS-v0.2.0.md)
 - [Release notes v0.2.0](docs/RELEASE-NOTES-v0.2.0.md)
+- [Release notes v0.5.0-rc1](docs/RELEASE-NOTES-v0.5.0-rc1.md)
+- [Changelog](CHANGELOG.md)
+- [Local authentication development](docs/LOCAL-AUTHENTICATION.md)
+- [Customer Travel Portal](docs/CUSTOMER-PORTAL.md)
+- [Booking Engine](https://github.com/airwide-travel-industry/virtcruise-backend/blob/main/docs/BOOKING-ENGINE.md)
 
 ## Development
 
@@ -33,10 +39,26 @@ Use `?api=mock` for the explicit browser mock or `?api=local` for a backend at
 `http://localhost:8080`. There is no build step. A basic quality gate is:
 
 ```sh
-for file in js/*.js js/repositories/*.js js/quote-domains/*.js; do
+for file in js/*.js js/repositories/*.js js/quote-domains/*.js js/auth/*.js js/portal/*.js; do
   node --check "$file"
 done
 ```
+
+Sprint 3 authentication must be tested against the real local backend and PostgreSQL. See
+[Local authentication development](docs/LOCAL-AUTHENTICATION.md) for routes, storage guarantees,
+CSRF/cookie troubleshooting, and the matching backend runbook.
+
+## Customer portal
+
+Authenticated customers can use the dashboard, owned quote review, booked-trip timelines, saved
+travellers, notifications, travel preferences and expanded profile pages. Portal views use
+`js/portal/portal-repository.js`; they do not call `fetch()` or create another authentication state.
+See [Customer Travel Portal](docs/CUSTOMER-PORTAL.md) for the navigation map, routes, data ownership,
+browser-only adapters and post-RC backend boundaries.
+
+Accepted quotes can be converted into idempotent customer-owned bookings. `/bookings/` and
+`/bookings/details/?id=…` provide status, timeline, traveller and payment-summary review; confirmed
+booking stages feed My Trips. Payment capture remains Sprint 3.5 work.
 
 ## GitHub Pages Deployment
 
@@ -138,7 +160,8 @@ fall back to the legacy two-step customer/quote flow when the aggregate route is
 
 ## Known limitations
 
-v0.2.0 provides quote requests, not confirmed bookings. It has no authentication, payments, real-time
-supplier availability, customer account history or staff portal. Offline submissions remain on the
-originating device until delivered. JavaScript and CSS currently use a one-day cache lifetime; see
-[Operations v0.2.0](docs/OPERATIONS-v0.2.0.md).
+The current customer portal derives trips from customer-owned bookings. Dedicated traveller,
+notification, preference and extended-profile backend resources remain future work. It does not
+provide payments, real-time supplier availability, downloadable documents or a staff portal.
+Offline submissions remain on the originating device until delivered. JavaScript and CSS currently
+use a one-day cache lifetime; see [Operations v0.2.0](docs/OPERATIONS-v0.2.0.md).

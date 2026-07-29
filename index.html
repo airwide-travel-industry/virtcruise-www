@@ -48,12 +48,12 @@
     <form class="quote" id="quoteForm">
       <h2>Get a Quick Quote</h2><p class="sub">Our travel experts will get back to you shortly.</p>
       <div class="form-grid">
-        <label class="field"><svg viewBox="0 0 24 24"><path d="M12 12a4 4 0 100-8 4 4 0 000 8zm-7 9a7 7 0 0114 0H5z"/></svg><input name="name" placeholder="Your Name"></label>
-        <label class="field"><svg viewBox="0 0 24 24"><path d="M3 5h18v14H3V5zm2 2v.5l7 5 7-5V7H5zm14 10V10l-7 5-7-5v7h14z"/></svg><input name="email" type="email" placeholder="Email Address"></label>
-        <label class="field full"><svg viewBox="0 0 24 24"><path d="M6.6 10.8c1.6 3.1 3.5 5 6.6 6.6l2.2-2.2c.3-.3.7-.4 1.1-.2 1.2.4 2.5.6 3.8.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.8 21 3 13.2 3 3.7c0-.6.4-1 1-1h3.4c.6 0 1 .4 1 1 0 1.3.2 2.6.6 3.8.1.4 0 .8-.2 1.1l-2.2 2.2z"/></svg><input name="mobile" placeholder="Mobile Number"></label>
-        <label class="field full"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 00-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 00-7-7zm0 9.5A2.5 2.5 0 1112 6a2.5 2.5 0 010 5.5z"/></svg><input name="destination" placeholder="Where are you going?"></label>
-        <label class="field"><svg viewBox="0 0 24 24"><path d="M7 2h2v2h6V2h2v2h3v18H4V4h3V2zm11 8H6v10h12V10z"/></svg><input name="departure" type="text" placeholder="Departure Date" class="date-input"></label>
-        <label class="field"><svg viewBox="0 0 24 24"><path d="M7 2h2v2h6V2h2v2h3v18H4V4h3V2zm11 8H6v10h12V10z"/></svg><input name="return" type="text" placeholder="Return Date" class="date-input"></label>
+        <label class="field"><svg viewBox="0 0 24 24"><path d="M12 12a4 4 0 100-8 4 4 0 000 8zm-7 9a7 7 0 0114 0H5z"/></svg><input name="name" placeholder="Your Name" aria-label="Your name"></label>
+        <label class="field"><svg viewBox="0 0 24 24"><path d="M3 5h18v14H3V5zm2 2v.5l7 5 7-5V7H5zm14 10V10l-7 5-7-5v7h14z"/></svg><input name="email" type="email" placeholder="Email Address" aria-label="Email address"></label>
+        <label class="field full"><svg viewBox="0 0 24 24"><path d="M6.6 10.8c1.6 3.1 3.5 5 6.6 6.6l2.2-2.2c.3-.3.7-.4 1.1-.2 1.2.4 2.5.6 3.8.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.8 21 3 13.2 3 3.7c0-.6.4-1 1-1h3.4c.6 0 1 .4 1 1 0 1.3.2 2.6.6 3.8.1.4 0 .8-.2 1.1l-2.2 2.2z"/></svg><input name="mobile" placeholder="Mobile Number" aria-label="Mobile number"></label>
+        <label class="field full"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 00-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 00-7-7zm0 9.5A2.5 2.5 0 1112 6a2.5 2.5 0 010 5.5z"/></svg><input name="destination" placeholder="Where are you going?" aria-label="Destination"></label>
+        <label class="field"><svg viewBox="0 0 24 24"><path d="M7 2h2v2h6V2h2v2h3v18H4V4h3V2zm11 8H6v10h12V10z"/></svg><input name="departure" type="text" placeholder="Departure Date" class="date-input" aria-label="Departure date"></label>
+        <label class="field"><svg viewBox="0 0 24 24"><path d="M7 2h2v2h6V2h2v2h3v18H4V4h3V2zm11 8H6v10h12V10z"/></svg><input name="return" type="text" placeholder="Return Date" class="date-input" aria-label="Return date"></label>
         <label class="field"><svg viewBox="0 0 24 24"><path d="M7 11a3 3 0 100-6 3 3 0 000 6zm10 0a3 3 0 100-6 3 3 0 000 6zM7 13c-4 0-6 2-6 5v2h12v-2c0-3-2-5-6-5zm10 0c-1 0-2 .1-3 .5 1.3 1.1 2 2.6 2 4.5v2h7v-2c0-3-2-5-6-5z"/></svg><select name="travellers" aria-label="Number of travellers"><option>Travellers</option><option>1</option><option>2</option><option>3-4</option><option>5+</option></select></label>
         <label class="field"><svg viewBox="0 0 24 24"><path d="M13 2v2.1c2.7.4 4 2 4 4h-3c0-.8-.7-1.5-2-1.5s-2 .6-2 1.4c0 .9.8 1.3 2.7 1.8 3 .7 4.6 1.9 4.6 4.4 0 2.2-1.5 3.7-4.3 4.1V21h-2v-2.6c-3-.3-4.7-2-4.7-4.5h3c0 1.2 1 2 2.7 2 1.4 0 2.2-.6 2.2-1.5 0-.8-.7-1.3-2.8-1.8-2.8-.7-4.4-1.8-4.4-4.3 0-2.1 1.5-3.7 4-4.1V2h2z"/></svg><select name="budget" aria-label="Travel budget in US dollars"><option>Budget (USD)</option><option>Below $500</option><option>$500-$1,000</option><option>$1,000+</option></select></label>
       </div>
@@ -337,7 +337,7 @@
       </div>
       <form class="newsletter-form" id="newsletterForm">
         <label class="sr-only" for="newsletterEmail">Email address</label>
-        <input id="newsletterEmail" name="email" type="email" autocomplete="email" placeholder="Your email address" aria-describedby="newsletterStatus">
+          <input id="newsletterEmail" name="email" type="email" autocomplete="email" placeholder="Your email address" aria-label="Email address for travel inspiration" aria-describedby="newsletterStatus">
         <button type="button" disabled aria-disabled="true">Coming Soon</button>
         <span class="sr-only" id="newsletterStatus">Newsletter subscriptions are coming soon.</span>
       </form>
