@@ -4,9 +4,9 @@ Production static frontend for Virtcruise Travels.
 
 - Production: https://virtcruise.airwide.co.uk
 - API: https://api.virtcruise.airwide.co.uk
-- Release candidate: `v0.5.0-rc1` (not deployed)
+- Release candidate in preparation: `v0.5.0-rc2` (not tagged or deployed)
 - Current production release: `v0.2.0`
-- Matching backend RC: [`airwide-travel-industry/virtcruise-backend`](https://github.com/airwide-travel-industry/virtcruise-backend), `v0.5.0-rc1`
+- Matching backend RC: [`airwide-travel-industry/virtcruise-backend`](https://github.com/airwide-travel-industry/virtcruise-backend), `v0.5.0-rc2`
 
 Native HTML, CSS and ES modules provide the homepage, package catalogue/pages, Quick Quote,
 Quote Builder, My Trip, authentication and the customer travel portal. Production is served by
@@ -19,6 +19,7 @@ NGINX and sends one aggregate, idempotent `POST /api/v1/quotes` to the Spring Bo
 - [Deployment v0.2.0](docs/DEPLOYMENT-v0.2.0.md)
 - [Operations v0.2.0](docs/OPERATIONS-v0.2.0.md)
 - [Release notes v0.2.0](docs/RELEASE-NOTES-v0.2.0.md)
+- [Release notes v0.5.0-rc2](docs/RELEASE-NOTES-v0.5.0-rc2.md)
 - [Release notes v0.5.0-rc1](docs/RELEASE-NOTES-v0.5.0-rc1.md)
 - [Changelog](CHANGELOG.md)
 - [Local authentication development](docs/LOCAL-AUTHENTICATION.md)

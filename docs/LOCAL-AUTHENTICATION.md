@@ -52,8 +52,12 @@ belong in this repository.
 - “Remember me” stores only the email preference.
 - Cookie-authenticated refresh/logout operations first obtain CSRF material and return it in the
   required header.
+- Startup first calls read-only `GET /api/v1/auth/session`. A guest response establishes guest state
+  without calling refresh. Only a returning browser reported as refreshable obtains CSRF and calls
+  the protected refresh endpoint.
 
-If refresh returns 401, sign in again; the token may have expired, rotated, or been revoked. A 403
+If restoration refresh returns 401, sign in again; the token may have expired, rotated, or been
+revoked. The client clears stale session metadata and does not enter a refresh loop. A 403
 on refresh/logout usually indicates a missing or mismatched CSRF cookie/header. Confirm that the
 frontend and backend origins match their local CORS configuration and that both fetch and cookie
 requests include credentials.
@@ -69,6 +73,7 @@ Run the frontend static checks from the repository root:
 
 ```bash
 find js -name '*.js' -print0 | xargs -0 -n1 node --check
+node --test tests/auth-session-bootstrap.test.mjs
 ```
 
 Stop the HTTP server after testing and delete temporary browser profiles or token files. The

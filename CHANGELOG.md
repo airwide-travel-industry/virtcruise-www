@@ -3,6 +3,25 @@
 All notable Virtcruise frontend changes are recorded here. The project follows Semantic Versioning;
 release candidates use the `-rcN` suffix.
 
+## [0.5.0-rc2] - Unreleased
+
+### Changed
+
+- Authentication bootstrap now discovers whether an eligible HttpOnly refresh session exists
+  before requesting CSRF and refresh.
+
+### Fixed
+
+- Normal guest browsing no longer makes an expected-to-fail refresh request or creates an HTTP 401
+  console entry.
+- Concurrent startup calls share one discovery/refresh operation; failed restoration clears stale
+  metadata and safely becomes guest without a loop.
+
+### Security
+
+- Access tokens remain memory-only and refresh tokens remain inaccessible HttpOnly cookies.
+- Session discovery neither reads browser tokens nor weakens refresh/CSRF behavior.
+
 ## [0.5.0-rc1] - 2026-07-28
 
 ### Added
@@ -41,5 +60,6 @@ release candidates use the `-rcN` suffix.
 - Introduced the production aggregate Quote Builder, live package catalogue, stable quote
   idempotency, offline submission queue and NGINX release process.
 
+[0.5.0-rc2]: docs/RELEASE-NOTES-v0.5.0-rc2.md
 [0.5.0-rc1]: docs/RELEASE-NOTES-v0.5.0-rc1.md
 [0.2.0]: docs/RELEASE-NOTES-v0.2.0.md
