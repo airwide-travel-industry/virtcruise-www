@@ -24,6 +24,7 @@ export function createUserRepository() {
   }
 
   return Object.freeze({
+    discoverSession: () => authRequest('/api/v1/auth/session', { auth: false }),
     register: payload => post('/api/v1/auth/register', payload, { auth: false }),
     verifyEmail: token => post('/api/v1/auth/email-verification/confirm', { token }, { auth: false }),
     resendVerification: email => post('/api/v1/auth/email-verification/request', { email }, { auth: false }),

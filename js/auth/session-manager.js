@@ -28,6 +28,7 @@ function writeMetadata(session) {
 
 export function createSessionManager(repository) {
   let refreshPromise = null;
+  let bootstrapPromise = null;
 
   function accept(session) {
     tokenManager.set(session.accessToken, session.accessTokenExpiresAt);
@@ -54,8 +55,29 @@ export function createSessionManager(repository) {
     return refreshPromise;
   }
 
+  async function bootstrap() {
+    if (bootstrapPromise) return bootstrapPromise;
+    bootstrapPromise = repository.discoverSession()
+      .then(discovery => {
+        if (!discovery?.refreshable) {
+          clear();
+          return null;
+        }
+        return refresh();
+      })
+      .catch(error => {
+        clear();
+        throw error;
+      })
+      .finally(() => {
+        bootstrapPromise = null;
+      });
+    return bootstrapPromise;
+  }
+
   return Object.freeze({
     accept,
+    bootstrap,
     clear,
     refresh,
     metadata: readMetadata,

@@ -1,4 +1,3 @@
-import { AuthError } from './auth-api.js';
 import { createSessionManager } from './session-manager.js';
 import { createUserRepository } from './user-repository.js';
 
@@ -20,15 +19,17 @@ function publish(next) {
 
 async function initialize() {
   if (initialization) return initialization;
-  initialization = session.refresh()
+  initialization = session.bootstrap()
     .then(user => {
-      publish({ status: 'authenticated', user, error: null });
+      publish({
+        status: user ? 'authenticated' : 'guest',
+        user,
+        error: null
+      });
       return user;
     })
     .catch(error => {
-      const expectedGuest = error instanceof AuthError
-        && ['INVALID_REFRESH_TOKEN', 'HTTP_401', 'HTTP_403'].includes(error.code);
-      publish({ status: 'guest', user: null, error: expectedGuest ? null : error });
+      publish({ status: 'guest', user: null, error });
       return null;
     });
   return initialization;
