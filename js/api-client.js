@@ -3,6 +3,7 @@ import { createCustomerRepository } from './repositories/customer-repository.js'
 import { createOfflineQuoteQueue } from './repositories/offline-quote-queue.js';
 import { createPackageRepository } from './repositories/package-repository.js';
 import { createQuoteRepository } from './repositories/quote-repository.js';
+import { tokenManager } from './auth/token-manager.js';
 
 const PRODUCTION_API_BASE_URL = 'https://api.virtcruise.airwide.co.uk';
 const DEFAULT_LOCAL_API_BASE_URL = 'http://localhost:8080';
@@ -51,10 +52,12 @@ export async function apiRequest(path, options = {}) {
     try {
       const response = await fetch(`${apiBaseUrl}${path}`, {
         ...options,
+        credentials: options.credentials || 'include',
         signal: options.signal || controller.signal,
         headers: {
           Accept: 'application/json',
           'X-Request-Id': requestId,
+          ...(tokenManager.get() ? { Authorization: `Bearer ${tokenManager.get()}` } : {}),
           ...(options.body ? { 'Content-Type': 'application/json' } : {}),
           ...options.headers
         }

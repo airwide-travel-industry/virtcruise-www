@@ -64,7 +64,7 @@ function desktopMarkup() {
       return `<li><button class="nav-menu-toggle" type="button" data-dropdown-toggle="${item.id}" aria-haspopup="true" aria-expanded="false" aria-controls="nav-dropdown-${item.id}">${escapeHtml(item.label)} <span class="nav-chevron" aria-hidden="true">⌄</span></button></li>`;
     }
     return `<li><a class="nav-link" data-nav-id="${item.id}" href="${escapeHtml(item.href)}"${item.service ? ` data-nav-service="${item.service}"` : ''}>${escapeHtml(item.label)}</a></li>`;
-  }).join('')}</ul>`;
+  }).join('')}</ul><div class="nav-auth" data-auth-navigation aria-live="polite"></div>`;
 }
 
 function dropdownMarkup(item) {
@@ -81,7 +81,52 @@ function mobileMarkup() {
       ).join('')}</ul></li>`;
     }
     return `<li><a class="mobile-nav-link" data-nav-id="${item.id}" href="${escapeHtml(item.href)}"${item.service ? ` data-nav-service="${item.service}"` : ''}>${escapeHtml(item.label)}</a></li>`;
-  }).join('')}</ul></nav>`;
+  }).join('')}<li class="mobile-auth" data-mobile-auth-navigation></li></ul></nav>`;
+}
+
+function initials(user) {
+  return `${user?.givenName?.[0] || ''}${user?.familyName?.[0] || ''}`.toUpperCase() || 'VC';
+}
+
+function renderAuthNavigation({ status, user }) {
+  const desktop = document.querySelector('[data-auth-navigation]');
+  const mobile = document.querySelector('[data-mobile-auth-navigation]');
+  if (!desktop || !mobile) return;
+  if (status === 'authenticated' && user) {
+    const name = escapeHtml(user.givenName || 'Traveller');
+    const portalItems = [
+      ['/dashboard/', 'Dashboard'], ['/quotes/', 'My Quotes'], ['/bookings/', 'My Bookings'],
+      ['/trips/', 'My Trips'],
+      ['/travellers/', 'Travellers'], ['/profile/', 'Profile'], ['/notifications/', 'Notifications']
+    ];
+    const portalLinks = portalItems.map(([path, label]) =>
+      `<a href="${authPageUrl(path)}">${label}</a>`
+    ).join('');
+    desktop.innerHTML = `<div class="account-menu"><button class="account-menu-toggle" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="accountMenu"><span class="account-avatar" aria-hidden="true">${escapeHtml(initials(user))}</span><span class="account-name">${name}</span><span aria-hidden="true">⌄</span></button><div class="account-dropdown" id="accountMenu">${portalLinks}<button type="button" data-auth-logout>Logout</button></div></div>`;
+    mobile.innerHTML = `<div class="mobile-account-summary"><span class="account-avatar" aria-hidden="true">${escapeHtml(initials(user))}</span><strong>${name}</strong></div>${portalLinks}<button type="button" data-auth-logout>Logout</button>`;
+  } else {
+    desktop.innerHTML = `<a class="nav-sign-in" href="${authPageUrl('/signin/')}">Sign In</a>`;
+    mobile.innerHTML = `<a class="mobile-sign-in" href="${authPageUrl('/signin/')}">Sign In</a>`;
+  }
+}
+
+async function handleAuthAction(event) {
+  const accountToggle = event.target.closest('.account-menu-toggle');
+  if (accountToggle) {
+    const open = accountToggle.getAttribute('aria-expanded') !== 'true';
+    accountToggle.setAttribute('aria-expanded', String(open));
+    document.getElementById('accountMenu')?.classList.toggle('is-open', open);
+    return;
+  }
+  if (!event.target.closest('[data-auth-logout]')) return;
+  const button = event.target.closest('[data-auth-logout]');
+  button.disabled = true;
+  try {
+    await authenticationProvider.logout();
+    location.href = isPackagePage ? '../index.html' : 'index.html';
+  } catch {
+    button.disabled = false;
+  }
 }
 
 function positionDropdown(id) {
@@ -249,6 +294,7 @@ if (desktopNav && menuButton) {
   });
 
   const mobileNavigation = document.getElementById('mobileNavigation');
+  document.addEventListener('click', handleAuthAction);
   menuButton.addEventListener('click', toggleMobileNavigation);
   mobileNavigation.addEventListener('click', event => {
     const toggle = event.target.closest('[data-mobile-submenu-toggle]');
@@ -269,6 +315,10 @@ if (desktopNav && menuButton) {
   });
 
   document.addEventListener('click', event => {
+    if (!event.target.closest('.account-menu')) {
+      document.querySelector('.account-menu-toggle')?.setAttribute('aria-expanded', 'false');
+      document.getElementById('accountMenu')?.classList.remove('is-open');
+    }
     if (openDropdownId && !event.target.closest('.nav-dropdown,[data-dropdown-toggle]')) closeDropdown();
     if (document.getElementById('mobileNavigation')?.classList.contains('is-open') &&
         !event.target.closest('#mobileNavigation,[data-mobile-navigation-toggle]')) closeMobileNavigation();
@@ -290,4 +340,8 @@ if (desktopNav && menuButton) {
   window.addEventListener('hashchange', updateActiveState);
   setMobileTop();
   updateActiveState();
+  authenticationProvider.subscribe(renderAuthNavigation);
+  authenticationProvider.initialize();
 }
+import { authenticationProvider } from './auth/authentication-provider.js';
+import { authPageUrl } from './auth/config.js';
