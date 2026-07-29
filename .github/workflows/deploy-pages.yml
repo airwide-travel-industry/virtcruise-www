@@ -33,13 +33,17 @@ jobs:
           set -euo pipefail
           test ! -e _pages
           test -f index.html
-          for directory in css js images data packages; do
+          for directory in css js images data packages account auth bookings dashboard forgot-password \
+            notifications preferences profile quotes register reset-password signin travellers trips \
+            verify-email; do
             test -d "$directory"
           done
 
           mkdir _pages
           cp index.html .nojekyll _pages/
-          cp -R css js images data packages _pages/
+          cp -R css js images data packages account auth bookings dashboard forgot-password \
+            notifications preferences profile quotes register reset-password signin travellers trips \
+            verify-email _pages/
           find _pages -name .gitkeep -delete
 
       - name: Upload Pages artifact
