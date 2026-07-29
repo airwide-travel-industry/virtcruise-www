@@ -105,8 +105,8 @@ function renderAuthNavigation({ status, user }) {
     desktop.innerHTML = `<div class="account-menu"><button class="account-menu-toggle" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="accountMenu"><span class="account-avatar" aria-hidden="true">${escapeHtml(initials(user))}</span><span class="account-name">${name}</span><span aria-hidden="true">⌄</span></button><div class="account-dropdown" id="accountMenu">${portalLinks}<button type="button" data-auth-logout>Logout</button></div></div>`;
     mobile.innerHTML = `<div class="mobile-account-summary"><span class="account-avatar" aria-hidden="true">${escapeHtml(initials(user))}</span><strong>${name}</strong></div>${portalLinks}<button type="button" data-auth-logout>Logout</button>`;
   } else {
-    desktop.innerHTML = `<a class="nav-sign-in" href="${authPageUrl('/signin/')}">Sign In</a>`;
-    mobile.innerHTML = `<a class="mobile-sign-in" href="${authPageUrl('/signin/')}">Sign In</a>`;
+    desktop.innerHTML = `<a class="nav-sign-in" href="${authPageUrl('/signin/')}">Sign In</a><a class="nav-register" href="${authPageUrl('/register/')}">Register</a>`;
+    mobile.innerHTML = `<a class="mobile-sign-in" href="${authPageUrl('/signin/')}">Sign In</a><a class="mobile-register" href="${authPageUrl('/register/')}">Register</a>`;
   }
 }
 

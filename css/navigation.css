@@ -12,10 +12,12 @@
   display: flex;
   flex: 0 0 auto;
   align-items: center;
+  gap: 8px;
   margin-left: 16px;
 }
 
-.nav-sign-in {
+.nav-sign-in,
+.nav-register {
   min-height: 40px;
   display: inline-flex;
   align-items: center;
@@ -28,10 +30,29 @@
   text-shadow: none !important;
 }
 
-.nav-sign-in:hover,
-.nav-sign-in:focus-visible {
+.nav-register {
+  border-color: #e4b340;
   background: #e4b340;
   color: #031a38 !important;
+}
+
+.nav-sign-in:hover,
+.nav-sign-in:focus-visible,
+.nav-register:hover,
+.nav-register:focus-visible {
+  background: #e4b340;
+  color: #031a38 !important;
+}
+
+.nav-sign-in:focus-visible,
+.nav-register:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 3px;
+}
+
+.nav-register:hover,
+.nav-register:focus-visible {
+  background: #f0c75f;
 }
 
 .account-menu {
@@ -335,6 +356,13 @@
   color: #031a38 !important;
 }
 
+.mobile-register {
+  justify-content: center;
+  margin-top: 8px;
+  border: 1px solid #e4b340 !important;
+  color: #e4b340 !important;
+}
+
 .mobile-account-summary {
   display: flex;
   align-items: center;
@@ -349,6 +377,10 @@
   }
 
   .nav-sign-in {
+    padding-inline: 12px;
+  }
+
+  .nav-register {
     padding-inline: 12px;
   }
 
