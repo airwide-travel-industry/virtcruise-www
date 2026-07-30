@@ -12,10 +12,14 @@ Production Beta pairs frontend `v0.5.0-rc3` with backend `v0.5.0-rc2`. The relea
 - Cached/coalesced catalogue and portal reads; responsive lazy-loaded page modules.
 - Automated syntax, navigation, authentication bootstrap and Playwright browser checks.
 - Keyboard navigation, focus visibility, live regions and mobile card alternatives.
+- Customer financial overview, invoices/deposits, payments, receipts and refunds use accepted V7
+  DTOs with exact multi-currency rendering and memory-only financial caching.
 
 ## Technical debt and limitations
 
-- No payments, consultant portal or CRM.
+- No real payment initiation, provider integration, consultant portal or CRM.
+- Financial API dates, allocation detail, customer-safe document downloads and cross-currency
+  account discovery remain backend contract gaps.
 - Some portal preferences and traveller data remain local pending dedicated APIs.
 - Email delivery is synchronous; a durable outbox is future work.
 - Broader monitoring, WAF/rate-limit edge controls and off-host backup automation remain open.
@@ -23,5 +27,5 @@ Production Beta pairs frontend `v0.5.0-rc3` with backend `v0.5.0-rc2`. The relea
 
 ## Roadmap
 
-Sprint 3.5 is the next planned development increment. No Financial Engine implementation is part of
-this snapshot.
+DEV-004C is the customer Financial Portal increment. DEV-004D remains the next financial
+workstream after DEV-004C acceptance.

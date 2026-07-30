@@ -3,6 +3,28 @@
 All notable Virtcruise frontend changes are recorded here. The project follows Semantic Versioning;
 release candidates use the `-rcN` suffix.
 
+## [0.6.0-SNAPSHOT] - 2026-07-31
+
+### Added
+
+- Authenticated Financial Overview, Invoices & Deposits, invoice detail, Payments, Receipts and
+  Refunds routes.
+- Strict accepted-contract DTO mapping, exact currency-preserving Money presentation, paging,
+  page-local search/filtering, loading, empty, retry and safe error states.
+- Responsive and accessible financial cards/table plus deterministic API and browser fixtures.
+
+### Changed
+
+- Authenticated portal and account navigation now includes the Financial section.
+- Booking-linked financial records navigate back to the existing customer booking experience.
+
+### Security
+
+- Financial responses are cached in memory only and cleared on logout.
+- The financial client preserves memory-only access tokens, cookie credentials, CSRF for mutations,
+  explicit idempotency keys and safe Problem Details messages.
+- Customer ownership remains enforced exclusively by the accepted backend application layer.
+
 ## [0.5.0-beta] - 2026-07-30
 
 ### Added

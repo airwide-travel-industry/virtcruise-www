@@ -32,6 +32,8 @@ NGINX and sends one aggregate, idempotent `POST /api/v1/quotes` to the Spring Bo
 - [Changelog](CHANGELOG.md)
 - [Local authentication development](docs/LOCAL-AUTHENTICATION.md)
 - [Customer Travel Portal](docs/CUSTOMER-PORTAL.md)
+- [Customer Financial Portal](docs/FINANCIAL-PORTAL.md)
+- [Financial Portal Acceptance](docs/FINANCIAL-PORTAL-ACCEPTANCE.md)
 - [Booking Engine](https://github.com/airwide-travel-industry/virtcruise-backend/blob/main/docs/BOOKING-ENGINE.md)
 
 ## Development
@@ -68,6 +70,14 @@ browser-only adapters and post-RC backend boundaries.
 Accepted quotes can be converted into idempotent customer-owned bookings. `/bookings/` and
 `/bookings/details/?id=…` provide status, timeline, traveller and payment-summary review; confirmed
 booking stages feed My Trips. Payment capture remains Sprint 3.5 work.
+
+## Customer financial portal
+
+Sprint 3.5 adds protected `/financial/`, invoice/deposit, payment, receipt and refund views backed
+by the accepted `/api/v1/financial` application contract. Financial responses use a dedicated
+repository, strict DTO mapping and memory-only caching. Amounts retain their backend currency and
+are never combined or converted in the browser. No real payment control, ledger view or fake
+document download is exposed. See [Customer Financial Portal](docs/FINANCIAL-PORTAL.md).
 
 ## GitHub Pages Deployment
 
