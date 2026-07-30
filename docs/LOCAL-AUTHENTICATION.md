@@ -55,6 +55,9 @@ belong in this repository.
 - Startup first calls read-only `GET /api/v1/auth/session`. A guest response establishes guest state
   without calling refresh. Only a returning browser reported as refreshable obtains CSRF and calls
   the protected refresh endpoint.
+- Guest desktop and mobile navigation must expose separate, keyboard-operable **Sign In** and
+  **Register** links. `npm run test:navigation` is the mandatory computed-visibility regression
+  gate for the supported desktop, tablet and mobile viewports.
 
 If restoration refresh returns 401, sign in again; the token may have expired, rotated, or been
 revoked. The client clears stale session metadata and does not enter a refresh loop. A 403

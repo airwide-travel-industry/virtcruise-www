@@ -3,6 +3,20 @@
 All notable Virtcruise frontend changes are recorded here. The project follows Semantic Versioning;
 release candidates use the `-rcN` suffix.
 
+## [0.5.0-rc3] - Unreleased
+
+### Fixed
+
+- Guest desktop and mobile navigation now expose both Sign In and Register. RC2 rendered only Sign
+  In even though the registration page already existed.
+
+### Validation
+
+- A mandatory real-browser navigation gate verifies computed visibility, clipping, keyboard focus,
+  accessible names and `/register/` navigation at desktop, tablet and mobile widths.
+- Authenticated navigation remains unchanged and excludes both guest actions.
+- The backend remains `v0.5.0-rc2`; RC3 contains no backend or authentication-architecture changes.
+
 ## [0.5.0-rc2] - Unreleased
 
 ### Changed
@@ -60,6 +74,7 @@ release candidates use the `-rcN` suffix.
 - Introduced the production aggregate Quote Builder, live package catalogue, stable quote
   idempotency, offline submission queue and NGINX release process.
 
+[0.5.0-rc3]: docs/RELEASE-NOTES-v0.5.0-rc3.md
 [0.5.0-rc2]: docs/RELEASE-NOTES-v0.5.0-rc2.md
 [0.5.0-rc1]: docs/RELEASE-NOTES-v0.5.0-rc1.md
 [0.2.0]: docs/RELEASE-NOTES-v0.2.0.md
