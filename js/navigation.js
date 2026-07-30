@@ -96,6 +96,7 @@ function renderAuthNavigation({ status, user }) {
     const name = escapeHtml(user.givenName || 'Traveller');
     const portalItems = [
       ['/dashboard/', 'Dashboard'], ['/quotes/', 'My Quotes'], ['/bookings/', 'My Bookings'],
+      ['/financial/', 'Finances'],
       ['/trips/', 'My Trips'],
       ['/travellers/', 'Travellers'], ['/profile/', 'Profile'], ['/notifications/', 'Notifications']
     ];
