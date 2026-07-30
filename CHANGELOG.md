@@ -3,6 +3,28 @@
 All notable Virtcruise frontend changes are recorded here. The project follows Semantic Versioning;
 release candidates use the `-rcN` suffix.
 
+## [0.5.0-beta] - 2026-07-30
+
+### Added
+
+- Production Beta customer authentication, portal, quote review, booking review, responsive
+  navigation and transactional-email journeys.
+
+### Changed
+
+- The accepted frontend baseline is `v0.5.0-rc3` paired with backend `v0.5.0-rc2`.
+- `main` now identifies the next development line as `v0.6.0-SNAPSHOT`.
+
+### Fixed
+
+- Guest navigation exposes accessible Sign In and Register actions at all supported widths.
+- Session discovery avoids expected anonymous refresh failures.
+
+### Security
+
+- Access tokens remain memory-only and refresh tokens remain Secure HttpOnly cookies.
+- Production NGINX logs normalized paths without query strings so one-time tokens are not retained.
+
 ## [0.5.0-rc3] - Unreleased
 
 ### Fixed

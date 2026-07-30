@@ -1,5 +1,12 @@
 # Virtcruise Frontend
 
+> Production Beta: frontend `v0.5.0-rc3` / backend `v0.5.0-rc2`. Development on `main` is
+> `v0.6.0-SNAPSHOT`.
+
+Release documentation: [Production Beta](docs/PRODUCTION-BETA.md),
+[release notes](docs/RELEASE-NOTES-v0.5.0-beta.md),
+[project status](PROJECT-STATUS.md), and [architecture decisions](docs/architecture/ADR/).
+
 Production static frontend for Virtcruise Travels.
 
 - Production: https://virtcruise.airwide.co.uk

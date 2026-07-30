@@ -1,6 +1,6 @@
 {
   "name": "virtcruise-www",
-  "version": "0.5.0-rc3",
+  "version": "0.6.0-SNAPSHOT",
   "private": true,
   "type": "module",
   "scripts": {
