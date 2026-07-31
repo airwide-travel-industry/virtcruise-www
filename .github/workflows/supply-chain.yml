@@ -1,0 +1,47 @@
+name: Frontend supply-chain gate
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Test
+        run: npm test
+
+      - name: Enforce dependency audit
+        run: npm audit --audit-level=high
+
+      - name: Generate CycloneDX SBOM
+        run: >
+          npx --yes @cyclonedx/cyclonedx-npm@6.0.0
+          --omit optional
+          --output-reproducible
+          --validate
+          --spec-version 1.6
+          --output-file frontend-sbom.json
+          package.json
+
+      - name: Upload supply-chain evidence
+        uses: actions/upload-artifact@v6
+        with:
+          name: frontend-supply-chain
+          path: frontend-sbom.json
+          if-no-files-found: error
