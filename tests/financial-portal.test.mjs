@@ -27,7 +27,7 @@ function fileFor(requestUrl) {
   return file;
 }
 
-async function mockApi(page, { denyInvoice = false } = {}) {
+async function mockApi(page, { denyInvoice = false, emptyFinancial = false } = {}) {
   const requests = [];
   await page.route('https://api.virtcruise.airwide.co.uk/**', async route => {
     const request = route.request();
@@ -49,8 +49,12 @@ async function mockApi(page, { denyInvoice = false } = {}) {
         accountType: 'CUSTOMER', roles: ['ROLE_CUSTOMER'], permissions: []
       }
     });
-    if (url.pathname === '/api/v1/financial/accounts/me' || url.pathname === '/api/v1/financial/balance') return json(account);
-    if (url.pathname === '/api/v1/financial/invoices') return json(pageFixture(invoices));
+    if (url.pathname === '/api/v1/financial/accounts/me' || url.pathname === '/api/v1/financial/balance') return json(emptyFinancial ? {
+      ...account,
+      debits: { amount: 0, currency: 'ZAR' }, credits: { amount: 0, currency: 'ZAR' },
+      outstanding: { amount: 0, currency: 'ZAR' }, creditBalance: { amount: 0, currency: 'ZAR' }
+    } : account);
+    if (url.pathname === '/api/v1/financial/invoices') return json(pageFixture(emptyFinancial ? [] : invoices));
     if (url.pathname === `/api/v1/financial/invoices/${invoices[0].id}`) {
       if (denyInvoice) return route.fulfill({
         status: 403,
@@ -59,10 +63,10 @@ async function mockApi(page, { denyInvoice = false } = {}) {
       });
       return json(invoices[0]);
     }
-    if (url.pathname === '/api/v1/financial/payments') return json(pageFixture(payments));
-    if (url.pathname === '/api/v1/financial/receipts') return json(pageFixture(receipts));
-    if (url.pathname === '/api/v1/financial/refunds') return json(pageFixture(refunds));
-    if (url.pathname === '/api/v1/financial/deposits') return json(pageFixture(deposits));
+    if (url.pathname === '/api/v1/financial/payments') return json(pageFixture(emptyFinancial ? [] : payments));
+    if (url.pathname === '/api/v1/financial/receipts') return json(pageFixture(emptyFinancial ? [] : receipts));
+    if (url.pathname === '/api/v1/financial/refunds') return json(pageFixture(emptyFinancial ? [] : refunds));
+    if (url.pathname === '/api/v1/financial/deposits') return json(pageFixture(emptyFinancial ? [] : deposits));
     return route.fulfill({ status: 404, contentType: 'application/json', body: '{}' });
   });
   return requests;
@@ -143,6 +147,18 @@ test('invoice detail maps line items, booking navigation and safe ownership deni
   assert.equal(await denied.getByText('internal detail').count(), 0);
   assert.equal(await denied.getByText('You do not have permission to view this financial information.').isVisible(), true);
   await deniedContext.close();
+});
+
+test('zero-activity overview loads the authoritative default financial account exactly once', async () => {
+  const context = await browser.newContext({ viewport: viewports[0] });
+  const page = await context.newPage();
+  const requests = await mockApi(page, { emptyFinancial: true });
+  await page.goto(`${baseUrl}/financial/`, { waitUntil: 'networkidle' });
+  assert.equal(await page.getByRole('heading', { name: 'Financial Overview' }).isVisible(), true);
+  assert.equal(await page.getByText('ZAR 0.00', { exact: true }).isVisible(), true);
+  assert.equal(requests.filter(request => request.path ===
+    '/api/v1/financial/accounts/me?currency=ZAR').length, 1);
+  await context.close();
 });
 
 test('all history routes expose loading-complete and empty-safe customer views', async () => {

@@ -79,11 +79,14 @@ function invoiceCard(invoice) {
 }
 
 async function renderOverview() {
-  const resources = await Promise.allSettled([
+  const [account, resources] = await Promise.all([
+    repository.account('ZAR'),
+    Promise.allSettled([
     repository.invoices({ page: 0, size: 5 }),
     repository.payments({ page: 0, size: 5 }),
     repository.receipts({ page: 0, size: 5 }),
     repository.refunds({ page: 0, size: 5 })
+    ])
   ]);
   const [invoices, payments, receipts, refunds] = resources.map(result =>
     result.status === 'fulfilled' ? result.value : { items: [] }
@@ -91,24 +94,13 @@ async function renderOverview() {
   if (resources.some(result => result.status === 'rejected')) {
     throw resources.find(result => result.status === 'rejected').reason;
   }
-  const activeCurrencies = new Set([
-    ...invoices.items.map(item => item.total.currency),
-    ...payments.items.map(item => item.amount.currency),
-    ...receipts.items.map(item => item.total.currency),
-    ...refunds.items.map(item => item.amount.currency)
-  ]);
-  const account = activeCurrencies.has('ZAR') ? await repository.balance('ZAR') : null;
-  const deposits = account
-    ? await repository.deposits(account.id, { page: 0, size: 5 })
-    : { items: [] };
+  const deposits = await repository.deposits(account.id, { page: 0, size: 5 });
   const openInvoices = invoices.items.filter(item => !['PAID', 'CANCELLED', 'CREDITED'].includes(item.status));
   const pendingRefunds = refunds.items.filter(item => !['COMPLETED', 'REJECTED', 'CANCELLED'].includes(item.status));
   const nextDeposit = [...deposits.items]
     .filter(item => !['PAID', 'CANCELLED', 'REFUNDED'].includes(item.status))
     .sort((a, b) => a.dueDate.localeCompare(b.dueDate))[0];
-  const balanceState = !account
-    ? ['No outstanding balance', 'Your ZAR financial account has no activity yet.']
-    : account.outstanding.amount !== '0' && !/^0(?:\.0+)?$/.test(account.outstanding.amount)
+  const balanceState = account.outstanding.amount !== '0' && !/^0(?:\.0+)?$/.test(account.outstanding.amount)
       ? ['Amount outstanding', formatFinancialMoney(account.outstanding)]
       : account.creditBalance.amount !== '0' && !/^0(?:\.0+)?$/.test(account.creditBalance.amount)
         ? ['Credit balance', formatFinancialMoney(account.creditBalance)]
