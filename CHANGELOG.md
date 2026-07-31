@@ -25,6 +25,12 @@ release candidates use the `-rcN` suffix.
   explicit idempotency keys and safe Problem Details messages.
 - Customer ownership remains enforced exclusively by the accepted backend application layer.
 
+### Validation
+
+- DEV-004F confirms API compatibility with the additive Payment Provider Framework and Flyway V8.
+- Real authenticated browser acceptance passes against PostgreSQL 18.4 without adding a Pay control
+  or changing portal response mapping.
+
 ## [0.5.0-beta] - 2026-07-30
 
 ### Added

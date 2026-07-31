@@ -27,5 +27,10 @@ Production Beta pairs frontend `v0.5.0-rc3` with backend `v0.5.0-rc2`. The relea
 
 ## Roadmap
 
-DEV-004C is the customer Financial Portal increment. DEV-004D remains the next financial
-workstream after DEV-004C acceptance.
+DEV-004C provides the Customer Financial Portal. DEV-004F integrates it with the accepted DEV-004D
+provider-neutral backend while retaining a read-only customer experience. No real provider,
+payment initiation control, deployment or release candidate is included.
+
+The integrated V1–V8 backend and real browser journey pass. See
+`docs/FINANCIAL-ENGINE-INTEGRATION.md`; a future release-candidate workstream must keep the fake
+provider disabled and repeat the documented security and operational gates.

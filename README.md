@@ -34,6 +34,7 @@ NGINX and sends one aggregate, idempotent `POST /api/v1/quotes` to the Spring Bo
 - [Customer Travel Portal](docs/CUSTOMER-PORTAL.md)
 - [Customer Financial Portal](docs/FINANCIAL-PORTAL.md)
 - [Financial Portal Acceptance](docs/FINANCIAL-PORTAL-ACCEPTANCE.md)
+- [Financial Engine integration](docs/FINANCIAL-ENGINE-INTEGRATION.md)
 - [Booking Engine](https://github.com/airwide-travel-industry/virtcruise-backend/blob/main/docs/BOOKING-ENGINE.md)
 
 ## Development
@@ -78,6 +79,10 @@ by the accepted `/api/v1/financial` application contract. Financial responses us
 repository, strict DTO mapping and memory-only caching. Amounts retain their backend currency and
 are never combined or converted in the browser. No real payment control, ledger view or fake
 document download is exposed. See [Customer Financial Portal](docs/FINANCIAL-PORTAL.md).
+
+DEV-004F confirms these unchanged read contracts against the provider-framework backend and a clean
+Flyway V1–V8 PostgreSQL database. The portal remains read-only and does not expose the fake
+provider. See [Financial Engine integration](docs/FINANCIAL-ENGINE-INTEGRATION.md).
 
 ## GitHub Pages Deployment
 
