@@ -1,5 +1,9 @@
 # Virtcruise Frontend v0.6.0-rc1
 
+> RC-002 production validation found a blocking zero-activity financial-account contract defect.
+> This candidate must not be promoted. See
+> [RC-002 Production Deployment Validation](RC-002-PRODUCTION-VALIDATION.md).
+
 ## Overview
 
 This candidate adds the authenticated Customer Financial Portal to the accepted Production Beta
