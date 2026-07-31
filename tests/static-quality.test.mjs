@@ -61,6 +61,14 @@ test('required financial routes and assets exist', () => {
   required.forEach(path => assert.equal(existsSync(join(root, path)), true, `${path} must exist`));
 });
 
+test('static deployment includes financial routes and local fonts', async () => {
+  const workflow = await readFile(join(root, '.github/workflows/deploy-pages.yml'), 'utf8');
+  assert.match(workflow, /for directory in[\\\s\S]*\bfinancial\b/);
+  assert.match(workflow, /for directory in[\\\s\S]*\bfonts\b/);
+  assert.match(workflow, /cp -R[\\\s\S]*\bfinancial\b/);
+  assert.match(workflow, /cp -R[\\\s\S]*\bfonts\b/);
+});
+
 test('CSS local asset references resolve', async () => {
   const cssFiles = (await files()).filter(file => extname(file) === '.css');
   const failures = [];
