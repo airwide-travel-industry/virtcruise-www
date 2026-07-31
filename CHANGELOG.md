@@ -31,6 +31,11 @@ release candidates use the `-rcN` suffix.
 - Real authenticated browser acceptance passes against PostgreSQL 18.4 without adding a Pay control
   or changing portal response mapping.
 
+### Fixed
+
+- Local acceptance serving now logs normalized paths without verification, reset, OAuth or
+  financial-detail query values.
+
 ## [0.5.0-beta] - 2026-07-30
 
 ### Added

@@ -42,10 +42,13 @@ NGINX and sends one aggregate, idempotent `POST /api/v1/quotes` to the Spring Bo
 No build step is required. Because the site loads ES modules and JSON data, serve the repository over HTTP rather than opening `index.html` through `file://`. For example:
 
 ```sh
-python3 -m http.server 8000
+node scripts/safe-static-server.mjs 8000
 ```
 
 Then open `http://localhost:8000/`.
+
+The development server deliberately logs normalized paths without query strings so verification,
+password-reset and OAuth codes do not enter terminal output or retained acceptance logs.
 
 Use `?api=mock` for the explicit browser mock or `?api=local` for a backend at
 `http://localhost:8080`. There is no build step. A basic quality gate is:

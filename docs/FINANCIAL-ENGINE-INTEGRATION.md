@@ -19,3 +19,8 @@ Integrated acceptance used real RS256 authentication and a clean PostgreSQL 18.4
 through Flyway V8. The portal passed empty and populated histories, ownership denial, logout
 protection, browser-storage inspection and desktop/tablet/mobile layouts without API mapping
 changes.
+
+The integration logging audit found that Python’s generic development HTTP server logs full query
+strings. The repository now provides `scripts/safe-static-server.mjs`, which logs only normalized
+paths, and a regression test covering verification, reset, OAuth callback and financial-detail
+queries. This changes development evidence handling only, not deployed frontend behavior.
