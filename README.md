@@ -1,7 +1,7 @@
 # Virtcruise Frontend
 
-> Production Beta: frontend `v0.5.0-rc3` / backend `v0.5.0-rc2`. Development on `main` is
-> `v0.6.0-SNAPSHOT`.
+> Production Beta remains frontend `v0.5.0-rc3` / backend `v0.5.0-rc2`. The current candidate is
+> `v0.6.0-rc1`.
 
 Release documentation: [Production Beta](docs/PRODUCTION-BETA.md),
 [release notes](docs/RELEASE-NOTES-v0.5.0-beta.md),
@@ -27,6 +27,7 @@ NGINX and sends one aggregate, idempotent `POST /api/v1/quotes` to the Spring Bo
 - [Operations v0.2.0](docs/OPERATIONS-v0.2.0.md)
 - [Release notes v0.2.0](docs/RELEASE-NOTES-v0.2.0.md)
 - [Release notes v0.5.0-rc3](docs/RELEASE-NOTES-v0.5.0-rc3.md)
+- [Release notes v0.6.0-rc1](docs/RELEASE-NOTES-v0.6.0-rc1.md)
 - [Release notes v0.5.0-rc2](docs/RELEASE-NOTES-v0.5.0-rc2.md)
 - [Release notes v0.5.0-rc1](docs/RELEASE-NOTES-v0.5.0-rc1.md)
 - [Changelog](CHANGELOG.md)

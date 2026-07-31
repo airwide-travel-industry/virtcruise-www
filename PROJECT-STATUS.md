@@ -3,7 +3,7 @@
 ## Baseline
 
 Production Beta pairs frontend `v0.5.0-rc3` with backend `v0.5.0-rc2`. The release branch is
-`release/v0.5`; ongoing development uses `v0.6.0-SNAPSHOT`.
+`release/v0.5`; Sprint 3.5 is frozen as candidate `v0.6.0-rc1`.
 
 ## Architecture and quality
 

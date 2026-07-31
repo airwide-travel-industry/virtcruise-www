@@ -3,7 +3,7 @@
 All notable Virtcruise frontend changes are recorded here. The project follows Semantic Versioning;
 release candidates use the `-rcN` suffix.
 
-## [0.6.0-SNAPSHOT] - 2026-07-31
+## [0.6.0-rc1] - 2026-07-31
 
 ### Added
 
