@@ -4,8 +4,8 @@
 
 Production Beta runs frontend and backend `v0.6.0`, promoted without functional change from the
 accepted `v0.6.0-rc2` binaries. `release/v0.6` is the current Production Beta maintenance line;
-`release/v0.5` remains available for previous-beta maintenance only. `main` advances to the
-`0.7.0-SNAPSHOT` development line after the final release tag is secured.
+`release/v0.5` remains available for previous-beta maintenance only. The final `v0.6.0` tag and
+release branch are secured; `main` now identifies the future `0.7.0-SNAPSHOT` development line.
 
 ## Architecture and quality
 
