@@ -3,6 +3,22 @@
 All notable Virtcruise frontend changes are recorded here. The project follows Semantic Versioning;
 release candidates use the `-rcN` suffix.
 
+## [0.6.0] - 2026-08-01
+
+### Released
+
+- Promoted the accepted `v0.6.0-rc2` static archive to final `v0.6.0` without functional change.
+- Production Beta retains the accepted immutable frontend directory and matching backend RC2
+  binary content.
+- `release/v0.6` is the current Production Beta maintenance line; `release/v0.5` is retained for
+  previous-beta maintenance only.
+
+### Validation
+
+- RC-003 registration, verification, login, Financial Overview, responsive browser, storage,
+  authentication, security and logging gates passed in Production Beta.
+- The deterministic archive and CycloneDX SBOM are published with SHA-256 checksums.
+
 ## [0.6.0-rc2] - 2026-08-01
 
 ### Fixed

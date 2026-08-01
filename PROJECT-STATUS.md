@@ -2,8 +2,10 @@
 
 ## Baseline
 
-Production Beta pairs frontend `v0.5.0-rc3` with backend `v0.5.0-rc2`. The release branch is
-`release/v0.5`; Sprint 3.5 is prepared as candidate `v0.6.0-rc2`. RC1 remains rejected.
+Production Beta runs frontend and backend `v0.6.0`, promoted without functional change from the
+accepted `v0.6.0-rc2` binaries. `release/v0.6` is the current Production Beta maintenance line;
+`release/v0.5` remains available for previous-beta maintenance only. `main` advances to the
+`0.7.0-SNAPSHOT` development line after the final release tag is secured.
 
 ## Architecture and quality
 

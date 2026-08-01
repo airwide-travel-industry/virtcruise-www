@@ -1,7 +1,7 @@
 # Virtcruise Frontend
 
-> Production Beta remains frontend `v0.5.0-rc3` / backend `v0.5.0-rc2`. The current candidate is
-> `v0.6.0-rc2`; `v0.6.0-rc1` was not promoted.
+> Production Beta runs the binary content accepted as `v0.6.0-rc2` and promoted unchanged to
+> `v0.6.0`. The RC1 and RC2 tags remain immutable release evidence.
 
 Release documentation: [Production Beta](docs/PRODUCTION-BETA.md),
 [release notes](docs/RELEASE-NOTES-v0.5.0-beta.md),
@@ -12,8 +12,8 @@ Production static frontend for Virtcruise Travels.
 - Production: https://virtcruise.airwide.co.uk
 - API: https://api.virtcruise.airwide.co.uk
 - Release candidate in preparation: `v0.5.0-rc3` (frontend only; not deployed)
-- Current production release: `v0.2.0`
-- Matching backend RC: [`airwide-travel-industry/virtcruise-backend`](https://github.com/airwide-travel-industry/virtcruise-backend), `v0.5.0-rc2`
+- Current Production Beta release: `v0.6.0`
+- Matching backend: [`airwide-travel-industry/virtcruise-backend`](https://github.com/airwide-travel-industry/virtcruise-backend), `v0.6.0`
 
 Native HTML, CSS and ES modules provide the homepage, package catalogue/pages, Quick Quote,
 Quote Builder, My Trip, authentication and the customer travel portal. Production is served by
@@ -22,6 +22,7 @@ NGINX and sends one aggregate, idempotent `POST /api/v1/quotes` to the Spring Bo
 ## Documentation
 
 - [Release notes v0.6.0-rc2](docs/RELEASE-NOTES-v0.6.0-rc2.md)
+- [Release notes v0.6.0](docs/RELEASE-NOTES-v0.6.0.md)
 
 - [Architecture v0.2.0](docs/ARCHITECTURE-v0.2.0.md)
 - [Quote Builder v0.2.0](docs/QUOTE-BUILDER-v0.2.0.md)
