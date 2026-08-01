@@ -1,7 +1,7 @@
 # Virtcruise Frontend
 
 > Production Beta remains frontend `v0.5.0-rc3` / backend `v0.5.0-rc2`. The current candidate is
-> `v0.6.0-rc1`.
+> `v0.6.0-rc2`; `v0.6.0-rc1` was not promoted.
 
 Release documentation: [Production Beta](docs/PRODUCTION-BETA.md),
 [release notes](docs/RELEASE-NOTES-v0.5.0-beta.md),
@@ -20,6 +20,8 @@ Quote Builder, My Trip, authentication and the customer travel portal. Productio
 NGINX and sends one aggregate, idempotent `POST /api/v1/quotes` to the Spring Boot backend.
 
 ## Documentation
+
+- [Release notes v0.6.0-rc2](docs/RELEASE-NOTES-v0.6.0-rc2.md)
 
 - [Architecture v0.2.0](docs/ARCHITECTURE-v0.2.0.md)
 - [Quote Builder v0.2.0](docs/QUOTE-BUILDER-v0.2.0.md)

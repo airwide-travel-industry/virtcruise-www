@@ -3,6 +3,19 @@
 All notable Virtcruise frontend changes are recorded here. The project follows Semantic Versioning;
 release candidates use the `-rcN` suffix.
 
+## [0.6.0-rc2] - 2026-08-01
+
+### Fixed
+
+- The zero-activity Financial Overview now loads the authoritative default ZAR account exactly
+  once instead of inferring a balance solely from empty history collections.
+
+### Validation
+
+- Real Chrome registration, verification, login and Financial Overview acceptance passes at
+  desktop, tablet and mobile widths against PostgreSQL V1–V8 and the RC2 backend.
+- Account HTTP 200, zero/empty states, ownership, console/network/CORS, storage and logout gates pass.
+
 ## [0.6.0-rc1] - 2026-07-31
 
 ### Added
