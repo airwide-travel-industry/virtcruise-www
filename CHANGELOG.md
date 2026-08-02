@@ -1,5 +1,12 @@
 # Changelog
 
+## DEV-005G final commercial qualification rerun — 2026-08-02
+
+- Passed 49 active ordinary tests, six enabled real-environment tests and 50/50 repeated assertions.
+- Passed straight-through PDF and independent JPEG/PNG replacement browser journeys.
+- Retained loopback-only, query-safe, application-readiness acceptance.
+- Recorded integrated partial/full plus fake-SMTP evidence as the remaining RC-entry blocker.
+
 All notable Virtcruise frontend changes are recorded here. The project follows Semantic Versioning;
 release candidates use the `-rcN` suffix.
 

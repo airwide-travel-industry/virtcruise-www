@@ -1,5 +1,23 @@
 # Bank Transfer Commercial Qualification — Frontend Cross-reference
 
+## DEV-005G final rerun
+
+Final decision: **BANK TRANSFER COMMERCIAL QUALIFICATION REQUIRES FURTHER HARDENING**. Starting
+frontend `8c4d0b681524c6deba4ca0b213e246665464bc1b` and backend
+`2e9bd74768c0989b760a19568512af896d3cc22f` were clean and contained all accepted ancestry.
+
+Fresh results: 49/49 active ordinary tests; all six enabled real-environment tests; 50/50 assertions
+across ten repeats of the formerly failing financial group; real straight-through PDF approval;
+independent browser PDF-to-JPEG and PDF-to-PNG replacement journeys; desktop/tablet/mobile; clean
+asserted console/network/CORS/storage behavior; and loopback-only runtime with injected public
+requests denied. The backend passed 583/583 tests and clean Flyway V1–V13.
+
+The final gate remains blocked because the accepted integrated browser harness does not drive one
+invoice through partial and remaining transfers and inspect the resulting deterministic fake-SMTP
+mailbox. Component coverage cannot replace that mandatory integrated evidence. No frontend product
+defect was reproduced or changed. Local main was not integrated; nothing was pushed, tagged,
+deployed or released.
+
 ## DEV-005G2 deterministic acceptance
 
 DEV-005G2 removed Google Fonts runtime dependencies, replaced `networkidle` with application readiness, and added a loopback-only request guard. The original five pass individually, together and for ten consecutive grouped runs. The ordinary suite passes 49/49 active tests; all six real-backend tests pass separately with zero skips against backend `2e9bd747`. See the deterministic acceptance guide and results.

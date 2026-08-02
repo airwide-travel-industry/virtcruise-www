@@ -1,5 +1,11 @@
 # Customer Bank Transfer Acceptance
 
+Final DEV-005G rerun (2026-08-02) passed a straight-through browser PDF approval and independent
+PDF-to-JPEG and PDF-to-PNG rejection/replacement journeys against PostgreSQL 18.4/Flyway V1–V13.
+Registration, verification, instructions, upload, Finance review, privacy, payment/receipt/Booking
+continuation, ownership denials and three viewports passed. Integrated partial-then-remaining and
+fake-SMTP mailbox evidence remains mandatory and incomplete, so this is not RC entry approval.
+
 ## Automated browser coverage
 
 `node --test tests/customer-bank-transfer.test.mjs` exercises real headless Chrome with authenticated JWT-shaped sessions and mocked HTTP contracts:

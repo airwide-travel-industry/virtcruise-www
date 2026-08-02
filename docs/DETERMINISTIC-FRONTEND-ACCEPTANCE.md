@@ -1,5 +1,10 @@
 # Deterministic Frontend Acceptance
 
+Final DEV-005G rerun confirmation (2026-08-02): 49 active ordinary tests, all six enabled
+real-environment tests, and ten repeated five-test financial groups passed. Accepted source contains
+no global `networkidle` navigation and mandatory routes remained loopback-only. This deterministic
+gate passes; it does not remove the separate integrated partial/full and fake-SMTP blocker.
+
 DEV-005G2 makes mandatory browser acceptance independent of public Internet availability. Only the frontend origin and explicitly configured Virtcruise backend origin are permitted HTTP(S) origins. Browser-internal `about:`, `blob:` and `data:` resources remain permitted.
 
 ## Dependency inventory

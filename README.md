@@ -1,5 +1,8 @@
 # Virtcruise Frontend
 
+The final DEV-005G rerun passed deterministic regression and real PDF/JPEG/PNG browser journeys but
+remains blocked on integrated partial/full and fake-SMTP evidence. No RC or deployment is authorized.
+
 Browser acceptance is self-contained and denies unexpected public runtime requests. Run `npm test` for the ordinary suite; real PostgreSQL profiles are documented in [`docs/DETERMINISTIC-FRONTEND-ACCEPTANCE.md`](docs/DETERMINISTIC-FRONTEND-ACCEPTANCE.md). Mandatory pages use system fonts and application readiness rather than a public font CDN or global network idle.
 
 DEV-005G1 implements the protected customer Bank Transfer experience. See

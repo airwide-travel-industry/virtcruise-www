@@ -1,5 +1,9 @@
 # Project Status
 
+DEV-005G final rerun (2026-08-02): **BANK TRANSFER COMMERCIAL QUALIFICATION REQUIRES FURTHER
+HARDENING**. Deterministic and PDF/JPEG/PNG browser gates pass; integrated partial/full and
+fake-SMTP evidence is incomplete. Local main, release refs, tags and production remain unchanged.
+
 ## DEV-005G2 — deterministic frontend acceptance complete
 
 The original five timeouts pass ten consecutive grouped runs. Ordinary active tests pass 49/49 and mandatory opt-in real-backend tests pass 6/6 with zero skips. Public runtime requests are blocked and Google Fonts is removed. DEV-005G remains not rerun and not accepted; it is ready for a separately authorized commercial qualification rerun.
