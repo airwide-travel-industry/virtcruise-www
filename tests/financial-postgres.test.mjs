@@ -46,7 +46,7 @@ test('real PostgreSQL financial portal customer journeys', { skip: !enabled, tim
   const email = `dev004c-${unique}@example.test`;
   const password = `Portal-${unique}-Safe!`;
   const otherCustomer = crypto.randomUUID();
-  const accountId = crypto.randomUUID();
+  let accountId;
   const invoiceId = crypto.randomUUID();
   const paymentId = crypto.randomUUID();
   const receiptId = crypto.randomUUID();
@@ -83,12 +83,15 @@ test('real PostgreSQL financial portal customer journeys', { skip: !enabled, tim
 
     const customerId = sql(`select customer_id from user_accounts where normalized_email=lower('${email}')`);
     assert.match(customerId, /^[0-9a-f-]{36}$/);
+    accountId = sql(`select id from financial_accounts where customer_id='${customerId}' and currency='ZAR'`);
+    assert.match(accountId, /^[0-9a-f-]{36}$/);
     sql(`begin;
       insert into customers(id,email,normalized_email,first_name,last_name,created_at,updated_at,created_by,updated_by,version)
         values ('${otherCustomer}','other-${unique}@example.test','other-${unique}@example.test','Other','Customer',now(),now(),'dev004c','dev004c',0);
+      update financial_accounts set debit_total=5000,credit_total=2000,updated_at=now(),updated_by='dev004c'
+        where id='${accountId}';
       insert into financial_accounts(id,customer_id,currency,status,debit_total,credit_total,version,created_at,updated_at,created_by,updated_by)
-        values ('${accountId}','${customerId}','ZAR','OPEN',5000,2000,0,now(),now(),'dev004c','dev004c'),
-               ('${otherAccount}','${otherCustomer}','ZAR','OPEN',100,0,0,now(),now(),'dev004c','dev004c');
+        values ('${otherAccount}','${otherCustomer}','ZAR','OPEN',100,0,0,now(),now(),'dev004c','dev004c');
       insert into financial_invoices(id,invoice_number,account_id,customer_id,booking_reference,currency,status,allocated_amount,credited_amount,version,created_at,updated_at,created_by,updated_by)
         values ('${invoiceId}','INV-DEV004C-${unique}','${accountId}','${customerId}','VC-DEV004C-${unique}','ZAR','PARTIALLY_PAID',2000,0,0,now(),now(),'dev004c','dev004c'),
                ('${otherInvoice}','INV-OTHER-${unique}','${otherAccount}','${otherCustomer}',null,'ZAR','ISSUED',0,0,0,now(),now(),'dev004c','dev004c');
