@@ -1,5 +1,12 @@
 # Project Status
 
+## DEV-005G commercial qualification
+
+Commercial qualification requires further hardening. The Finance and Financial portals remain
+accepted components, but the customer bank-transfer submission/status UI and authoritative
+bank-instruction contract do not exist. Local main integration, RC creation and deployment are
+blocked. See `docs/BANK-TRANSFER-COMMERCIAL-QUALIFICATION.md`.
+
 ## Baseline
 
 Production Beta runs frontend and backend `v0.6.0`, promoted without functional change from the

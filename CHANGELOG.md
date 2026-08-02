@@ -5,6 +5,13 @@ release candidates use the `-rcN` suffix.
 
 ## [0.7.0-SNAPSHOT] - Unreleased
 
+### DEV-005G qualification
+
+- Recorded that the accepted Finance portal does not include a customer bank-instruction,
+  case-creation, proof-upload or case-status experience.
+- Classified the absent authoritative bank-account configuration/discovery contract as a commercial
+  launch blocker. No product feature, release candidate or deployment was created.
+
 ### Added
 
 - Protected Finance overview, bank-transfer queue, assignment views, SLA view, completed view, and

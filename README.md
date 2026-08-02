@@ -1,5 +1,10 @@
 # Virtcruise Frontend
 
+DEV-005G commercial qualification is documented in
+[`docs/BANK-TRANSFER-COMMERCIAL-QUALIFICATION.md`](docs/BANK-TRANSFER-COMMERCIAL-QUALIFICATION.md).
+It identifies launch-blocking customer submission and authoritative bank-instruction gaps; no RC or
+deployment is authorized.
+
 > Production Beta runs the binary content accepted as `v0.6.0-rc2` and promoted unchanged to
 > `v0.6.0`. The RC1 and RC2 tags remain immutable release evidence.
 
