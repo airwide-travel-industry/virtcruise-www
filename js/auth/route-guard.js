@@ -20,3 +20,24 @@ export async function requireAuthentication() {
   location.replace(authPageUrl('/signin/', { returnTo: `${location.pathname}${location.search}${location.hash}` }));
   return null;
 }
+
+export function hasFinanceAccess(user) {
+  const roles = new Set(Array.isArray(user?.roles) ? user.roles : []);
+  const permissions = new Set(Array.isArray(user?.permissions) ? user.permissions : []);
+  return roles.has('ROLE_FINANCE') || roles.has('ROLE_ADMIN')
+    || permissions.has('BANK_TRANSFER_REVIEW') || permissions.has('BANK_TRANSFER_ADMIN');
+}
+
+export async function requireFinanceAccess() {
+  const user = await authenticationProvider.initialize();
+  if (!user) {
+    rememberDestination();
+    location.replace(authPageUrl('/signin/', { returnTo: `${location.pathname}${location.search}${location.hash}` }));
+    return null;
+  }
+  if (!hasFinanceAccess(user)) {
+    location.replace(authPageUrl('/dashboard/'));
+    return null;
+  }
+  return user;
+}

@@ -20,7 +20,10 @@ function writeMetadata(session) {
       givenName: user.givenName,
       familyName: user.familyName,
       emailVerified: Boolean(user.emailVerified),
-      accountType: user.accountType
+      accountType: user.accountType,
+      customerId: user.customerId || null,
+      roles: Array.isArray(user.roles) ? user.roles : [],
+      permissions: Array.isArray(user.permissions) ? user.permissions : []
     },
     authenticatedAt: new Date().toISOString()
   }));

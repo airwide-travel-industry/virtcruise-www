@@ -52,6 +52,13 @@ const escapeHtml = value => String(value).replace(/[&<>"']/g, character => ({
   '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
 })[character]);
 
+const hasFinanceAccess = user => {
+  const roles = new Set(Array.isArray(user?.roles) ? user.roles : []);
+  const permissions = new Set(Array.isArray(user?.permissions) ? user.permissions : []);
+  return roles.has('ROLE_FINANCE') || roles.has('ROLE_ADMIN')
+    || permissions.has('BANK_TRANSFER_REVIEW') || permissions.has('BANK_TRANSFER_ADMIN');
+};
+
 const desktopNav = document.querySelector('[data-site-navigation], #mainNavigation, .detail-nav-links');
 let menuButton = document.querySelector('[data-mobile-navigation-toggle], .mobile-btn');
 const dropdowns = new Map();
@@ -100,6 +107,7 @@ function renderAuthNavigation({ status, user }) {
       ['/trips/', 'My Trips'],
       ['/travellers/', 'Travellers'], ['/profile/', 'Profile'], ['/notifications/', 'Notifications']
     ];
+    if (hasFinanceAccess(user)) portalItems.splice(1, 0, ['/finance/', 'Finance Operations']);
     const portalLinks = portalItems.map(([path, label]) =>
       `<a href="${authPageUrl(path)}">${label}</a>`
     ).join('');
