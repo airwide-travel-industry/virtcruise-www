@@ -50,7 +50,8 @@ export function startStaticServer({ root = process.cwd(), port = 5002, host = '1
     createReadStream(target).pipe(response);
   });
   server.listen(port, host, () => {
-    process.stdout.write(`Virtcruise static server listening on http://${host}:${port}\n`);
+    const address = server.address();
+    process.stdout.write(`Virtcruise static server listening on http://${host}:${address.port}\n`);
   });
   return server;
 }
