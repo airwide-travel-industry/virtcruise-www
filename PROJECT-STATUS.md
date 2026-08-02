@@ -1,5 +1,9 @@
 # Project Status
 
+## DEV-005G2 — deterministic frontend acceptance complete
+
+The original five timeouts pass ten consecutive grouped runs. Ordinary active tests pass 49/49 and mandatory opt-in real-backend tests pass 6/6 with zero skips. Public runtime requests are blocked and Google Fonts is removed. DEV-005G remains not rerun and not accepted; it is ready for a separately authorized commercial qualification rerun.
+
 ## DEV-005G commercial requalification
 
 Qualification used frontend `4e431899c112515cd50321c8e6e7cc5a36e1cbfd` and backend

@@ -3,6 +3,13 @@
 All notable Virtcruise frontend changes are recorded here. The project follows Semantic Versioning;
 release candidates use the `-rcN` suffix.
 
+## 0.7.0-SNAPSHOT — DEV-005G2
+
+- Removed Google Fonts imports/hints and standardized on system/Georgia fallbacks.
+- Added observable Playwright readiness and prohibited global `networkidle` waits.
+- Added loopback-only browser acceptance with query-safe diagnostics.
+- Hardened static-server tests and aligned real fixtures with Flyway V1–V13 and activation-created accounts.
+
 ## [0.7.0-SNAPSHOT] - Unreleased
 
 ### DEV-005G commercial requalification

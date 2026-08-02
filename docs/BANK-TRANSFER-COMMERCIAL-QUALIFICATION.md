@@ -1,5 +1,11 @@
 # Bank Transfer Commercial Qualification — Frontend Cross-reference
 
+## DEV-005G2 deterministic acceptance
+
+DEV-005G2 removed Google Fonts runtime dependencies, replaced `networkidle` with application readiness, and added a loopback-only request guard. The original five pass individually, together and for ten consecutive grouped runs. The ordinary suite passes 49/49 active tests; all six real-backend tests pass separately with zero skips against backend `2e9bd747`. See the deterministic acceptance guide and results.
+
+This permits a new qualification run; it is not DEV-005G acceptance. DEV-005G was not rerun here.
+
 ## Requalification after DEV-005G1B
 
 DEV-005G reran from frontend `4e431899c112515cd50321c8e6e7cc5a36e1cbfd` and backend
