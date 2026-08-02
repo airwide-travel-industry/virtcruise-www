@@ -5,6 +5,12 @@ release candidates use the `-rcN` suffix.
 
 ## [0.7.0-SNAPSHOT] - Unreleased
 
+### DEV-005G commercial requalification
+
+- Recorded the passing 583-test PostgreSQL/Flyway V1–V13 backend gate and the blocking frontend
+  regression evidence: five `networkidle` navigation timeouts caused by nondeterministic external
+  font requests. No product code, local main, release candidate or deployment was changed.
+
 ### DEV-005G1A real-backend acceptance
 
 - Added a no-mock PostgreSQL 18.4, Flyway V1–V12, RS256 and Chrome customer/Finance acceptance journey with database, authorization, responsive and storage assertions.

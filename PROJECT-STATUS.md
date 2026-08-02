@@ -1,5 +1,20 @@
 # Project Status
 
+## DEV-005G commercial requalification
+
+Qualification used frontend `4e431899c112515cd50321c8e6e7cc5a36e1cbfd` and backend
+`7f4e3a4cf6425bbb6356f55aa1cb9e5b81d300db`. The backend passed all 583 PostgreSQL 18.4 tests with
+zero skips and clean Flyway V1–V13. The mandatory frontend regression did not pass: `npm test`
+reported 39 passes, five 30-second `networkidle` navigation timeouts and six opt-in skips, and the
+financial-portal timeouts reproduced in isolation. External Google Fonts requests make the browser
+harness nondeterministic before UI assertions execute.
+
+No bank-transfer product defect was proven and no product code was changed. Remaining DEV-005G
+journeys were stopped under the blocker rule. A bounded frontend acceptance-harness hardening
+workstream is required before DEV-005G can rerun. Local main was not integrated and nothing was
+pushed, tagged, deployed, promoted or released. Recommendation: **BANK TRANSFER COMMERCIAL
+QUALIFICATION REQUIRES FURTHER HARDENING**.
+
 ## DEV-005G1A real-backend acceptance
 
 The no-mock PostgreSQL 18.4/Flyway V1–V12/RS256/Chrome primary customer Bank Transfer journey passes through Finance approval, one Payment, one Receipt, balanced Ledger and confirmed Booking. Acceptance-proven defects were minimally corrected and regression tested. Terminal `REJECTED` prevents mandatory replacement and second approval; separate no-mock JPEG/PNG browser journeys also remain incomplete. The recommendation is **CUSTOMER BANK TRANSFER REAL BACKEND ACCEPTANCE REQUIRES FURTHER HARDENING**. DEV-005G has not begun and deployment is not authorized.
