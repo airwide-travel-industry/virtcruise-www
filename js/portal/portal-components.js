@@ -51,6 +51,7 @@ const navigation = [
   ['financial', '/financial/', 'Financial Overview'],
   ['invoices', '/financial/invoices/', 'Invoices'],
   ['payments', '/financial/payments/', 'Payments'],
+  ['bank-transfer', '/bank-transfer/', 'Pay by Bank Transfer'],
   ['receipts', '/financial/receipts/', 'Receipts'],
   ['refunds', '/financial/refunds/', 'Refunds'],
   ['trips', '/trips/', 'My Trips'],

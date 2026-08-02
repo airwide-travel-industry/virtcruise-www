@@ -104,6 +104,7 @@ function renderAuthNavigation({ status, user }) {
     const portalItems = [
       ['/dashboard/', 'Dashboard'], ['/quotes/', 'My Quotes'], ['/bookings/', 'My Bookings'],
       ['/financial/', 'Finances'],
+      ['/bank-transfer/', 'Pay by Bank Transfer'],
       ['/trips/', 'My Trips'],
       ['/travellers/', 'Travellers'], ['/profile/', 'Profile'], ['/notifications/', 'Notifications']
     ];
