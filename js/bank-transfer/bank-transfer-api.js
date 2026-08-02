@@ -40,6 +40,9 @@ export function createBankTransferRepository() {
     bookings: () => financialRequest('/api/v1/bookings?page=0&size=100'),
     payments: () => financialRequest('/api/v1/financial/payments?page=0&size=100'),
     receipts: () => financialRequest('/api/v1/financial/receipts?page=0&size=100'),
-    booking: id => financialRequest(`/api/v1/bookings/${encodeURIComponent(id)}`)
+    async booking(id) {
+      const value = await financialRequest(`/api/v1/bookings/${encodeURIComponent(id)}`);
+      return value?.booking || value;
+    }
   });
 }
