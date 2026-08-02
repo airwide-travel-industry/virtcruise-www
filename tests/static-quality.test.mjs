@@ -37,6 +37,22 @@ test('HTML has unique IDs and valid local script, stylesheet, image and route re
   assert.deepEqual(failures, []);
 });
 
+test('mandatory runtime HTML is independent of public resources', async () => {
+  const htmlFiles = (await files()).filter(file => extname(file) === '.html');
+  const failures = [];
+  for (const file of htmlFiles) {
+    const source = await readFile(file, 'utf8');
+    for (const match of source.matchAll(/<(?:link|script|img|iframe)\b[^>]*(?:href|src|srcset)=["']([^"']+)["']/gi)) {
+      const reference = match[1];
+      if (/^(?:https?:)?\/\//i.test(reference)) failures.push(`${file}: external runtime resource ${reference}`);
+    }
+    if (/(?:fonts\.googleapis\.com|fonts\.gstatic\.com|@import\s+url\(\s*["']?https?:)/i.test(source)) {
+      failures.push(`${file}: external font dependency`);
+    }
+  }
+  assert.deepEqual(failures, []);
+});
+
 test('financial pages use repository modules and never log financial objects', async () => {
   const page = await readFile(join(root, 'js/financial/financial-page.js'), 'utf8');
   const repository = await readFile(join(root, 'js/financial/financial-repository.js'), 'utf8');
