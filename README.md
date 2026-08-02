@@ -19,6 +19,10 @@ Native HTML, CSS and ES modules provide the homepage, package catalogue/pages, Q
 Quote Builder, My Trip, authentication and the customer travel portal. Production is served by
 NGINX and sends one aggregate, idempotent `POST /api/v1/quotes` to the Spring Boot backend.
 
+The `0.7.0-SNAPSHOT` development line also contains the protected Finance Operations Portal for
+the accepted DEV-005C bank-transfer review and private proof APIs. It is not deployed and does not
+create payments, receipts, allocations, ledger entries, or booking progression.
+
 ## Documentation
 
 - [Release notes v0.6.0-rc2](docs/RELEASE-NOTES-v0.6.0-rc2.md)
@@ -39,6 +43,8 @@ NGINX and sends one aggregate, idempotent `POST /api/v1/quotes` to the Spring Bo
 - [Customer Financial Portal](docs/FINANCIAL-PORTAL.md)
 - [Financial Portal Acceptance](docs/FINANCIAL-PORTAL-ACCEPTANCE.md)
 - [Financial Engine integration](docs/FINANCIAL-ENGINE-INTEGRATION.md)
+- [Finance Operations Portal](docs/FINANCE-OPERATIONS-PORTAL.md)
+- [Finance Operations Portal Acceptance](docs/FINANCE-OPERATIONS-PORTAL-ACCEPTANCE.md)
 - [Booking Engine](https://github.com/airwide-travel-industry/virtcruise-backend/blob/main/docs/BOOKING-ENGINE.md)
 
 ## Development
@@ -58,10 +64,13 @@ Use `?api=mock` for the explicit browser mock or `?api=local` for a backend at
 `http://localhost:8080`. There is no build step. A basic quality gate is:
 
 ```sh
-for file in js/*.js js/repositories/*.js js/quote-domains/*.js js/auth/*.js js/portal/*.js; do
+for file in js/*.js js/repositories/*.js js/quote-domains/*.js js/auth/*.js js/portal/*.js js/financial/*.js js/finance/*.js; do
   node --check "$file"
 done
 ```
+
+Finance development routes begin at `/finance/`. They require Finance or Administrator authority
+after session restoration and consume the backend at accepted commit `8f5f373`.
 
 Sprint 3 authentication must be tested against the real local backend and PostgreSQL. See
 [Local authentication development](docs/LOCAL-AUTHENTICATION.md) for routes, storage guarantees,

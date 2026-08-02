@@ -3,6 +3,34 @@
 All notable Virtcruise frontend changes are recorded here. The project follows Semantic Versioning;
 release candidates use the `-rcN` suffix.
 
+## [0.7.0-SNAPSHOT] - Unreleased
+
+### Added
+
+- Protected Finance overview, bank-transfer queue, assignment views, SLA view, completed view, and
+  operational case detail routes.
+- Authenticated private proof inspection for accepted clean PDF/JPEG/PNG evidence with in-memory
+  Blob URLs and deterministic cleanup.
+- Assignment, start-review, internal-comment, approval, and rejection workflows backed only by the
+  accepted DEV-005C APIs.
+- Strict Finance DTO mapping, server pagination/filter/sort, safe Problem Details, read coalescing,
+  short-lived memory caching, conflict refresh, and stable mutation idempotency keys.
+- Deterministic Finance fixtures, contract tests, and portal/acceptance documentation.
+
+### Security
+
+- Finance routes and navigation require accepted Finance/Administrator roles or permissions before
+  protected content renders; backend authorization remains authoritative.
+- Approval requires explicit independent cleared-funds attestation and a reason. Proof viewing never
+  implies cleared funds and unsafe proof states cannot be opened.
+- No proof bytes, tokens, internal comments, or Finance API objects are persisted or logged.
+
+### Limitations
+
+- Accepted API gaps for reviewer lookup, server assignment/SLA/date filters, multi-status filtering,
+  comments/history reads, audit activity, and richer display references are omitted or explicitly
+  labelled as current-page behavior.
+
 ## [0.6.0] - 2026-08-01
 
 ### Released

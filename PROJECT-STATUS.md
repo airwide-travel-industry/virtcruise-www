@@ -16,6 +16,8 @@ release branch are secured; `main` now identifies the future `0.7.0-SNAPSHOT` de
 - Keyboard navigation, focus visibility, live regions and mobile card alternatives.
 - Customer financial overview, invoices/deposits, payments, receipts and refunds use accepted V7
   DTOs with exact multi-currency rendering and memory-only financial caching.
+- DEV-005D Finance Operations consumes the frozen DEV-005C bank-transfer/proof APIs through strict
+  DTOs, role-gated static routes, stable mutation idempotency, and memory-only proof viewing.
 
 ## Technical debt and limitations
 
@@ -26,6 +28,8 @@ release branch are secured; `main` now identifies the future `0.7.0-SNAPSHOT` de
 - Email delivery is synchronous; a durable outbox is future work.
 - Broader monitoring, WAF/rate-limit edge controls and off-host backup automation remain open.
 - Query strings are intentionally absent from NGINX operational logs.
+- Finance reviewer discovery, global assignment/SLA/date filters, comment/audit history, and richer
+  case display references require additive backend contracts; the UI does not synthesize them.
 
 ## Roadmap
 
@@ -36,3 +40,6 @@ payment initiation control, deployment or release candidate is included.
 The integrated V1–V8 backend and real browser journey pass. See
 `docs/FINANCIAL-ENGINE-INTEGRATION.md`; a future release-candidate workstream must keep the fake
 provider disabled and repeat the documented security and operational gates.
+
+DEV-005D targets `0.7.0-SNAPSHOT` against accepted backend commit `8f5f373`. It adds no financial
+posting or booking progression and does not begin DEV-005E. See `docs/FINANCE-OPERATIONS-PORTAL.md`.
