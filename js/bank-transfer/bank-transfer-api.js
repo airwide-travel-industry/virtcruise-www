@@ -34,6 +34,7 @@ export function createBankTransferRepository() {
     reviews: () => financialRequest(`${reviewPath}?page=0&size=100&sort=createdAt&direction=desc`),
     review: id => financialRequest(`${reviewPath}/${encodeURIComponent(id)}`),
     create: value => financialRequest(reviewPath, { method: 'POST', body: value, idempotencyKey: crypto.randomUUID() }),
+    requestReplacement: id => financialRequest(`${reviewPath}/${encodeURIComponent(id)}/request-replacement`, { method: 'POST', idempotencyKey: crypto.randomUUID() }),
     proofs: id => financialRequest(`${reviewPath}/${encodeURIComponent(id)}/proofs`),
     upload: (id, file) => uploadRequest(`${reviewPath}/${encodeURIComponent(id)}/proofs`, file, crypto.randomUUID()),
     invoices: () => financialRequest('/api/v1/financial/invoices?page=0&size=100'),

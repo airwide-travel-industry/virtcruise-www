@@ -1,6 +1,6 @@
 import { escapeHtml, portalUrl } from '../portal/portal-components.js';
 
-const LABELS = Object.freeze({ NEW:'New', AWAITING_UPLOAD:'Awaiting proof', PROOF_RECEIVED:'Proof received', UNDER_REVIEW:'Under review', APPROVED:'Approved', REJECTED:'Rejected', EXPIRED:'Expired', CANCELLED:'Cancelled', RECEIVING:'Receiving', QUARANTINED:'Quarantined', SCANNING:'Scanning', ACCEPTED:'Accepted', SCAN_FAILED:'Scan failed', DELETED:'Deleted', MISSING:'Missing object', CLEAN:'Clean' });
+const LABELS = Object.freeze({ NEW:'New', AWAITING_UPLOAD:'Awaiting proof', AWAITING_REPLACEMENT:'Awaiting replacement', PROOF_RECEIVED:'Proof received', UNDER_REVIEW:'Under review', APPROVED:'Approved', REJECTED:'Rejected', EXPIRED:'Expired', CANCELLED:'Cancelled', RECEIVING:'Receiving', QUARANTINED:'Quarantined', SCANNING:'Scanning', ACCEPTED:'Accepted', SUPERSEDED:'Superseded', SCAN_FAILED:'Scan failed', DELETED:'Deleted', MISSING:'Missing object', CLEAN:'Clean' });
 export const label = value => LABELS[value] || String(value || '').replaceAll('_',' ').toLowerCase().replace(/^./, c => c.toUpperCase());
 export const badge = value => `<span class="portal-status status-${escapeHtml(String(value).toLowerCase())}">${escapeHtml(label(value))}</span>`;
 export const dateTime = value => value ? new Intl.DateTimeFormat(undefined,{year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',timeZoneName:'short'}).format(new Date(value)) : 'Not available';

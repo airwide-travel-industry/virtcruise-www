@@ -1,7 +1,7 @@
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-const CASE_STATES = new Set(['NEW','AWAITING_UPLOAD','PROOF_RECEIVED','UNDER_REVIEW','APPROVED','REJECTED','EXPIRED','CANCELLED']);
+const CASE_STATES = new Set(['NEW','AWAITING_UPLOAD','AWAITING_REPLACEMENT','PROOF_RECEIVED','UNDER_REVIEW','APPROVED','REJECTED','EXPIRED','CANCELLED']);
 const CASE_PROOF_STATES = new Set(['NOT_RECEIVED','RECEIVED']);
-const PROOF_STATES = new Set(['QUARANTINED','SCANNING','ACCEPTED','REJECTED','SCAN_FAILED','DELETED','EXPIRED']);
+const PROOF_STATES = new Set(['QUARANTINED','SCANNING','ACCEPTED','SUPERSEDED','REJECTED','SCAN_FAILED','DELETED','EXPIRED']);
 const text = (value, field, max = 500) => { if (typeof value !== 'string' || !value || value.length > max) throw new TypeError(`Invalid ${field}`); return value; };
 const uuid = (value, field) => { if (!UUID.test(value || '')) throw new TypeError(`Invalid ${field}`); return value; };
 const instant = (value, field) => { if (typeof value !== 'string' || Number.isNaN(Date.parse(value))) throw new TypeError(`Invalid ${field}`); return value; };

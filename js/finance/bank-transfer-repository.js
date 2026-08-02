@@ -23,7 +23,7 @@ export function createBankTransferRepository() {
     unassign(id,key) { return mutate(`${BASE}/${encodeURIComponent(id)}/assignment`,{method:'DELETE',idempotencyKey:key}); },
     start(id,reviewerId,key) { return mutate(`${BASE}/${encodeURIComponent(id)}/review`,{method:'POST',body:{reviewerId},idempotencyKey:key}); },
     approve(id,reason,key) { return mutate(`${BASE}/${encodeURIComponent(id)}/approve`,{method:'POST',body:{reason},idempotencyKey:key}); },
-    reject(id,reason,key) { return mutate(`${BASE}/${encodeURIComponent(id)}/reject`,{method:'POST',body:{reason},idempotencyKey:key}); },
+    reject(id,decision,key) { return mutate(`${BASE}/${encodeURIComponent(id)}/reject`,{method:'POST',body:decision,idempotencyKey:key}); },
     comment(id,comment,key) { return mutate(`${BASE}/${encodeURIComponent(id)}/comments`,{method:'POST',body:{comment},idempotencyKey:key},value => value); }
   });
 }
