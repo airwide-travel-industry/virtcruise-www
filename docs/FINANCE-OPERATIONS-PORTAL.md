@@ -58,3 +58,7 @@ The portal uses explicit refresh only; no polling or WebSocket was introduced. I
 ## DEV-005E prerequisites
 
 Backend support is required before adding a reviewer directory, server-side assignment/reviewer/SLA/date filters, multi-status completed filtering, comment/history reads, audit-safe activity, richer customer/booking/invoice display references, review-age/completion timestamps, resubmission/supersession data, or proof legal-hold state. These gaps are not frontend convenience changes and DEV-005D does not alter the backend.
+
+## Real-backend acceptance
+
+DEV-005D1 passed the supported portal against PostgreSQL 18.4, Flyway V1–V10, real RS256 authentication, private accepted storage, deterministic scanning, two Finance sessions, Customer ownership, Consultant read-only policy, Administrator backend policy, authenticated PDF/JPEG/PNG retrieval, HTTP idempotency, concurrency, and direct database assertions. Run the opt-in harness with `npm run test:finance:real` only after provisioning the disposable topology described in the acceptance document. It never intercepts API responses.

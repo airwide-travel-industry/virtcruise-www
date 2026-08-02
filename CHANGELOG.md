@@ -31,6 +31,14 @@ release candidates use the `-rcN` suffix.
   comments/history reads, audit activity, and richer display references are omitted or explicitly
   labelled as current-page behavior.
 
+### Acceptance
+
+- DEV-005D1 passed real Chrome against PostgreSQL 18.4, Flyway V1–V10, real RS256 sessions, private
+  PDF/JPEG/PNG proofs, two concurrent Finance actors, Customer ownership, and Consultant denials.
+- Direct database assertions proved idempotent single audit/outbox decisions and no Payment,
+  Receipt, Allocation, Ledger, or Booking mutation.
+- The unchanged accepted backend passed its complete 353-test PostgreSQL suite.
+
 ## [0.6.0] - 2026-08-01
 
 ### Released

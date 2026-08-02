@@ -43,3 +43,6 @@ provider disabled and repeat the documented security and operational gates.
 
 DEV-005D targets `0.7.0-SNAPSHOT` against accepted backend commit `8f5f373`. It adds no financial
 posting or booking progression and does not begin DEV-005E. See `docs/FINANCE-OPERATIONS-PORTAL.md`.
+DEV-005D1 real-backend acceptance passed PostgreSQL 18.4/Flyway V1–V10, real RS256 browser sessions,
+private proof retrieval, concurrent Finance decisions, authorization, storage/privacy, responsive
+Chrome, database effects, and the unchanged backend’s 353-test PostgreSQL regression suite.

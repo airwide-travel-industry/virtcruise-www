@@ -71,6 +71,9 @@ done
 
 Finance development routes begin at `/finance/`. They require Finance or Administrator authority
 after session restoration and consume the backend at accepted commit `8f5f373`.
+DEV-005D1 real-backend acceptance is opt-in via `npm run test:finance:real`; its disposable
+PostgreSQL/RS256/proof-storage topology is documented in
+[`docs/FINANCE-OPERATIONS-PORTAL-ACCEPTANCE.md`](docs/FINANCE-OPERATIONS-PORTAL-ACCEPTANCE.md).
 
 Sprint 3 authentication must be tested against the real local backend and PostgreSQL. See
 [Local authentication development](docs/LOCAL-AUTHENTICATION.md) for routes, storage guarantees,
