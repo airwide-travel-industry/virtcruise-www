@@ -1,6 +1,8 @@
 # Virtcruise Frontend
 
-DEV-005G commercial qualification is documented in
+DEV-005G1 implements the protected customer Bank Transfer experience. See
+[`docs/CUSTOMER-BANK-TRANSFER.md`](docs/CUSTOMER-BANK-TRANSFER.md) and its
+[`acceptance record`](docs/CUSTOMER-BANK-TRANSFER-ACCEPTANCE.md). DEV-005G commercial qualification is documented in
 [`docs/BANK-TRANSFER-COMMERCIAL-QUALIFICATION.md`](docs/BANK-TRANSFER-COMMERCIAL-QUALIFICATION.md).
 It identifies launch-blocking customer submission and authoritative bank-instruction gaps; no RC or
 deployment is authorized.
@@ -50,6 +52,8 @@ create payments, receipts, allocations, ledger entries, or booking progression.
 - [Financial Engine integration](docs/FINANCIAL-ENGINE-INTEGRATION.md)
 - [Finance Operations Portal](docs/FINANCE-OPERATIONS-PORTAL.md)
 - [Finance Operations Portal Acceptance](docs/FINANCE-OPERATIONS-PORTAL-ACCEPTANCE.md)
+- [Customer Bank Transfer](docs/CUSTOMER-BANK-TRANSFER.md)
+- [Customer Bank Transfer Acceptance](docs/CUSTOMER-BANK-TRANSFER-ACCEPTANCE.md)
 - [Booking Engine](https://github.com/airwide-travel-industry/virtcruise-backend/blob/main/docs/BOOKING-ENGINE.md)
 
 ## Development

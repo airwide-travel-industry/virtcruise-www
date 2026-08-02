@@ -1,5 +1,9 @@
 # Project Status
 
+## DEV-005G1 customer Bank Transfer
+
+The complete protected customer UI is implemented on `0.7.0-SNAPSHOT`: instructions, exact reference, review creation, secure proof upload/replacement, safe progress, payment/receipt status and authoritative Booking progression. Deterministic Chrome acceptance covers desktop, tablet and mobile. The accepted backend required one read-only environment-configured instruction endpoint. Real PostgreSQL/real JWT end-to-end qualification remains to be executed, so the current recommendation is **CUSTOMER BANK TRANSFER EXPERIENCE REQUIRES FURTHER HARDENING**. DEV-005G has not begun and no deployment is authorized.
+
 ## DEV-005G commercial qualification
 
 Commercial qualification requires further hardening. The Finance and Financial portals remain

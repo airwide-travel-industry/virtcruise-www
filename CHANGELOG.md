@@ -5,6 +5,14 @@ release candidates use the `-rcN` suffix.
 
 ## [0.7.0-SNAPSHOT] - Unreleased
 
+### DEV-005G1 customer Bank Transfer
+
+- Added protected instruction, creation, status and details routes integrated into the Customer Portal.
+- Added authoritative configured bank details, exact invoice-derived references, proof upload/replacement, customer-safe progress, receipt and Booking projection views.
+- Preserved the distinction between proof received and payment received; no customer control records a payment.
+- Added desktop/tablet/mobile Chrome journeys, storage/security assertions and customer documentation.
+- Added the smallest backend contract extension: authenticated read-only bank instructions from environment configuration.
+
 ### DEV-005G qualification
 
 - Recorded that the accepted Finance portal does not include a customer bank-instruction,
