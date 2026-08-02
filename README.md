@@ -7,6 +7,8 @@ DEV-005G1 implements the protected customer Bank Transfer experience. See
 It identifies launch-blocking customer submission and authoritative bank-instruction gaps; no RC or
 deployment is authorized.
 
+DEV-005G1A proved the primary PDF journey against real PostgreSQL, RS256 and Chrome. Qualification remains blocked because the accepted backend makes a Finance-rejected review terminal and does not permit replacement proof upload.
+
 > Production Beta runs the binary content accepted as `v0.6.0-rc2` and promoted unchanged to
 > `v0.6.0`. The RC1 and RC2 tags remain immutable release evidence.
 

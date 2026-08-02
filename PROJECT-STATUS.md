@@ -1,5 +1,9 @@
 # Project Status
 
+## DEV-005G1A real-backend acceptance
+
+The no-mock PostgreSQL 18.4/Flyway V1–V12/RS256/Chrome primary customer Bank Transfer journey passes through Finance approval, one Payment, one Receipt, balanced Ledger and confirmed Booking. Acceptance-proven defects were minimally corrected and regression tested. Terminal `REJECTED` prevents mandatory replacement and second approval; separate no-mock JPEG/PNG browser journeys also remain incomplete. The recommendation is **CUSTOMER BANK TRANSFER REAL BACKEND ACCEPTANCE REQUIRES FURTHER HARDENING**. DEV-005G has not begun and deployment is not authorized.
+
 ## DEV-005G1 customer Bank Transfer
 
 The complete protected customer UI is implemented on `0.7.0-SNAPSHOT`: instructions, exact reference, review creation, secure proof upload/replacement, safe progress, payment/receipt status and authoritative Booking progression. Deterministic Chrome acceptance covers desktop, tablet and mobile. The accepted backend required one read-only environment-configured instruction endpoint. Real PostgreSQL/real JWT end-to-end qualification remains to be executed, so the current recommendation is **CUSTOMER BANK TRANSFER EXPERIENCE REQUIRES FURTHER HARDENING**. DEV-005G has not begun and no deployment is authorized.

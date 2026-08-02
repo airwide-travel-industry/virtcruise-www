@@ -28,10 +28,14 @@ The accepted backend had no authoritative bank-instruction discovery contract. T
 
 ## Customer-safe state
 
-The timeline translates backend state into Review Created, Proof Uploaded, Proof Accepted, Awaiting Finance Review, Payment Recorded, Receipt Issued and Booking Confirmed. Reviewer identity, internal comments, audit, outbox data and storage keys are never rendered. A rejection displays only the bounded decision reason and offers replacement upload.
+The timeline translates backend state into Review Created, Proof Uploaded, Proof Accepted, Awaiting Finance Review, Payment Recorded, Receipt Issued and Booking Confirmed. Reviewer identity, internal comments, audit, outbox data and storage keys are never rendered. A rejection displays only the bounded decision reason. Replacement is offered only when the backend reports an upload-eligible state; the accepted backend currently makes a Finance-rejected review terminal.
 
 Payment and receipt steps are derived from authoritative Financial APIs by the exact transfer reference. Booking status comes from the Booking API and is never calculated in the browser. The receipt view states that PDF download is planned because the current receipt DTO has no PDF contract. Customer notification history is not available from the backend; transactional email remains the notification mechanism.
 
 ## Configuration
 
 Set `BANK_TRANSFER_BANK_NAME`, `BANK_TRANSFER_ACCOUNT_NAME`, `BANK_TRANSFER_ACCOUNT_NUMBER`, `BANK_TRANSFER_BRANCH_CODE`, `BANK_TRANSFER_SWIFT`, `BANK_TRANSFER_CURRENCY`, `BANK_TRANSFER_REFERENCE_PREFIX`, `BANK_TRANSFER_REFERENCE_RULES`, and `BANK_TRANSFER_IMPORTANT_INSTRUCTIONS` on the backend. Production values must be verified by Finance before release qualification.
+
+## DEV-005G1A qualification boundary
+
+The real primary PDF journey passed against PostgreSQL 18.4, Flyway V1–V12, RS256 and Chrome 141. The accepted backend cannot execute rejection followed by replacement: `ReviewRejected` leaves the case terminal while proof acceptance permits only `AWAITING_UPLOAD`. A client-side workaround would bypass the authoritative lifecycle.

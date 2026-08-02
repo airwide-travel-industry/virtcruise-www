@@ -5,6 +5,13 @@ release candidates use the `-rcN` suffix.
 
 ## [0.7.0-SNAPSHOT] - Unreleased
 
+### DEV-005G1A real-backend acceptance
+
+- Added a no-mock PostgreSQL 18.4, Flyway V1–V12, RS256 and Chrome customer/Finance acceptance journey with database, authorization, responsive and storage assertions.
+- Fixed case-insensitive invoice-to-Booking correlation, accepted Booking-detail envelope handling and completed-stage timeline presentation.
+- Recorded the accepted backend outbox scheduling/transaction-boundary compatibility correction required for automatic Financial projection.
+- Recorded the blocker that terminal Finance rejection cannot be followed by replacement proof or second approval.
+
 ### DEV-005G1 customer Bank Transfer
 
 - Added protected instruction, creation, status and details routes integrated into the Customer Portal.
