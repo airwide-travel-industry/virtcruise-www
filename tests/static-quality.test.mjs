@@ -103,3 +103,14 @@ test('CSS local asset references resolve', async () => {
   }
   assert.deepEqual(failures, []);
 });
+
+test('browser acceptance uses application readiness instead of global network idle', async () => {
+  const testFiles = (await files(join(root, 'tests')))
+    .filter(file => extname(file) === '.mjs' && !file.endsWith('/static-quality.test.mjs'));
+  const failures = [];
+  for (const file of testFiles) {
+    const source = await readFile(file, 'utf8');
+    if (/networkidle/.test(source)) failures.push(file);
+  }
+  assert.deepEqual(failures, []);
+});

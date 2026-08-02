@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import { chromium } from 'playwright-core';
+import { waitForApplicationReady } from './helpers/browser-acceptance.mjs';
 
 const enabled = process.env.RUN_FINANCIAL_BROWSER_INTEGRATION === 'true';
 const frontend = process.env.FINANCIAL_FRONTEND_URL || 'http://127.0.0.1:5002';
@@ -55,7 +56,7 @@ test('real PostgreSQL financial portal customer journeys', { skip: !enabled, tim
   const otherInvoice = crypto.randomUUID();
 
   try {
-    await page.goto(`${frontend}/register/?api=local`);
+    await page.goto(`${frontend}/register/?api=local`);await waitForApplicationReady(page);
     await page.getByLabel('First name').fill('Financial');
     await page.getByLabel('Last name').fill('Traveller');
     await page.getByLabel('Email').fill(email);
@@ -67,16 +68,16 @@ test('real PostgreSQL financial portal customer journeys', { skip: !enabled, tim
     await page.getByText(/check your email/i).waitFor();
 
     const verification = await developmentToken(email, 'VERIFICATION');
-    await page.goto(`${frontend}/verify-email/?api=local&token=${encodeURIComponent(verification)}`);
+    await page.goto(`${frontend}/verify-email/?api=local&token=${encodeURIComponent(verification)}`);await waitForApplicationReady(page);
     await page.getByText(/verified|verification complete/i).waitFor();
 
-    await page.goto(`${frontend}/signin/?api=local`);
+    await page.goto(`${frontend}/signin/?api=local`);await waitForApplicationReady(page);
     await page.getByLabel('Email').fill(email);
     await page.locator('#password').fill(password);
     await page.getByRole('button', { name: /^sign in$/i }).click();
     await page.waitForURL(/\/(?:account|dashboard)\//);
 
-    await page.goto(`${frontend}/financial/?api=local`, { waitUntil: 'networkidle' });
+    await page.goto(`${frontend}/financial/?api=local`, { waitUntil:'domcontentloaded' });await waitForApplicationReady(page);
     await page.getByRole('heading', { name: 'Financial Overview' }).waitFor();
     assert.equal(await page.getByText('No outstanding balance', { exact: true }).isVisible(), true);
 
@@ -114,21 +115,21 @@ test('real PostgreSQL financial portal customer journeys', { skip: !enabled, tim
       { width: 390, height: 844 }
     ]) {
       await page.setViewportSize(viewport);
-      await page.goto(`${frontend}/financial/invoices/?api=local`, { waitUntil: 'networkidle' });
+      await page.goto(`${frontend}/financial/invoices/?api=local`, { waitUntil:'domcontentloaded' });await waitForApplicationReady(page);
       await page.getByText(`INV-DEV004C-${unique}`, { exact: true }).waitFor();
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), true);
     }
 
-    await page.goto(`${frontend}/financial/invoices/details/?api=local&id=${invoiceId}`, { waitUntil: 'networkidle' });
+    await page.goto(`${frontend}/financial/invoices/details/?api=local&id=${invoiceId}`, { waitUntil:'domcontentloaded' });await waitForApplicationReady(page);
     assert.equal(await page.getByText('Controlled PostgreSQL browser fixture').isVisible(), true);
-    await page.goto(`${frontend}/financial/payments/?api=local`, { waitUntil: 'networkidle' });
+    await page.goto(`${frontend}/financial/payments/?api=local`, { waitUntil:'domcontentloaded' });await waitForApplicationReady(page);
     assert.equal(await page.getByText(`PAY-DEV004C-${unique}`, { exact: true }).isVisible(), true);
-    await page.goto(`${frontend}/financial/receipts/?api=local`, { waitUntil: 'networkidle' });
+    await page.goto(`${frontend}/financial/receipts/?api=local`, { waitUntil:'domcontentloaded' });await waitForApplicationReady(page);
     assert.equal(await page.getByText(`REC-DEV004C-${unique}`, { exact: true }).isVisible(), true);
-    await page.goto(`${frontend}/financial/refunds/?api=local`, { waitUntil: 'networkidle' });
+    await page.goto(`${frontend}/financial/refunds/?api=local`, { waitUntil:'domcontentloaded' });await waitForApplicationReady(page);
     assert.equal(await page.getByText('Controlled customer refund').isVisible(), true);
 
-    await page.goto(`${frontend}/financial/invoices/details/?api=local&id=${otherInvoice}`, { waitUntil: 'networkidle' });
+    await page.goto(`${frontend}/financial/invoices/details/?api=local&id=${otherInvoice}`, { waitUntil:'domcontentloaded' });await waitForApplicationReady(page);
     assert.equal(await page.getByRole('heading', { name: 'Financial information unavailable' }).isVisible(), true);
 
     const storage = await page.evaluate(() => ({
@@ -140,7 +141,7 @@ test('real PostgreSQL financial portal customer journeys', { skip: !enabled, tim
     assert.deepEqual(requestFailures, []);
 
     await page.getByRole('button', { name: 'Logout' }).click();
-    await page.goto(`${frontend}/financial/?api=local`);
+    await page.goto(`${frontend}/financial/?api=local`);await waitForApplicationReady(page);
     await page.waitForURL(/\/signin\//);
   } finally {
     await context.close();

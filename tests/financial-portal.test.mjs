@@ -5,6 +5,9 @@ import { createServer } from 'node:http';
 import { extname, join, normalize } from 'node:path';
 import { chromium } from 'playwright-core';
 import {
+  enforceOfflineAcceptance, navigateToReadyPage, waitForFinancialPageReady
+} from './helpers/browser-acceptance.mjs';
+import {
   account, deposits, invoices, page as pageFixture, payments, receipts, refunds
 } from './fixtures/financial-api.mjs';
 
@@ -97,13 +100,17 @@ for (const viewport of viewports) {
   test(`${viewport.name} financial portal renders owned multi-currency data without overflow`, async () => {
     const context = await browser.newContext({ viewport });
     const page = await context.newPage();
+    const network = await enforceOfflineAcceptance(context, {
+      allowedOrigins: [baseUrl, 'https://api.virtcruise.airwide.co.uk']
+    });
     const consoleErrors = [];
     const failed = [];
     page.on('console', message => { if (message.type() === 'error') consoleErrors.push(message.text()); });
     page.on('requestfailed', request => failed.push(request.url()));
     const requests = await mockApi(page);
-    await page.goto(`${baseUrl}/financial/invoices/`, { waitUntil: 'networkidle' });
-    await page.getByRole('heading', { name: 'Invoices & Deposits' }).waitFor();
+    await navigateToReadyPage(page, `${baseUrl}/financial/invoices/`, {
+      ready: current => waitForFinancialPageReady(current, 'Invoices & Deposits')
+    });
     assert.equal(await page.getByText('INV-2026-000001', { exact: true }).isVisible(), true);
     assert.equal(await page.getByText('INV-2026-000002', { exact: true }).isVisible(), true);
     assert.equal(await page.getByText('Online payment will be available soon.').isVisible(), true);
@@ -118,6 +125,7 @@ for (const viewport of viewports) {
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), true);
     assert.deepEqual(consoleErrors, []);
     assert.deepEqual(failed, []);
+    network.assertClean();
     assert.ok(requests.some(request => request.path === '/api/v1/financial/invoices?page=0&size=10'));
     assert.equal(requests.filter(request => request.path === '/api/v1/financial/invoices?page=0&size=10').length, 1);
     assert.ok(requests.filter(request => request.path.startsWith('/api/v1/financial/'))
@@ -132,17 +140,25 @@ for (const viewport of viewports) {
 test('invoice detail maps line items, booking navigation and safe ownership denial', async () => {
   const context = await browser.newContext({ viewport: viewports[0] });
   const page = await context.newPage();
+  const network = await enforceOfflineAcceptance(context, {
+    allowedOrigins: [baseUrl, 'https://api.virtcruise.airwide.co.uk']
+  });
   await mockApi(page);
-  await page.goto(`${baseUrl}/financial/invoices/details/?id=${invoices[0].id}`, { waitUntil: 'networkidle' });
+  await navigateToReadyPage(page, `${baseUrl}/financial/invoices/details/?id=${invoices[0].id}`, {
+    ready: current => waitForFinancialPageReady(current, invoices[0].number)
+  });
   assert.equal(await page.getByRole('heading', { name: invoices[0].number }).isVisible(), true);
   assert.equal(await page.getByRole('table').isVisible(), true);
   assert.equal(await page.getByRole('link', { name: /View booking/ }).isVisible(), true);
+  network.assertClean();
   await context.close();
 
   const deniedContext = await browser.newContext({ viewport: viewports[0] });
   const denied = await deniedContext.newPage();
   await mockApi(denied, { denyInvoice: true });
-  await denied.goto(`${baseUrl}/financial/invoices/details/?id=${invoices[0].id}`, { waitUntil: 'networkidle' });
+  await navigateToReadyPage(denied, `${baseUrl}/financial/invoices/details/?id=${invoices[0].id}`, {
+    ready: current => current.getByRole('heading', { name: 'Financial information unavailable' }).waitFor()
+  });
   assert.equal(await denied.getByRole('heading', { name: 'Financial information unavailable' }).isVisible(), true);
   assert.equal(await denied.getByText('internal detail').count(), 0);
   assert.equal(await denied.getByText('You do not have permission to view this financial information.').isVisible(), true);
@@ -152,12 +168,18 @@ test('invoice detail maps line items, booking navigation and safe ownership deni
 test('zero-activity overview loads the authoritative default financial account exactly once', async () => {
   const context = await browser.newContext({ viewport: viewports[0] });
   const page = await context.newPage();
+  const network = await enforceOfflineAcceptance(context, {
+    allowedOrigins: [baseUrl, 'https://api.virtcruise.airwide.co.uk']
+  });
   const requests = await mockApi(page, { emptyFinancial: true });
-  await page.goto(`${baseUrl}/financial/`, { waitUntil: 'networkidle' });
+  await navigateToReadyPage(page, `${baseUrl}/financial/`, {
+    ready: current => waitForFinancialPageReady(current, 'Financial Overview')
+  });
   assert.equal(await page.getByRole('heading', { name: 'Financial Overview' }).isVisible(), true);
   assert.equal(await page.getByText('ZAR 0.00', { exact: true }).isVisible(), true);
   assert.equal(requests.filter(request => request.path ===
     '/api/v1/financial/accounts/me?currency=ZAR').length, 1);
+  network.assertClean();
   await context.close();
 });
 
@@ -166,7 +188,9 @@ test('all history routes expose loading-complete and empty-safe customer views',
     const context = await browser.newContext({ viewport: viewports[0] });
     const page = await context.newPage();
     await mockApi(page);
-    await page.goto(`${baseUrl}/${route}`, { waitUntil: 'networkidle' });
+    await navigateToReadyPage(page, `${baseUrl}/${route}`, {
+      ready: current => current.locator('main h1').waitFor()
+    });
     assert.equal(await page.locator('main h1').count(), 1);
     assert.equal(await page.locator('[aria-busy="true"]').count(), 0);
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), true);

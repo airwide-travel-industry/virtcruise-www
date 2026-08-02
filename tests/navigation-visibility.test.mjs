@@ -5,6 +5,7 @@ import { readFile } from 'node:fs/promises';
 import { createServer } from 'node:http';
 import { extname, join, normalize } from 'node:path';
 import { chromium } from 'playwright-core';
+import { waitForApplicationReady } from './helpers/browser-acceptance.mjs';
 
 const root = process.cwd();
 const mimeTypes = {
@@ -167,7 +168,7 @@ for (const viewport of viewports) {
     });
     page.on('requestfailed', request => unexpectedFailures.push(request.url()));
     await mockAuthentication(page, false);
-    await page.goto(`${baseUrl}/`, { waitUntil: 'networkidle' });
+    await page.goto(`${baseUrl}/`, { waitUntil:'domcontentloaded' });await waitForApplicationReady(page);
     await openNavigation(page, viewport.mobile);
 
     const container = viewport.mobile
@@ -201,7 +202,7 @@ for (const viewport of viewports) {
     const context = await browser.newContext({ viewport });
     const page = await context.newPage();
     await mockAuthentication(page, true);
-    await page.goto(`${baseUrl}/`, { waitUntil: 'networkidle' });
+    await page.goto(`${baseUrl}/`, { waitUntil:'domcontentloaded' });await waitForApplicationReady(page);
     await openNavigation(page, viewport.mobile);
 
     const container = viewport.mobile
