@@ -1,5 +1,10 @@
 # Project Status
 
+## RC-004 — 2026-08-03
+
+Manual Finance customer presentation and representative SELF_SERVICE regression pass. OPS-001 still
+requires approved production contact values and edge configuration. No push, tag or deployment.
+
 ## RC-003 — 2026-08-03
 
 Frontend compatibility for the V14 multi-bank customer API is implemented on

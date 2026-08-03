@@ -1,5 +1,8 @@
 # Virtcruise Frontend
 
+RC-004 (`0.7.0-rc3`) supports the backend's explicit MANUAL_FINANCE contact journey while retaining
+the RC-003 SELF_SERVICE flow.
+
 RC-003 (`0.7.0-rc2`) requests authoritative Bank Transfer instructions for the selected invoice
 currency. Review submission remains disabled until the backend returns one effective account; the
 browser performs no fallback selection or accounting.

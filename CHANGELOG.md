@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.7.0-rc3 — RC-004
+
+- Added capability-driven manual Finance contact presentation with no hardcoded payment details.
+- Preserved customer navigation while removing self-service mutations and success implications.
+- Added responsive ordinary and real PostgreSQL/Chrome non-mutation acceptance.
+
 ## 0.7.0-rc2 — RC-003
 
 - Selects authoritative Bank Transfer instructions by invoice currency.

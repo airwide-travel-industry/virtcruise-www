@@ -1,5 +1,8 @@
 # Customer Bank Transfer Experience
 
+RC-004 keeps Bank Transfer discoverable in MANUAL_FINANCE but replaces self-service controls with
+approved Finance contact instructions, owned reference/currency, and explicit unpaid wording.
+
 RC-003 removes the flat bank environment contract. The page now requests
 `/api/v1/bank-transfer/reviews/instructions?currency=<invoice currency>` after invoice selection and
 does not enable review creation until the authoritative account is available. Production values are
