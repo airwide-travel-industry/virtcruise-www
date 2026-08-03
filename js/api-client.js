@@ -4,11 +4,10 @@ import { createOfflineQuoteQueue } from './repositories/offline-quote-queue.js';
 import { createPackageRepository } from './repositories/package-repository.js';
 import { createQuoteRepository } from './repositories/quote-repository.js';
 import { tokenManager } from './auth/token-manager.js';
+import { runtimeConfig } from './runtime-config.js';
 
-const PRODUCTION_API_BASE_URL = 'https://api.virtcruise.airwide.co.uk';
 const DEFAULT_LOCAL_API_BASE_URL = 'http://localhost:8080';
 const requestedMode = new URLSearchParams(window.location.search).get('api');
-const runtimeConfig = globalThis.VIRTCRUISE_CONFIG || {};
 
 const apiMode = requestedMode === 'mock'
   ? 'mock'
@@ -16,9 +15,9 @@ const apiMode = requestedMode === 'mock'
     ? 'local'
     : 'production';
 const apiBaseUrl = apiMode === 'production'
-  ? PRODUCTION_API_BASE_URL
+  ? runtimeConfig.apiOrigin
   : apiMode === 'local'
-    ? String(runtimeConfig.localApiBaseUrl || DEFAULT_LOCAL_API_BASE_URL).replace(/\/+$/, '')
+    ? DEFAULT_LOCAL_API_BASE_URL
     : '';
 
 function userMessage(status, error, path) {

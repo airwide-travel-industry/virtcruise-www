@@ -29,10 +29,10 @@ after(async () => {
 test('mandatory public routes render with loopback-only network access', async () => {
   const context = await browser.newContext();
   const network = await enforceOfflineAcceptance(context, {
-    allowedOrigins: [baseUrl, 'https://api.virtcruise.airwide.co.uk']
+    allowedOrigins: [baseUrl, 'https://api.virtcruisetravels.com']
   });
   const page = await context.newPage();
-  await page.route('https://api.virtcruise.airwide.co.uk/**', route => route.fulfill({
+  await page.route('https://api.virtcruisetravels.com/**', route => route.fulfill({
     contentType: 'application/json',
     body: JSON.stringify({ success: true, data: { authenticated: false, refreshable: false } })
   }));

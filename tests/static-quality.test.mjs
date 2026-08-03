@@ -9,7 +9,7 @@ const root = process.cwd();
 async function files(directory = root) {
   const entries = await readdir(directory, { withFileTypes: true });
   const nested = await Promise.all(entries
-    .filter(entry => !['.git', 'node_modules', 'artifacts'].includes(entry.name))
+    .filter(entry => !['.git', 'node_modules', 'artifacts', 'dist'].includes(entry.name))
     .map(entry => entry.isDirectory() ? files(join(directory, entry.name)) : [join(directory, entry.name)]));
   return nested.flat();
 }

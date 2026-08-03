@@ -32,7 +32,7 @@ function fileFor(requestUrl) {
 
 async function mockApi(page, { denyInvoice = false, emptyFinancial = false } = {}) {
   const requests = [];
-  await page.route('https://api.virtcruise.airwide.co.uk/**', async route => {
+  await page.route('https://api.virtcruisetravels.com/**', async route => {
     const request = route.request();
     const url = new URL(request.url());
     requests.push({
@@ -101,7 +101,7 @@ for (const viewport of viewports) {
     const context = await browser.newContext({ viewport });
     const page = await context.newPage();
     const network = await enforceOfflineAcceptance(context, {
-      allowedOrigins: [baseUrl, 'https://api.virtcruise.airwide.co.uk']
+      allowedOrigins: [baseUrl, 'https://api.virtcruisetravels.com']
     });
     const consoleErrors = [];
     const failed = [];
@@ -141,7 +141,7 @@ test('invoice detail maps line items, booking navigation and safe ownership deni
   const context = await browser.newContext({ viewport: viewports[0] });
   const page = await context.newPage();
   const network = await enforceOfflineAcceptance(context, {
-    allowedOrigins: [baseUrl, 'https://api.virtcruise.airwide.co.uk']
+    allowedOrigins: [baseUrl, 'https://api.virtcruisetravels.com']
   });
   await mockApi(page);
   await navigateToReadyPage(page, `${baseUrl}/financial/invoices/details/?id=${invoices[0].id}`, {
@@ -169,7 +169,7 @@ test('zero-activity overview loads the authoritative default financial account e
   const context = await browser.newContext({ viewport: viewports[0] });
   const page = await context.newPage();
   const network = await enforceOfflineAcceptance(context, {
-    allowedOrigins: [baseUrl, 'https://api.virtcruise.airwide.co.uk']
+    allowedOrigins: [baseUrl, 'https://api.virtcruisetravels.com']
   });
   const requests = await mockApi(page, { emptyFinancial: true });
   await navigateToReadyPage(page, `${baseUrl}/financial/`, {

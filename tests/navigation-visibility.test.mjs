@@ -80,7 +80,7 @@ async function assertVisible(locator, label) {
 }
 
 async function mockAuthentication(page, authenticated) {
-  await page.route('https://api.virtcruise.airwide.co.uk/**', async route => {
+  await page.route('https://api.virtcruisetravels.com/**', async route => {
     const url = new URL(route.request().url());
     if (url.pathname === '/api/v1/auth/session') {
       return route.fulfill({

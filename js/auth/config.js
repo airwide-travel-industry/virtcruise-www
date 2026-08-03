@@ -1,16 +1,16 @@
-const PRODUCTION_API_BASE_URL = 'https://api.virtcruise.airwide.co.uk';
+import { runtimeConfig } from '../runtime-config.js';
+
 const DEFAULT_LOCAL_API_BASE_URL = 'http://localhost:8080';
 
 const params = new URLSearchParams(window.location.search);
 const requestedMode = params.get('api');
-const runtimeConfig = globalThis.VIRTCRUISE_CONFIG || {};
 const siteBasePath = new URL('../../', import.meta.url).pathname.replace(/\/+$/, '');
 
 export const authRuntime = Object.freeze({
   mode: requestedMode === 'local' ? 'local' : 'production',
   apiBaseUrl: requestedMode === 'local'
-    ? String(runtimeConfig.localApiBaseUrl || DEFAULT_LOCAL_API_BASE_URL).replace(/\/+$/, '')
-    : PRODUCTION_API_BASE_URL
+    ? DEFAULT_LOCAL_API_BASE_URL
+    : runtimeConfig.apiOrigin
 });
 
 export function authPageUrl(path, parameters = {}) {
