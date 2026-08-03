@@ -1,5 +1,13 @@
 # Changelog
 
+## DEV-005G3 partial-to-full acceptance — 2026-08-03
+
+- Added the no-mock real-browser partial-to-full acceptance harness and loopback fake-SMTP capture.
+- Added exact partial transfer amounts and distinct repeat-invoice references after failing-first
+  journey regressions proved both defects.
+- Passed focused, ordinary and mandatory real-customer regression; no main merge, push, tag, RC or
+  deployment occurred.
+
 ## DEV-005G final commercial qualification rerun — 2026-08-02
 
 - Passed 49 active ordinary tests, six enabled real-environment tests and 50/50 repeated assertions.

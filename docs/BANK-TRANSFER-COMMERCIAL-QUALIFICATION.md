@@ -1,5 +1,11 @@
 # Bank Transfer Commercial Qualification — Frontend Cross-reference
 
+## DEV-005G3 prerequisite evidence — 2026-08-03
+
+The missing same-invoice partial-to-full real-browser journey and deterministic fake-SMTP evidence
+now pass. See `BANK-TRANSFER-PARTIAL-FULL-ACCEPTANCE.md`. DEV-005G remains unaccepted until its full
+commercial qualification is freshly rerun.
+
 ## DEV-005G final rerun
 
 Final decision: **BANK TRANSFER COMMERCIAL QUALIFICATION REQUIRES FURTHER HARDENING**. Starting

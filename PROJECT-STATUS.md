@@ -1,5 +1,10 @@
 # Project Status
 
+DEV-005G3 (2026-08-03): **READY TO RERUN DEV-005G COMMERCIAL QUALIFICATION**. One real-browser
+invoice passed ZAR 4,000 partial then ZAR 6,000 final transfers, authoritative continuation,
+responsive/privacy gates and deterministic email evidence. DEV-005G remains to be rerun; main,
+remote refs, tags and production are unchanged.
+
 DEV-005G final rerun (2026-08-02): **BANK TRANSFER COMMERCIAL QUALIFICATION REQUIRES FURTHER
 HARDENING**. Deterministic and PDF/JPEG/PNG browser gates pass; integrated partial/full and
 fake-SMTP evidence is incomplete. Local main, release refs, tags and production remain unchanged.
