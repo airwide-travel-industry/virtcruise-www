@@ -30,7 +30,7 @@ Recommendation: **READY FOR WEB-003**
 - JavaScript syntax and package JSON parse validation: pass.
 
 Chrome for Testing 151 was used from a temporary, non-project test location because the environment
-did not provide `/usr/bin/google-chrome`. The test harness honors `CHROME_BIN`; no browser binary is
+did not provide Playwright-managed Chromium. The test harness honors `PLAYWRIGHT_CHROMIUM_EXECUTABLE`; no browser binary is
 shipped by WEB-002.
 
 ## Scope confirmation
@@ -38,4 +38,3 @@ shipped by WEB-002.
 No backend files, database schema, CMS, content editing, deployment, pricing administration or
 version-history system were created. Production remains v0.7.0. WEB-002 stops at the frontend
 customer experience and is ready for WEB-003 data binding.
-
