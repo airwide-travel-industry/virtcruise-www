@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { after, before, test } from 'node:test';
-import { chromium } from 'playwright-core';
+import { launchChromium } from './helpers/playwright-runtime.mjs';
 import { startStaticServer } from '../scripts/safe-static-server.mjs';
 
 const homepage = await readFile(new URL('../index.html', import.meta.url), 'utf8');
@@ -23,7 +23,7 @@ before(async () => {
   server = startStaticServer({ port: 0 });
   await new Promise(resolve => server.once('listening', resolve));
   origin = `http://127.0.0.1:${server.address().port}`;
-  browser = await chromium.launch({ executablePath: process.env.CHROME_BIN || '/usr/bin/google-chrome', headless: true });
+  browser = await launchChromium({ headless: true });
 });
 
 after(async () => {

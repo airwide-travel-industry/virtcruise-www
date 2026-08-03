@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { chromium } from 'playwright-core';
+import { launchChromium } from './helpers/playwright-runtime.mjs';
 import { waitForApplicationReady } from './helpers/browser-acceptance.mjs';
 
 const enabled = process.env.RUN_FINANCIAL_BROWSER_INTEGRATION === 'true';
@@ -28,8 +28,7 @@ async function developmentToken(email, purpose) {
 
 test('real PostgreSQL financial portal customer journeys', { skip: !enabled, timeout: 120_000 }, async () => {
   assert.ok(localKey.length >= 24, 'A local-only token retrieval key is required');
-  const browser = await chromium.launch({
-    executablePath: process.env.CHROME_BIN || '/usr/bin/google-chrome',
+  const browser = await launchChromium({
     headless: true,
     args: ['--no-sandbox']
   });

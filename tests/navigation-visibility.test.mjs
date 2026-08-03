@@ -4,7 +4,7 @@ import { createReadStream, existsSync, statSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import { createServer } from 'node:http';
 import { extname, join, normalize } from 'node:path';
-import { chromium } from 'playwright-core';
+import { launchChromium } from './helpers/playwright-runtime.mjs';
 import { waitForApplicationReady } from './helpers/browser-acceptance.mjs';
 
 const root = process.cwd();
@@ -145,8 +145,7 @@ before(async () => {
   });
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
   baseUrl = `http://127.0.0.1:${server.address().port}`;
-  browser = await chromium.launch({
-    executablePath: process.env.CHROME_BIN || '/usr/bin/google-chrome',
+  browser = await launchChromium({
     headless: true,
     args: ['--no-sandbox']
   });

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { chromium } from 'playwright-core';
+import { launchChromium } from './helpers/playwright-runtime.mjs';
 import { waitForApplicationReady } from './helpers/browser-acceptance.mjs';
 
 const enabled = process.env.RUN_CUSTOMER_BANK_TRANSFER_REAL_ACCEPTANCE === 'true';
@@ -26,7 +26,7 @@ test('complete real customer bank-transfer journey',{skip:!enabled,timeout:18000
   assert.equal(sql("select current_setting('server_version'),current_setting('server_encoding'),current_setting('TimeZone'),current_setting('password_encryption')"),'18.4|UTF8|UTC|scram-sha-256');
   assert.equal(sql("select string_agg(version,',' order by installed_rank) from flyway_schema_history where success"),'1,2,3,4,5,6,7,8,9,10,11,12,13,14');
   sql("update bank_account_configuration set display_name='ZAR transfers',bank_name='DEV-005G1B Acceptance Bank',account_name='Virtcruise Travels',account_number='123456789',branch_code='123456',swift_code='TESTZAXX',customer_instructions='Allow two business days.',reference_prefix='VC',reference_rules='Use the exact reference shown.',reconciliation_identifier='DEV005G1B-ZAR',updated_at=now() where currency='ZAR' and active");assert.equal(sql("select currency from bank_account_configuration where currency='ZAR' and active"),'ZAR');
-  const browser=await chromium.launch({executablePath:process.env.CHROME_BIN||'/usr/bin/google-chrome',headless:true,args:['--no-sandbox']});
+  const browser=await launchChromium({headless:true,args:['--no-sandbox']});
   const customerEmail=email('customer-a'),otherEmail=email('customer-b'),financeEmail=email('finance'),consultantEmail=email('consultant'),adminEmail=email('admin');
   const context=await browser.newContext({viewport:{width:1920,height:1080},reducedMotion:'reduce'});const page=await context.newPage();
   try{

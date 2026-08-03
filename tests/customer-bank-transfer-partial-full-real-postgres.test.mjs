@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { chromium } from 'playwright-core';
+import { launchChromium } from './helpers/playwright-runtime.mjs';
 import { enforceOfflineAcceptance, waitForApplicationReady } from './helpers/browser-acceptance.mjs';
 
 const enabled = process.env.RUN_PARTIAL_FULL_REAL_ACCEPTANCE === 'true';
@@ -23,7 +23,7 @@ async function messages(){const response=await fetch(`${smtpApi}/messages`);asse
 
 test('one real invoice progresses from partial to full payment with deterministic email evidence',{skip:!enabled,timeout:240000},async()=>{
  assert.ok(localKey.length>=24);assert.equal(sql("select current_setting('server_version'),current_setting('server_encoding'),current_setting('TimeZone'),current_setting('password_encryption')"),'18.4|UTF8|UTC|scram-sha-256');assert.equal(sql("select string_agg(version,',' order by installed_rank) from flyway_schema_history where success"),'1,2,3,4,5,6,7,8,9,10,11,12,13,14');sql("update bank_account_configuration set display_name='ZAR transfers',bank_name='DEV-005G3 Acceptance Bank',account_name='Virtcruise Travels',account_number='123456789',branch_code='123456',swift_code='TESTZAXX',customer_instructions='Allow two business days.',reference_prefix='VC',reference_rules='Use the exact reference shown.',reconciliation_identifier='DEV005G3-ZAR',updated_at=now() where currency='ZAR' and active");assert.equal(sql("select currency from bank_account_configuration where currency='ZAR' and active"),'ZAR');
- const browser=await chromium.launch({executablePath:process.env.CHROME_BIN||'/usr/bin/google-chrome',headless:true,args:['--no-sandbox']});const context=await browser.newContext({viewport:{width:1920,height:1080},reducedMotion:'reduce'});await enforceOfflineAcceptance(context,{allowedOrigins:[new URL(web).origin,new URL(api).origin]});const page=await context.newPage(),consoleErrors=[],failed=[];page.on('console',message=>{if(message.type()==='error')consoleErrors.push(message.text());});page.on('requestfailed',request=>failed.push(new URL(request.url()).origin+new URL(request.url()).pathname));
+ const browser=await launchChromium({headless:true,args:['--no-sandbox']});const context=await browser.newContext({viewport:{width:1920,height:1080},reducedMotion:'reduce'});await enforceOfflineAcceptance(context,{allowedOrigins:[new URL(web).origin,new URL(api).origin]});const page=await context.newPage(),consoleErrors=[],failed=[];page.on('console',message=>{if(message.type()==='error')consoleErrors.push(message.text());});page.on('requestfailed',request=>failed.push(new URL(request.url()).origin+new URL(request.url()).pathname));
  let firstPath,secondPath;
  try{
   await register(page,customerEmail,'Partial');const staff=await context.newPage();await register(staff,financeEmail,'Finance');await staff.close();sql(`delete from user_roles where user_account_id=(select id from user_accounts where normalized_email='${financeEmail}');insert into user_roles(user_account_id,role_id) select u.id,r.id from user_accounts u cross join roles r where u.normalized_email='${financeEmail}' and r.name='ROLE_FINANCE';update user_accounts set account_type='STAFF',customer_id=null where normalized_email='${financeEmail}';`);

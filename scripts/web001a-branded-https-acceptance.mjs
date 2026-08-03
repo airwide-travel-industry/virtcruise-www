@@ -4,7 +4,7 @@ import { readFile } from 'node:fs/promises';
 import { createServer } from 'node:https';
 import { request as httpRequest } from 'node:http';
 import { extname, join, normalize, resolve, sep } from 'node:path';
-import { chromium } from 'playwright-core';
+import { launchChromium } from '../tests/helpers/playwright-runtime.mjs';
 
 const frontendHost = 'www.virtcruisetravels.com';
 const apiHost = 'api.virtcruisetravels.com';
@@ -52,7 +52,7 @@ function serve(request, response) {
 
 const server = createServer({ key, cert }, serve);
 await new Promise((resolvePromise, reject) => server.once('error',reject).listen(port,'127.0.0.1',resolvePromise));
-const browser = await chromium.launch({ executablePath:process.env.CHROME_BIN || '/usr/bin/google-chrome', headless:true,
+const browser = await launchChromium({ headless:true,
   args:['--no-sandbox',`--host-resolver-rules=MAP ${frontendHost}:443 127.0.0.1:${port},MAP ${apiHost}:443 127.0.0.1:${port},EXCLUDE localhost`] });
 
 try {
