@@ -1,5 +1,10 @@
 # Project Status
 
+## v0.7.0 final release — 2026-08-03
+
+**V0.7.0 RELEASED.** The RC4 frontend accepted in Production Beta is promoted unchanged. Production
+remains healthy in Manual Finance mode. The next delivery cycle is Sprint 3.7.
+
 ## RC-005 — 2026-08-03
 
 No frontend product correction was required. RC3 behavior remains the RC4 frontend baseline and

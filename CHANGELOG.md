@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.7.0 — 2026-08-03
+
+- Promoted the exact accepted RC4 frontend without rebuilding.
+- Released responsive customer/Finance Bank Transfer, Financial, Receipt, replacement and Manual
+  Finance experiences with deterministic offline browser behavior.
+
 ## 0.7.0-rc4 — RC-005
 
 - Reissued the unchanged accepted customer experience under the RC4 artifact identity.

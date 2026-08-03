@@ -1,5 +1,8 @@
 # Virtcruise Frontend
 
+Current release: **v0.7.0**. Production runs the exact immutable RC4 frontend accepted in Manual
+Finance Production Beta. See [`docs/RELEASE-NOTES-v0.7.0.md`](docs/RELEASE-NOTES-v0.7.0.md).
+
 The v0.7.0-rc4 frontend preserves the accepted RC3 Manual Finance and Self Service presentation;
 the bounded scanner correction is backend-only.
 
