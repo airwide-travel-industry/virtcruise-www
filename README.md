@@ -1,5 +1,10 @@
 # Virtcruise Frontend
 
+DEV-005G final consolidation passed on 2026-08-03: 50 active ordinary tests and all seven mandatory
+real-environment tests passed with zero mandatory skips. Bank Transfer is ready for the v0.7.0
+release-candidate workstream; no RC or deployment was created. See
+`docs/BANK-TRANSFER-COMMERCIAL-QUALIFICATION.md`.
+
 The final DEV-005G rerun passed deterministic regression and real PDF/JPEG/PNG browser journeys but
 remains blocked on integrated partial/full and fake-SMTP evidence. No RC or deployment is authorized.
 

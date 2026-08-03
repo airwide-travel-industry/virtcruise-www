@@ -1,5 +1,13 @@
 # Changelog
 
+## DEV-005G final consolidation — 2026-08-03
+
+- Passed 50 active ordinary tests and all seven mandatory real-environment tests with zero
+  mandatory skips.
+- Consolidated initial/replacement and partial-to-full browser, SMTP, responsive, accessibility,
+  privacy and offline evidence as ready for the v0.7.0 RC workstream.
+- Made no push, tag, release candidate or deployment.
+
 ## DEV-005G3 partial-to-full acceptance — 2026-08-03
 
 - Added the no-mock real-browser partial-to-full acceptance harness and loopback fake-SMTP capture.

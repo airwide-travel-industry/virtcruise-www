@@ -1,5 +1,9 @@
 # Customer Bank Transfer Acceptance
 
+Final consolidation (2026-08-03) additionally passed the same-invoice ZAR 4,000.00 partial and ZAR
+6,000.00 final browser journey with deterministic SMTP and exact backend state. Together with the
+accepted PDF/JPEG/PNG journeys, customer Bank Transfer is ready for the v0.7.0 RC workstream.
+
 Final DEV-005G rerun (2026-08-02) passed a straight-through browser PDF approval and independent
 PDF-to-JPEG and PDF-to-PNG rejection/replacement journeys against PostgreSQL 18.4/Flyway V1–V13.
 Registration, verification, instructions, upload, Finance review, privacy, payment/receipt/Booking

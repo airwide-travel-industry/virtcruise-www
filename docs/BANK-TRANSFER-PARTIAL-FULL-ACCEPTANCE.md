@@ -33,5 +33,5 @@ failing-test-first corrections. Harness commit `d51876e` records the journey and
 
 Focused regression passed 13/13. The ordinary suite passed 50 active tests with seven opt-in skips
 by design. The enabled real-customer suite and DEV-005G3 each passed 1/1 with zero enabled skips.
-DEV-005G is not accepted here: its exact prerequisite is a fresh complete commercial qualification
-rerun. Recommendation: **READY TO RERUN DEV-005G COMMERCIAL QUALIFICATION**.
+DEV-005G3 supplied the missing prerequisite. The subsequent final DEV-005G consolidation passed;
+see `BANK-TRANSFER-COMMERCIAL-QUALIFICATION.md` for the release-candidate entry decision.

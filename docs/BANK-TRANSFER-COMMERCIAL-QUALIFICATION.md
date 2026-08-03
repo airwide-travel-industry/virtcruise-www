@@ -1,5 +1,32 @@
 # Bank Transfer Commercial Qualification — Frontend Cross-reference
 
+## Final consolidation — 2026-08-03
+
+**READY FOR v0.7.0 RELEASE-CANDIDATE WORKSTREAM.** This supersedes the historical blocked entries
+below. The accepted frontend baseline was `2744de0012fe556f4ad3357b55b6a5c1cbede6b0`; backend
+baseline `4c128ab3662a852dd986002309880dd5549895c9` supplied PostgreSQL/Flyway and service evidence.
+
+The complete ordinary suite passed 50 active tests. All mandatory real-environment suites passed:
+customer Bank Transfer 1/1, Finance 4/4, Financial Portal 1/1 and DEV-005G3 1/1—7/7 with zero
+mandatory skips. No product correction was required during consolidation. The accepted source has
+no runtime `networkidle`, external resource dependency or public-network allowance.
+
+Commercial evidence covers initial PDF approval, private Finance proof viewing and cleared-funds
+attestation; safe rejection with private comments; independent JPEG and PNG replacements with
+immutable cycles/supersession; and the same ZAR 10,000.00 invoice receiving ZAR 4,000.00 then ZAR
+6,000.00. The partial UI retained ZAR 6,000.00 outstanding and no confirmation; final UI showed two
+Payments/Receipts, a paid invoice and confirmed Booking. Deterministic SMTP proved two payment, two
+Receipt and one post-commit confirmation messages with no proof/private/internal content.
+
+Desktop 1920×1080, tablet 1024×768 and mobile 390×844 passed without overflow. Semantic headings,
+labels, keyboard/focus behavior, live textual status, reduced motion and local fonts are accepted;
+no accessibility score is claimed. Offline denial, query-safe diagnostics, clean console/CORS,
+memory-only tokens, empty sensitive Web Storage, Blob cleanup and logout/back protection passed.
+
+Production exact origin, backend URL and bank details remain deployment configuration. Staging
+must validate edge routing, credentials, multipart/CSRF/idempotency headers and invalid-origin
+denial. No push, tag, RC or deployment occurred.
+
 ## DEV-005G3 prerequisite evidence — 2026-08-03
 
 The missing same-invoice partial-to-full real-browser journey and deterministic fake-SMTP evidence

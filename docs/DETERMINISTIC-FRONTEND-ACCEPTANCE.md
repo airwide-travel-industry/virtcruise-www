@@ -1,5 +1,9 @@
 # Deterministic Frontend Acceptance
 
+Final consolidation (2026-08-03) passed 50 active ordinary tests and all seven mandatory
+real-environment tests with zero mandatory skips, including DEV-005G3. Loopback-only operation,
+external-request denial and the prohibition on runtime `networkidle` remain green.
+
 Final DEV-005G rerun confirmation (2026-08-02): 49 active ordinary tests, all six enabled
 real-environment tests, and ten repeated five-test financial groups passed. Accepted source contains
 no global `networkidle` navigation and mandatory routes remained loopback-only. This deterministic

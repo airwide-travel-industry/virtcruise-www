@@ -1,5 +1,9 @@
 # Project Status
 
+DEV-005G final consolidation (2026-08-03): **READY FOR v0.7.0 RELEASE-CANDIDATE WORKSTREAM**.
+The ordinary suite and all seven mandatory real-environment tests passed with zero mandatory skips.
+No RC, push, tag or deployment occurred.
+
 DEV-005G3 (2026-08-03): **READY TO RERUN DEV-005G COMMERCIAL QUALIFICATION**. One real-browser
 invoice passed ZAR 4,000 partial then ZAR 6,000 final transfers, authoritative continuation,
 responsive/privacy gates and deterministic email evidence. DEV-005G remains to be rerun; main,
