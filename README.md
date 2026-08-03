@@ -1,5 +1,10 @@
 # Virtcruise Frontend
 
+`v0.7.0-rc1` release engineering is documented in
+[`docs/RELEASE-NOTES-v0.7.0-rc1.md`](docs/RELEASE-NOTES-v0.7.0-rc1.md) and
+[`docs/ROLLBACK-v0.7.0-rc1.md`](docs/ROLLBACK-v0.7.0-rc1.md). RC-001 produced local immutable
+candidate artifacts only; it did not push, tag, deploy or create the final `v0.7.0` release.
+
 DEV-005G final consolidation passed on 2026-08-03: 50 active ordinary tests and all seven mandatory
 real-environment tests passed with zero mandatory skips. Bank Transfer is ready for the v0.7.0
 release-candidate workstream; no RC or deployment was created. See

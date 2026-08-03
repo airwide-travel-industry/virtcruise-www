@@ -1,5 +1,9 @@
 # Project Status
 
+RC-001 (2026-08-03): **READY FOR RC-002 PRODUCTION BETA**. The local `release/v0.7` branch packages
+`0.7.0-rc1`; deterministic archive/SBOMs, ordinary regression and immutable-artifact browser staging
+passed. Nothing was pushed, tagged or deployed.
+
 DEV-005G final consolidation (2026-08-03): **READY FOR v0.7.0 RELEASE-CANDIDATE WORKSTREAM**.
 The ordinary suite and all seven mandatory real-environment tests passed with zero mandatory skips.
 No RC, push, tag or deployment occurred.

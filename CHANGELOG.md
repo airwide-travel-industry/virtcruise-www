@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.7.0-rc1 — RC-001 — 2026-08-03
+
+- Prepared the local `release/v0.7` candidate and reproducible frontend archive, manifests,
+  dependency inventory and CycloneDX JSON/XML SBOMs without changing product behavior.
+- Passed 50 active ordinary tests and immutable-artifact real-browser staging for customer Bank
+  Transfer, replacement, Finance, Financial, partial/full, responsive and offline paths.
+- Added release and rollback notes. No push, tag, deployment or final `v0.7.0` release occurred.
+
 ## DEV-005G final consolidation — 2026-08-03
 
 - Passed 50 active ordinary tests and all seven mandatory real-environment tests with zero
