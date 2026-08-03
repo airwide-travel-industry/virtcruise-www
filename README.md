@@ -1,5 +1,9 @@
 # Virtcruise Frontend
 
+RC-002 production validation stopped safely at pre-flight because mandatory production Bank
+Transfer/proof configuration and V13 NGINX routes are not yet provisioned. The frontend was not
+activated; see [`docs/RC-002-PRODUCTION-VALIDATION.md`](docs/RC-002-PRODUCTION-VALIDATION.md).
+
 `v0.7.0-rc1` release engineering is documented in
 [`docs/RELEASE-NOTES-v0.7.0-rc1.md`](docs/RELEASE-NOTES-v0.7.0-rc1.md) and
 [`docs/ROLLBACK-v0.7.0-rc1.md`](docs/ROLLBACK-v0.7.0-rc1.md). RC-001 produced local immutable

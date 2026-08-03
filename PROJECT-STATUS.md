@@ -1,5 +1,9 @@
 # Project Status
 
+RC-002 v0.7.0-rc1 (2026-08-03): **RC-002 REQUIRES FURTHER HARDENING**. Artifact and read-only
+production pre-flight passed, but mandatory Bank Transfer/proof configuration and V13 NGINX routes
+are not provisioned. Production remains unchanged on v0.6.0.
+
 RC-001 (2026-08-03): **READY FOR RC-002 PRODUCTION BETA**. The local `release/v0.7` branch packages
 `0.7.0-rc1`; deterministic archive/SBOMs, ordinary regression and immutable-artifact browser staging
 passed. Nothing was pushed, tagged or deployed.

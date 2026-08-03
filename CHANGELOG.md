@@ -1,5 +1,12 @@
 # Changelog
 
+## RC-002 v0.7.0-rc1 production pre-flight — 2026-08-03
+
+- Verified the immutable frontend archive and release metadata and the healthy public frontend/TLS.
+- Stopped before production mutation because mandatory backend Bank Transfer/proof configuration and
+  V13 NGINX routes are absent.
+- No artifact extraction, activation, browser test, rollback, push, tag or release occurred.
+
 ## 0.7.0-rc1 — RC-001 — 2026-08-03
 
 - Prepared the local `release/v0.7` candidate and reproducible frontend archive, manifests,
