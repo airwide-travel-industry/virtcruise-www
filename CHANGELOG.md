@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.8.0 — WEB-002 Catalogue Refactoring
+
+- Gave every catalogue package a unique destination-specific cover and relevant two-image gallery.
+- Reordered customer services and demoted Car Rental to a final, visually distinct trip add-on.
+- Extracted shared package Summary, Duration, Price Panel, Gallery and CTA rendering with stable
+  data-binding points for the future WEB-003 CMS integration.
+- Aligned package cards, summaries, prices and CTAs across Featured Tours, Explore All Packages and
+  detail pages; improved desktop, tablet, mobile, focus and reduced-motion behavior.
+- Added canonical, description and Open Graph metadata to the homepage and every package page.
+- Added WEB-002 catalogue, accessibility, responsive and SEO acceptance checks. No backend, CMS,
+  database, deployment, pricing-administration or versioning implementation was added.
+
 ## v0.8.0-dev — WEB-001
 
 - Added a fail-closed branded public/API runtime configuration boundary.

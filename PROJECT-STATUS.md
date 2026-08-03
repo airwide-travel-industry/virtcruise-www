@@ -1,5 +1,14 @@
 # Project Status
 
+## WEB-002 — Catalogue Refactoring and Customer Experience — 2026-08-03
+
+**READY FOR WEB-003.** The v0.8.0 frontend catalogue has unique package covers, destination-relevant
+galleries, a primary-product hierarchy with Car Rental demoted to a trip add-on, shared package
+presentation components, CMS-ready binding points, responsive layouts, accessible interactions and
+complete public metadata. Ordinary and browser regression are green (67 active passes, 8 expected
+opt-in real-environment skips). No backend, CMS, database, deployment or pricing administration was
+implemented. Production remains v0.7.0.
+
 WEB-001 engineering is in progress. Static packaging and branded runtime configuration are present.
 WebDev hosting evidence, branded API DNS/TLS/proxy activation, and mandatory real-browser/PostgreSQL
 acceptance remain blockers; Production Beta is unchanged.

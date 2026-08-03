@@ -1,6 +1,12 @@
 # Virtcruise Frontend
 
-Current release: **v0.7.0**. Production runs the exact immutable RC4 frontend accepted in Manual
+Current production release: **v0.7.0**. WEB-002 prepares the frontend-only **v0.8.0** catalogue
+experience for WEB-003; it has not been deployed. See the
+[`catalogue refactoring`](docs/WEB-002-CATALOGUE-REFACTORING.md),
+[`UX decisions`](docs/WEB-002-UX-DECISIONS.md), and
+[`acceptance record`](docs/WEB-002-ACCEPTANCE.md).
+
+Production runs the exact immutable RC4 frontend accepted in Manual
 Finance Production Beta. See [`docs/RELEASE-NOTES-v0.7.0.md`](docs/RELEASE-NOTES-v0.7.0.md).
 
 The v0.7.0-rc4 frontend preserves the accepted RC3 Manual Finance and Self Service presentation;
@@ -67,6 +73,10 @@ the accepted DEV-005C bank-transfer review and private proof APIs. It is not dep
 create payments, receipts, allocations, ledger entries, or booking progression.
 
 ## Documentation
+
+- [WEB-002 Catalogue Refactoring](docs/WEB-002-CATALOGUE-REFACTORING.md)
+- [WEB-002 UX Decisions](docs/WEB-002-UX-DECISIONS.md)
+- [WEB-002 Acceptance](docs/WEB-002-ACCEPTANCE.md)
 
 - [Release notes v0.6.0-rc2](docs/RELEASE-NOTES-v0.6.0-rc2.md)
 - [Release notes v0.6.0](docs/RELEASE-NOTES-v0.6.0.md)
