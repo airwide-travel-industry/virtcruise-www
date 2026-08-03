@@ -1,211 +1,158 @@
 import { createMemoryCache, RepositoryError, withRetry } from './base-repository.js';
 
-const cache = createMemoryCache();
-const OFFLINE_CACHE_KEY = 'virtcruise.packageCatalog.v1';
+const cache = createMemoryCache({ ttl: 60_000 });
+const OFFLINE_CACHE_KEY = 'virtcruise.publishedPackageCatalog.v2';
+const PUBLIC_CATALOGUE_PATH = 'api/v1/catalogue/packages';
+const FALLBACK_IMAGE = 'images/hero-victoria-falls-final.jpg';
 
-function staticCatalogUrl() {
-  return new URL('../../data/packages.json', import.meta.url);
-}
+const staticCatalogUrl = () => new URL('../../data/packages.json', import.meta.url);
+const publicUrl = reference => {
+  const value = String(reference || '').trim();
+  if (!value || value.includes('..') || /(^|\/)(managed|private|storage|uploads?)\//i.test(value)) return '';
+  if (/^https?:\/\//i.test(value)) return value;
+  if (value.startsWith('/')) return value.slice(1);
+  return value;
+};
+const array = value => Array.isArray(value) ? value : [];
 
 function readOfflineCatalog() {
   try {
     const cached = JSON.parse(localStorage.getItem(OFFLINE_CACHE_KEY) || 'null');
     return Array.isArray(cached?.packages) ? cached.packages : null;
-  } catch {
-    return null;
-  }
+  } catch { return null; }
 }
 
 function cacheOfflineCatalog(packages) {
   try {
-    localStorage.setItem(OFFLINE_CACHE_KEY, JSON.stringify({
-      cachedAt: new Date().toISOString(),
-      packages
-    }));
-  } catch {
-    // Memory caching still keeps the current page functional.
-  }
+    localStorage.setItem(OFFLINE_CACHE_KEY, JSON.stringify({ cachedAt: new Date().toISOString(), packages }));
+  } catch { /* Memory caching remains available. */ }
 }
 
-async function fetchJson(url, { signal } = {}) {
+async function fetchJson(url, { signal, etag } = {}) {
   let response;
   try {
-    response = await fetch(url, { headers: { Accept: 'application/json' }, signal });
+    response = await fetch(url, {
+      headers: { Accept: 'application/json', ...(etag ? { 'If-None-Match': etag } : {}) },
+      signal
+    });
   } catch (cause) {
-    throw new RepositoryError('The package catalogue is unavailable while you are offline.', {
-      cause,
-      code: 'NETWORK_UNAVAILABLE',
-      retryable: true
+    throw new RepositoryError('The published package catalogue is unavailable.', {
+      cause, code: cause?.name === 'AbortError' ? 'TIMEOUT' : 'NETWORK_UNAVAILABLE', retryable: true
     });
   }
-  if (!response.ok) {
-    throw new RepositoryError(`Package data returned HTTP ${response.status}.`, {
-      code: `HTTP_${response.status}`,
-      retryable: response.status >= 500
-    });
+  if (response.status === 304) return { notModified: true, etag };
+  if (!response.ok) throw new RepositoryError('The published package catalogue is unavailable.', {
+    code: `HTTP_${response.status}`, status: response.status, retryable: response.status >= 500
+  });
+  let body;
+  try { body = await response.json(); } catch (cause) {
+    throw new RepositoryError('The published catalogue response is malformed.', { cause, code: 'MALFORMED_RESPONSE' });
   }
-  return response.json();
-}
-
-function backendCatalogUrl(apiBaseUrl) {
-  return apiBaseUrl ? new URL('api/v1/packages', `${apiBaseUrl.replace(/\/+$/, '')}/`) : null;
-}
-
-function validatePackages(packages) {
-  if (!Array.isArray(packages)) {
-    throw new RepositoryError('The package catalogue response is invalid.', { retryable: false });
-  }
-  const invalid = packages.find(pkg => !pkg?.id || !pkg?.slug || !pkg?.name || !pkg?.destination);
-  if (invalid) {
-    throw new RepositoryError('The package catalogue contains an incomplete package.', { retryable: false });
-  }
-  return packages;
+  return { body: body?.data ?? body, etag: response.headers.get('ETag') || '' };
 }
 
 function normalisePackage(pkg) {
-  if (pkg.destinationName === undefined && pkg.imageUrl === undefined) return pkg;
+  if (pkg.title === undefined && pkg.packageType === undefined) return pkg;
+  const media = array(pkg.media).map(item => ({
+    src: publicUrl(item.reference), role: String(item.role || '').toUpperCase(),
+    order: Number(item.order || 0), alt: item.altText || '', caption: item.caption || ''
+  })).filter(item => item.src).sort((a, b) => a.order - b.order);
+  const cover = media.find(item => ['COVER', 'HERO'].includes(item.role)) || media[0];
+  const gallery = media.filter(item => item.role === 'GALLERY');
+  const displayed = gallery.length ? gallery : media;
+  const prices = array(pkg.pricing);
+  const price = prices.find(item => !item.priceOnRequest && Number.isFinite(Number(item.amount))) || prices[0] || {};
+  const highlights = array(pkg.highlights);
   return {
-    id: pkg.id,
-    code: pkg.code,
-    slug: pkg.slug,
-    name: pkg.name,
-    destination: pkg.destinationName || '',
-    country: '',
-    region: '',
-    summary: pkg.summary || pkg.description || '',
-    description: pkg.description || pkg.summary || '',
-    image: pkg.imageUrl || '',
-    gallery: pkg.imageUrl ? [pkg.imageUrl] : [],
-    duration: {
-      days: Number(pkg.durationDays || 0),
-      nights: Math.max(0, Number(pkg.durationDays || 0) - 1),
-      label: `${Number(pkg.durationDays || 0)} days`
+    id: String(pkg.id), code: pkg.code || '', slug: pkg.slug, packageType: pkg.packageType || '',
+    name: pkg.title, title: pkg.title, destination: pkg.destination || '', summary: pkg.summary || '',
+    description: pkg.description || pkg.summary || '', duration: {
+      days: Number(pkg.durationDays || 0), nights: Math.max(0, Number(pkg.durationDays || 0) - 1),
+      label: `${Number(pkg.durationDays || 0)} day${Number(pkg.durationDays) === 1 ? '' : 's'}`
     },
-    priceFrom: Number(pkg.basePrice || 0),
-    currency: pkg.currency || 'USD',
-    priceUnit: pkg.priceUnit || 'per person',
-    categories: pkg.categories || [],
-    inclusions: pkg.inclusions || [],
-    exclusions: pkg.exclusions || [],
-    optionalExtras: [],
-    itinerary: [],
-    bookingTerms: [],
-    faq: [],
-    featured: Boolean(pkg.featured)
+    featured: Boolean(pkg.featured), highlights, categories: [], inclusions: [], exclusions: [],
+    optionalExtras: [], itinerary: [], bookingTerms: [], faq: [], prices,
+    priceFrom: price.priceOnRequest ? null : Number(price.amount), currency: price.currency || 'USD',
+    priceUnit: price.displayBasis || price.qualifier || 'per person', priceOnRequest: Boolean(price.priceOnRequest || !prices.length),
+    image: cover?.src || FALLBACK_IMAGE, imageAlt: cover?.alt || `${pkg.title} in ${pkg.destination}`,
+    gallery: displayed.map(item => item.src), galleryAlts: displayed.map(item => item.alt),
+    galleryCaptions: displayed.map(item => item.caption), seo: pkg.seo || {}, callToAction: pkg.callToAction || {},
+    publishedAt: pkg.publishedAt || ''
   };
 }
 
-export function createPackageRepository({ apiBaseUrl = '', source = 'production' } = {}) {
-  const backendUrl = backendCatalogUrl(apiBaseUrl);
-  const primaryUrl = source === 'mock' || !backendUrl ? staticCatalogUrl() : backendUrl;
-  let lastSource = source === 'mock' ? 'mock-json' : 'api';
-  async function loadUrl(url, {
-    forceRefresh = false,
-    signal,
-    cacheKey = String(url),
-    requireContent = false
-  } = {}) {
-    if (!forceRefresh) {
-      const cached = cache.get(cacheKey);
-      if (cached) return cached;
+function validatePackages(value) {
+  if (!Array.isArray(value)) throw new RepositoryError('The published catalogue response is malformed.', { code: 'MALFORMED_RESPONSE' });
+  if (value.some(pkg => !pkg?.id || !pkg?.slug || !pkg?.name || !pkg?.destination)) {
+    throw new RepositoryError('The published catalogue contains an incomplete package.', { code: 'MALFORMED_RESPONSE' });
+  }
+  return value;
+}
+
+export function createPackageRepository({ apiBaseUrl = '', source = 'production', dynamicCatalogueEnabled = true } = {}) {
+  const dynamic = dynamicCatalogueEnabled && source !== 'mock' && Boolean(apiBaseUrl);
+  let lastSource = dynamic ? 'published-api' : 'legacy-catalogue';
+  let lastPage = { number: 0, size: 12, totalElements: 0, totalPages: 0 };
+  const etags = new Map();
+
+  async function load(url, options = {}) {
+    const key = String(url);
+    if (!options.forceRefresh) {
+      const hit = cache.get(key);
+      if (hit) return hit;
     }
-    const response = await withRetry(() => fetchJson(url, { signal }));
-    const packages = (response?.data || response).map(normalisePackage);
-    validatePackages(packages);
-    if (requireContent && packages.length === 0) {
-      throw new RepositoryError('The production package catalogue does not contain any active packages.', {
-        code: 'PACKAGE_CATALOGUE_EMPTY',
-        retryable: false
-      });
-    }
-    cache.set(cacheKey, packages);
+    const result = await withRetry(() => fetchJson(url, { signal: options.signal, etag: etags.get(key) }));
+    if (result.notModified) return cache.get(key) || [];
+    if (result.etag) etags.set(key, result.etag);
+    const payload = result.body;
+    const raw = Array.isArray(payload) ? payload : payload?.content;
+    const packages = validatePackages(array(raw).map(normalisePackage));
+    lastPage = Array.isArray(payload)
+      ? { number: Number(options.page || 0), size: packages.length, totalElements: packages.length, totalPages: packages.length ? 1 : 0 }
+      : { number: payload.number ?? payload.page ?? 0, size: payload.size ?? packages.length, totalElements: payload.totalElements ?? packages.length, totalPages: payload.totalPages ?? (packages.length ? 1 : 0) };
+    cache.set(key, packages);
     cacheOfflineCatalog(packages);
     return packages;
   }
-  async function localFallback(signal, cacheKey) {
-    try {
-      const staticKey = String(staticCatalogUrl());
-      const packages = await loadUrl(staticCatalogUrl(), { signal, cacheKey: staticKey });
-      lastSource = 'local-fallback';
-      cache.set(cacheKey, packages);
-      return packages;
-    } catch {
-      const offline = readOfflineCatalog();
-      if (offline) {
-        lastSource = 'offline-cache';
-        cache.set(cacheKey, offline);
-        return offline;
-      }
-      throw new RepositoryError('Package information is unavailable. Please reconnect and try again.', {
-        code: 'PACKAGE_CATALOGUE_UNAVAILABLE',
-        retryable: true
-      });
-    }
+
+  async function legacy(options = {}) {
+    lastSource = 'legacy-catalogue';
+    const result = await fetchJson(staticCatalogUrl(), options);
+    return validatePackages(array(result.body).map(normalisePackage));
   }
+
   return {
-    get source() {
-      return lastSource;
-    },
-    async list({ forceRefresh = false, signal } = {}) {
-      const cacheKey = String(primaryUrl);
-      if (source === 'mock' || !backendUrl) {
-        lastSource = 'mock-json';
-        return loadUrl(staticCatalogUrl(), { forceRefresh, signal, cacheKey });
+    get source() { return lastSource; },
+    get pagination() { return { ...lastPage }; },
+    async list({ page = 0, size = 12, search = '', destination = '', type = '', featured = false, forceRefresh = false, signal } = {}) {
+      if (!dynamic) return legacy({ signal });
+      if (navigator.onLine === false) {
+        const offline = readOfflineCatalog();
+        if (offline) { lastSource = 'published-offline-cache'; return offline; }
+        throw new RepositoryError('Published packages are unavailable while offline.', { code: 'OFFLINE', retryable: true });
       }
-      if (navigator.onLine === false) return localFallback(signal, cacheKey);
-      try {
-        const packages = await loadUrl(primaryUrl, { forceRefresh, signal, cacheKey, requireContent: true });
-        lastSource = 'api';
-        return packages;
-      } catch (error) {
-        return localFallback(signal, cacheKey);
-      }
+      const url = new URL(PUBLIC_CATALOGUE_PATH, `${apiBaseUrl.replace(/\/+$/, '')}/`);
+      if (page) url.searchParams.set('page', page); url.searchParams.set('size', size);
+      if (search) url.searchParams.set('search', search); if (destination) url.searchParams.set('destination', destination);
+      if (type) url.searchParams.set('type', type); if (featured) url.searchParams.set('featured', 'true');
+      lastSource = 'published-api';
+      return load(url, { page, forceRefresh, signal });
     },
     async featured(options = {}) {
-      if (source === 'mock' || !backendUrl) {
-        return (await this.list(options)).filter(pkg => pkg.featured);
-      }
-      const url = new URL('api/v1/packages/featured', `${apiBaseUrl.replace(/\/+$/, '')}/`);
-      const cacheKey = String(url);
-      if (navigator.onLine === false) {
-        return (await localFallback(options.signal, cacheKey)).filter(pkg => pkg.featured);
-      }
-      try {
-        const packages = await loadUrl(url, { ...options, cacheKey, requireContent: true });
-        lastSource = 'api';
-        return packages;
-      } catch {
-        return (await localFallback(options.signal, cacheKey)).filter(pkg => pkg.featured);
-      }
+      if (!dynamic) return (await legacy(options)).filter(pkg => pkg.featured);
+      const url = new URL(`${PUBLIC_CATALOGUE_PATH}/featured`, `${apiBaseUrl.replace(/\/+$/, '')}/`);
+      lastSource = 'published-api';
+      return load(url, options);
     },
-    async getById(id, options) {
-      if (source === 'mock' || !backendUrl || navigator.onLine === false || lastSource === 'local-fallback') {
-        return (await this.list(options)).find(pkg => pkg.id === id) || null;
-      }
-      try {
-        const response = await fetchJson(new URL(`api/v1/packages/${encodeURIComponent(id)}`, `${apiBaseUrl}/`), options);
-        const pkg = normalisePackage(response?.data || response);
-        validatePackages([pkg]);
-        return pkg;
-      } catch {
-        return (await localFallback(options?.signal, `package-id:${id}`)).find(pkg => pkg.id === id) || null;
-      }
+    async getBySlug(slug, options = {}) {
+      if (!dynamic) return (await legacy(options)).find(pkg => pkg.slug === slug) || null;
+      const url = new URL(`${PUBLIC_CATALOGUE_PATH}/${encodeURIComponent(slug)}`, `${apiBaseUrl.replace(/\/+$/, '')}/`);
+      const result = await fetchJson(url, options);
+      const pkg = normalisePackage(result.body);
+      validatePackages([pkg]);
+      return pkg;
     },
-    async getBySlug(slug, options) {
-      if (source === 'mock' || !backendUrl || navigator.onLine === false || lastSource === 'local-fallback') {
-        return (await this.list(options)).find(pkg => pkg.slug === slug) || null;
-      }
-      try {
-        const response = await fetchJson(new URL(`api/v1/packages/slug/${encodeURIComponent(slug)}`, `${apiBaseUrl}/`), options);
-        const pkg = normalisePackage(response?.data || response);
-        validatePackages([pkg]);
-        return pkg;
-      } catch {
-        return (await localFallback(options?.signal, `package-slug:${slug}`)).find(pkg => pkg.slug === slug) || null;
-      }
-    },
-    clearCache() {
-      cache.clear();
-    }
+    async getById(id, options) { return (await this.list(options)).find(pkg => pkg.id === id) || null; },
+    clearCache() { cache.clear(); etags.clear(); }
   };
 }

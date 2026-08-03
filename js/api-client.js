@@ -99,7 +99,8 @@ export async function apiRequest(path, options = {}) {
 const offlineQueue = createOfflineQuoteQueue();
 const packageRepository = createPackageRepository({
   apiBaseUrl,
-  source: apiMode === 'mock' ? 'mock' : apiMode
+  source: apiMode === 'mock' ? 'mock' : apiMode,
+  dynamicCatalogueEnabled: runtimeConfig.dynamicCatalogueEnabled
 });
 const quoteRepository = createQuoteRepository({
   request: apiRequest,

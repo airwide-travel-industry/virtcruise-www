@@ -11,7 +11,8 @@ const closeButton = document.getElementById('closeEnquiryApp');
 const tripButton = document.getElementById('myEnquiryButton');
 const quoteForm = document.getElementById('quoteForm');
 const statusNode = document.getElementById('quoteBuilderStatus');
-const featuredFallsPackage = document.getElementById('featuredFallsPackage');
+const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
+const money = (amount, currency = 'USD') => amount == null ? 'Price on request' : new Intl.NumberFormat('en-US', { style: 'currency', currency, maximumFractionDigits: 0 }).format(amount);
 const featuredToursGrid = document.getElementById('featuredToursGrid');
 const featuredTourStatus = document.getElementById('featuredTourStatus');
 const previousServiceButton = document.querySelector('.service-prev');
@@ -247,24 +248,25 @@ function syncFeaturedTourButtons() {
   });
 }
 
-function hydrateFeaturedTours() {
-  featuredToursGrid?.querySelectorAll('[data-package-id]').forEach(card => {
-    const currentSlug = card.querySelector('.tour-button-secondary')?.getAttribute('href')
-      ?.split('/').pop()?.replace(/\.html$/, '');
-    const packageData = packageCatalog.find(pkg =>
-      pkg.id === card.dataset.packageId || pkg.slug === currentSlug);
-    if (!packageData) return;
-    card.dataset.packageId = packageData.id;
-    const addButton = card.querySelector('[data-featured-add]');
-    if (addButton) addButton.dataset.featuredAdd = packageData.id;
-    card.querySelector('h3').textContent = packageData.name;
-    card.querySelector('.tour-content>p').textContent = packageData.summary;
-    const image = card.querySelector('img');
-    image.src = packageData.image;
-    image.alt = `${packageData.name} in ${packageData.destination}`;
-    const details = card.querySelector('.tour-button-secondary');
-    details.href = `packages/${packageData.slug}.html`;
-  });
+function hydrateFeaturedTours(featured) {
+  if (!featuredToursGrid) return;
+  featuredToursGrid.removeAttribute('aria-busy');
+  featuredToursGrid.innerHTML = featured.length ? featured.map(pkg => `<article class="tour-card" data-package-id="${escapeHtml(pkg.id)}"><div class="tour-image"><img src="${escapeHtml(pkg.image)}" width="960" height="640" loading="lazy" decoding="async" alt="${escapeHtml(pkg.imageAlt)}"></div><div class="tour-content"><h3>${escapeHtml(pkg.name)}</h3><p>${escapeHtml(pkg.summary)}</p><div class="tour-actions"><a class="tour-button tour-button-secondary" href="packages/${escapeHtml(pkg.slug)}.html">View Details</a><button class="tour-button" type="button" data-featured-add="${escapeHtml(pkg.id)}">Add to My Trip</button></div></div></article>`).join('')
+    : '<p class="shop-empty" role="status">No featured tours are available right now. Explore all published packages below.</p>';
+}
+
+function hydrateVictoriaFalls() {
+  const host = document.getElementById('featuredFallsDynamic');
+  if (!host) return;
+  const pkg = packageCatalog.find(item => item.packageType === 'VICTORIA_FALLS' || item.slug === 'victoria-falls-escape');
+  host.removeAttribute('aria-busy');
+  if (!pkg) {
+    host.innerHTML = '<p class="shop-empty" role="status">The Victoria Falls package is temporarily unavailable.</p>';
+    return;
+  }
+  const highlights = (pkg.highlights?.length ? pkg.highlights : pkg.inclusions).slice(0, 6);
+  const cta = pkg.callToAction?.label || 'Build My Quote';
+  host.innerHTML = `<div class="falls-package-image"><img src="${escapeHtml(pkg.image)}" width="1600" height="699" loading="lazy" decoding="async" alt="${escapeHtml(pkg.imageAlt)}"><span class="falls-package-badge">${escapeHtml(pkg.destination)}</span></div><form class="falls-package-content" id="featuredFallsPackage"><p class="falls-summary-label">Featured package</p><h3>${escapeHtml(pkg.name)}</h3><p class="falls-package-summary">${escapeHtml(pkg.summary)}</p>${highlights.length ? `<section class="package-inclusions" aria-labelledby="packageHighlightsTitle"><h4 id="packageHighlightsTitle">Highlights</h4><ul>${highlights.map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul></section>` : ''}<div class="package-price" aria-label="${escapeHtml(pkg.priceOnRequest ? 'Price on request' : `From ${money(pkg.priceFrom, pkg.currency)} ${pkg.priceUnit}`)}"><h4>${pkg.priceOnRequest ? '' : 'From'}</h4><p class="price">${escapeHtml(money(pkg.priceFrom, pkg.currency))} <small>${escapeHtml(pkg.priceOnRequest ? '' : pkg.priceUnit)}</small></p></div><button class="package-cta" type="submit">${escapeHtml(cta)}</button><a class="falls-details-link" href="packages/${escapeHtml(pkg.slug)}.html">View Full Details</a></form>`;
 }
 
 function featuredTourFeedback(button, message, nextLabel) {
@@ -309,13 +311,14 @@ featuredToursGrid?.addEventListener('click', event => {
 });
 document.addEventListener('virtcruise:quote-updated', syncFeaturedTourButtons);
 
-featuredFallsPackage?.addEventListener('submit', event => {
+document.addEventListener('submit', event => {
+  if (event.target.id !== 'featuredFallsPackage') return;
   event.preventDefault();
   const pkg = packageCatalog.find(entry =>
-    entry.id === 'pkg-victoria-falls' || entry.slug === 'victoria-falls-escape');
+    entry.packageType === 'VICTORIA_FALLS' || entry.slug === 'victoria-falls-escape');
   if (!pkg) return;
-  lastFocus = event.submitter || featuredFallsPackage.querySelector('[type=submit]');
-  const activityOption = new FormData(featuredFallsPackage).get('activityOption') || 'OPTION_A';
+  lastFocus = event.submitter || event.target.querySelector('[type=submit]');
+  const activityOption = new FormData(event.target).get('activityOption') || '';
   builder.addFeaturedPackage(pkg, activityOption);
   if (location.hash !== '#cart') history.pushState(null, '', '#cart');
 });
@@ -333,7 +336,8 @@ async function init() {
     if (!packageCatalog.some(entry => entry.id === pkg.id)) packageCatalog.push(pkg);
   });
   setPackageChoices(packageCatalog);
-  hydrateFeaturedTours();
+  hydrateFeaturedTours(featured);
+  hydrateVictoriaFalls();
   syncFeaturedTourButtons();
   applyRoute();
 }

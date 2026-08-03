@@ -17,12 +17,16 @@ export function validateRuntimeConfig(value) {
   const apiOrigin = exactOrigin(value.apiOrigin, 'apiOrigin');
   if (publicOrigin !== APPROVED_PUBLIC_ORIGIN) throw new Error('publicOrigin is not approved');
   if (!APPROVED_API_ORIGINS.has(apiOrigin)) throw new Error('apiOrigin is not approved');
-  return Object.freeze({ publicOrigin, apiOrigin });
+  if (typeof value.dynamicCatalogueEnabled !== 'boolean') {
+    throw new Error('dynamicCatalogueEnabled must be a boolean');
+  }
+  return Object.freeze({ publicOrigin, apiOrigin, dynamicCatalogueEnabled: value.dynamicCatalogueEnabled });
 }
 
 // This is the single, non-secret production deployment boundary. Artifact generation
 // copies it unchanged; local mode remains an explicit query-selected development path.
 export const runtimeConfig = validateRuntimeConfig({
   publicOrigin: APPROVED_PUBLIC_ORIGIN,
-  apiOrigin: 'https://api.virtcruisetravels.com'
+  apiOrigin: 'https://api.virtcruisetravels.com',
+  dynamicCatalogueEnabled: true
 });

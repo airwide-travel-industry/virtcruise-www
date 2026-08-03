@@ -180,34 +180,7 @@
       <p>Start with three hand-picked journeys, then compare every destination in the full catalogue below.</p>
     </header>
 
-    <div class="tour-grid" id="featuredToursGrid">
-      <article class="tour-card" data-package-id="pkg-zimbabwe-safari">
-        <div class="tour-image"><img src="images/tour-zimbabwe-safari.webp" width="960" height="640" loading="lazy" decoding="async" alt="Elephants crossing Zimbabwean savanna at golden hour"></div>
-        <div class="tour-content">
-          <h3>Zimbabwean Safari</h3>
-          <p>Experience the wild heart of Africa with our luxury safari tour.</p>
-          <div class="tour-actions"><a class="tour-button tour-button-secondary" href="packages/zimbabwe-safari.html">View Details</a><button class="tour-button" type="button" data-featured-add="pkg-zimbabwe-safari">Add to My Trip</button></div>
-        </div>
-      </article>
-
-      <article class="tour-card" data-package-id="pkg-europe-city">
-        <div class="tour-image"><img src="images/tour-europe-city.webp" width="960" height="640" loading="lazy" decoding="async" alt="Grand historic architecture on a European city boulevard"></div>
-        <div class="tour-content">
-          <h3>European City Break</h3>
-          <p>Discover the history and culture of Europe’s most iconic cities.</p>
-          <div class="tour-actions"><a class="tour-button tour-button-secondary" href="packages/european-city-break.html">View Details</a><button class="tour-button" type="button" data-featured-add="pkg-europe-city">Add to My Trip</button></div>
-        </div>
-      </article>
-
-      <article class="tour-card" data-package-id="pkg-tropical-paradise">
-        <div class="tour-image"><img src="images/tour-tropical-paradise.webp" width="960" height="640" loading="lazy" decoding="async" alt="Pristine tropical beach with turquoise water and palm trees"></div>
-        <div class="tour-content">
-          <h3>Tropical Paradise</h3>
-          <p>Relax on pristine beaches and enjoy the crystal-clear waters of the tropics.</p>
-          <div class="tour-actions"><a class="tour-button tour-button-secondary" href="packages/tropical-paradise.html">View Details</a><button class="tour-button" type="button" data-featured-add="pkg-tropical-paradise">Add to My Trip</button></div>
-        </div>
-      </article>
-    </div>
+    <div class="tour-grid" id="featuredToursGrid" aria-busy="true"><p class="shop-empty">Loading featured tours…</p></div>
     <p class="sr-only" id="featuredTourStatus" role="status" aria-live="polite"></p>
   </div>
 </section>
@@ -216,64 +189,12 @@
   <article class="falls-package-card">
       <div class="falls-package-inner">
         <header class="falls-package-header">
-          <h2 id="fallsPackageTitle">Exclusive Victoria Falls Package!</h2>
-          <p>Experience one of the Seven Natural Wonders of the World with our special holiday package, crafted for an unforgettable adventure.</p>
+          <h2 id="fallsPackageTitle">Victoria Falls</h2>
+          <p>Explore the current published Victoria Falls package.</p>
         </header>
       </div>
 
-      <div class="falls-package-image">
-        <img src="images/victoria-falls-package.webp" width="1600" height="699" loading="lazy" decoding="async" alt="Panoramic view of Victoria Falls cascading into its misty gorge">
-        <span class="falls-package-badge">Victoria Falls <small>Zimbabwe</small></span>
-      </div>
-
-      <form class="falls-package-content" id="featuredFallsPackage">
-        <p class="falls-summary-label">Exclusive Offer</p>
-        <h3>Victoria Falls Holiday Package</h3>
-        <p class="falls-package-summary">3 nights accommodation for two people with transfers included.</p>
-        <section class="package-inclusions" aria-labelledby="packageInclusionsTitle">
-          <h4 id="packageInclusionsTitle">What’s Included?</h4>
-          <ul>
-            <li>3 nights accommodation</li>
-            <li>Return transfers</li>
-            <li>Bus or flight travel options</li>
-            <li>Custom activities available</li>
-          </ul>
-        </section>
-
-        <div class="activity-options">
-          <label class="activity-option">
-            <input type="radio" name="activityOption" value="OPTION_A" checked>
-            <span class="activity-selection" aria-hidden="true">✓</span>
-            <p class="activity-label">Activity Option</p>
-            <h4>Option A</h4>
-            <ul>
-              <li>Chobe Day Trip</li>
-              <li>Standard Sunset Cruise</li>
-              <li>Guided Rainforest Tour</li>
-            </ul>
-          </label>
-
-          <label class="activity-option">
-            <input type="radio" name="activityOption" value="OPTION_B">
-            <span class="activity-selection" aria-hidden="true">✓</span>
-            <p class="activity-label">Activity Option</p>
-            <h4>Option B</h4>
-            <ul>
-              <li>Game Drive</li>
-              <li>Helicopter Flight</li>
-            </ul>
-          </label>
-        </div>
-
-        <div class="package-price" aria-label="Fixed package price: 250 dollars per person">
-          <h4>From</h4>
-          <p class="price"><span aria-hidden="true">$</span>250 <small>per person</small></p>
-          <p class="discount">25% Limited-Time Discount</p>
-        </div>
-
-        <button class="package-cta" type="submit">Book Your Package</button>
-        <a class="falls-details-link" href="packages/victoria-falls-escape.html">View Full Itinerary</a>
-      </form>
+      <div id="featuredFallsDynamic" aria-busy="true"><p class="shop-empty">Loading Victoria Falls package…</p></div>
   </article>
 </section>
 
@@ -286,15 +207,15 @@
     </header>
     <form class="shop-filters" id="packageFilters" aria-label="Filter travel packages">
       <div class="shop-filter-row">
+        <label class="filter-field">Search<input id="packageSearch" type="search" autocomplete="off" placeholder="Search packages"></label>
         <label class="filter-field">Destination<select id="destinationFilter"><option value="all">All destinations</option></select></label>
-        <label class="filter-field">Budget<select id="budgetFilter"><option value="all">Any budget</option><option value="under-750">Under USD 750</option><option value="750-1200">USD 750–1,200</option><option value="over-1200">Over USD 1,200</option></select></label>
-        <label class="filter-field">Duration<select id="durationFilter"><option value="all">Any duration</option><option value="short">Up to 4 days</option><option value="medium">5–6 days</option><option value="long">7+ days</option></select></label>
+        <label class="filter-field">Package type<select id="typeFilter"><option value="all">All package types</option><option value="HOLIDAY_PACKAGE">Holiday package</option><option value="VICTORIA_FALLS">Victoria Falls</option><option value="TRIP_ADD_ON">Trip add-on</option></select></label>
         <button class="filter-reset" id="resetFilters" type="button">Reset filters</button>
       </div>
-      <fieldset class="filter-chips" id="categoryFilters"><legend>Travel style</legend></fieldset>
     </form>
     <div class="shop-results-bar" aria-live="polite"><p><strong id="packageResultCount">Loading packages…</strong></p><p>Prices are indicative and confirmed in your final quotation.</p></div>
     <div class="package-grid" id="packageGrid"><p class="shop-empty">Loading travel packages…</p></div>
+    <nav class="shop-pagination" id="packagePagination" aria-label="Package catalogue pages"></nav>
   </div>
 </section>
 
