@@ -16,6 +16,11 @@ const referenceFor = (prefix, invoice, sequence = 1) => {
 };
 
 function setPage(markup) { document.getElementById('portalPage').innerHTML = markup; document.querySelector('#portalPage h1')?.focus(); }
+function manualPanel(capability) {
+  const reference = capability.invoiceReference || capability.bookingReference;
+  return `<section class="portal-panel manual-finance" data-manual-finance><p class="portal-eyebrow">Manual Finance Assistance</p><h2>${escapeHtml(capability.heading)}</h2><p>${escapeHtml(capability.message)}</p><dl class="instruction-grid">${capability.phone ? `<div><dt>Phone</dt><dd><a href="tel:${escapeHtml(capability.phone)}">${escapeHtml(capability.phone)}</a></dd></div>` : ''}${capability.email ? `<div><dt>Email</dt><dd><a href="mailto:${escapeHtml(capability.email)}">${escapeHtml(capability.email)}</a></dd></div>` : ''}${capability.operatingHours ? `<div><dt>Operating hours</dt><dd>${escapeHtml(capability.operatingHours)}</dd></div>` : ''}${capability.currency ? `<div><dt>Currency</dt><dd>${escapeHtml(capability.currency)}</dd></div>` : ''}</dl>${reference ? `<div class="reference-box"><span>Quote this reference</span><strong data-reference-value>${escapeHtml(reference)}</strong><button type="button" class="portal-button secondary" data-copy-manual>Copy reference</button></div>` : ''}${capability.additionalInstructions ? `<p>${escapeHtml(capability.additionalInstructions)}</p>` : ''}<div class="transfer-warning" role="note"><strong>No payment has been recorded.</strong><p>Your Booking is not confirmed until Finance has independently verified cleared funds.</p></div></section>`;
+}
+function bindManualCopy() { document.querySelector('[data-copy-manual]')?.addEventListener('click', async () => { await navigator.clipboard.writeText(document.querySelector('[data-reference-value]').textContent); announce('Reference copied.'); }); }
 function steps(review, proofs, payment, receipt, booking) {
   const proof = proofs[0];
   const reviewStatus = String(review.reviewStatus || '').toUpperCase();
@@ -37,8 +42,15 @@ function steps(review, proofs, payment, receipt, booking) {
 }
 
 async function renderHome() {
-  const [invoices, reviews] = await Promise.all([repository.invoices(), repository.reviews()]);
-  const currency = list(invoices).find(item => Number(item.outstanding?.amount || 0) > 0)?.outstanding?.currency;
+  const invoices = await repository.invoices();
+  const outstanding = list(invoices).find(item => Number(item.outstanding?.amount || 0) > 0);
+  const capability = await repository.capability(outstanding?.id);
+  if (!capability.selfServiceAvailable) {
+    setPage(`${pageHeading('Contact Finance for payment instructions', 'Bank Transfer', 'Our Finance team will provide the approved payment instructions for your booking.')} ${manualPanel(capability)}`);
+    bindManualCopy(); return;
+  }
+  const reviews = await repository.reviews();
+  const currency = outstanding?.outstanding?.currency;
   const instructions = currency ? await repository.instructions(currency) : null;
   const values = list(reviews);
   setPage(`${pageHeading('Secure payment option', 'Pay by Bank Transfer', 'Transfer funds using the authoritative details below, then send proof for independent Finance verification.', `<a class="portal-button" href="${portalUrl('/bank-transfer/new/')}">Create review case</a>`)}
@@ -54,6 +66,8 @@ async function renderNew() {
   const normalizeReference = value => String(value || '').trim().toUpperCase();
   const bookingByReference = new Map(list(bookings).map(item => [normalizeReference(item.bookingReference), item.id]));
   const available = list(invoices).filter(item => Number(item.outstanding?.amount || 0) > 0 && bookingByReference.has(normalizeReference(item.bookingReference)));
+  const capability = await repository.capability(available[0]?.id);
+  if (!capability.selfServiceAvailable) { setPage(`${pageHeading('Contact Finance for payment instructions','Bank Transfer','Automated proof submission is not currently available.')} ${manualPanel(capability)}`); bindManualCopy(); return; }
   const sequenceFor = invoice => list(reviews).filter(review => review.invoiceId === invoice.id).length + 1;
   setPage(`${pageHeading('Submit proof for verification', 'Create Bank Transfer Review Case', 'Select the invoice and enter the exact amount you transferred. The reference comes from Virtcruise records.')}
     <section class="portal-panel transfer-warning"><strong>First make the transfer using the exact reference shown.</strong><p>Using the wrong reference may delay processing.</p></section>
@@ -66,7 +80,7 @@ async function renderNew() {
   form.addEventListener('submit',async event=>{event.preventDefault();const button=form.querySelector('[type=submit]');button.disabled=true;try{const invoice=available[Number(select.value)],transferred=amount.value;if(!transferred||Number(transferred)<=0||Number(transferred)>Number(invoice.outstanding.amount))throw new Error('Enter an amount no greater than the outstanding balance.');const created=await repository.create({bookingId:bookingByReference.get(normalizeReference(invoice.bookingReference)),invoiceId:invoice.id,currency:invoice.outstanding.currency,amount:transferred,bankAccount:new FormData(form).get('bankAccount'),transferReference:referenceFor(instructions.referencePrefix,invoice,sequenceFor(invoice))});location.href=portalUrl('/bank-transfer/details/',{id:created.id});}catch(error){announce(error.message);button.disabled=false;}});
 }
 
-async function renderStatus() { const reviews=list(await repository.reviews()); setPage(`${pageHeading('Verification progress','Bank Transfer Status','Track proof review, payment recording, receipts and booking confirmation.')}<section class="portal-panel">${reviews.length?`<div class="transfer-case-list">${reviews.map(card).join('')}</div>`:emptyState({title:'No reviews to track',message:'Create a review case after making your bank transfer.',action:`<a class="portal-button" href="${portalUrl('/bank-transfer/new/')}">Create review case</a>`})}</section>`); }
+async function renderStatus() { const invoices=await repository.invoices(),outstanding=list(invoices).find(item=>Number(item.outstanding?.amount||0)>0),capability=await repository.capability(outstanding?.id);if(!capability.selfServiceAvailable){setPage(`${pageHeading('Contact Finance for payment instructions','Bank Transfer','Automated proof submission is not currently available.')} ${manualPanel(capability)}`);bindManualCopy();return;}const reviews=list(await repository.reviews()); setPage(`${pageHeading('Verification progress','Bank Transfer Status','Track proof review, payment recording, receipts and booking confirmation.')}<section class="portal-panel">${reviews.length?`<div class="transfer-case-list">${reviews.map(card).join('')}</div>`:emptyState({title:'No reviews to track',message:'Create a review case after making your bank transfer.',action:`<a class="portal-button" href="${portalUrl('/bank-transfer/new/')}">Create review case</a>`})}</section>`); }
 
 async function renderDetails() {
   const id=query.get('id'); if(!id) return setPage(`${pageHeading('Bank transfer','Review not selected','Choose a review case from your status page.')} ${errorState('A review case identifier is required.',false)}`);
