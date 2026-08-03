@@ -101,6 +101,7 @@ img{display:block;max-width:100%}
   padding:2px 1px 5px;
 }
 .services-track::-webkit-scrollbar{display:none}
+.service-flights{order:1}.service-holiday-packages{order:2}.service-victoria-falls{order:3}.service-cruises{order:4}.service-accommodation{order:5}.service-visa{order:6}.service-car-rental{order:7}
 .service-card{
   flex:1 0 210px;
   min-width:210px;
@@ -170,6 +171,7 @@ img{display:block;max-width:100%}
   font-size:11.5px;
   line-height:1.35;
 }
+.service-card .service-badge{top:72px;right:auto;padding:4px 8px;border:1px solid rgba(228,179,64,.5);border-radius:999px;color:#f2cc70;font-size:8px;font-weight:800;letter-spacing:.8px;text-transform:uppercase}.service-supporting{background:linear-gradient(145deg,#33445a,#182a43);border-style:dashed}.service-supporting h3{top:101px}.service-supporting .service-badge~p{top:134px}.service-supporting .service-icon{background:linear-gradient(135deg,#dce2e9,#9eacbd)}
 .service-link{
   position:absolute;
   left:18px;

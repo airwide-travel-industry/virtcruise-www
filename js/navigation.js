@@ -34,7 +34,9 @@ const menuItems = [
     }))
   },
   { id: 'flights', label: 'Flights', href: hrefForService('flights'), service: 'flights' },
-  { id: 'hotels', label: 'Hotels', href: hrefForService('accommodation'), service: 'accommodation' },
+  { id: 'victoria-falls', label: 'Victoria Falls', href: hrefForPackage('packages/victoria-falls-escape.html') },
+  { id: 'cruises', label: 'Cruises', href: hrefForService('cruises'), service: 'cruises' },
+  { id: 'hotels', label: 'Accommodation', href: hrefForService('accommodation'), service: 'accommodation' },
   {
     id: 'visa',
     label: 'Visa Services',
@@ -44,6 +46,7 @@ const menuItems = [
       service
     }))
   },
+  { id: 'car-rental', label: 'Car Rental add-on', href: hrefForService('car-rental'), service: 'car-rental', supporting: true },
   { id: 'about', label: 'About Us', href: hrefForSection('aboutVirtcruiseTitle') },
   { id: 'contact', label: 'Contact', href: hrefForSection('footerContact') }
 ];
@@ -70,7 +73,7 @@ function desktopMarkup() {
     if (item.children) {
       return `<li><button class="nav-menu-toggle" type="button" data-dropdown-toggle="${item.id}" aria-haspopup="true" aria-expanded="false" aria-controls="nav-dropdown-${item.id}">${escapeHtml(item.label)} <span class="nav-chevron" aria-hidden="true">⌄</span></button></li>`;
     }
-    return `<li><a class="nav-link" data-nav-id="${item.id}" href="${escapeHtml(item.href)}"${item.service ? ` data-nav-service="${item.service}"` : ''}>${escapeHtml(item.label)}</a></li>`;
+    return `<li><a class="nav-link${item.supporting ? ' nav-link-supporting' : ''}" data-nav-id="${item.id}" href="${escapeHtml(item.href)}"${item.service ? ` data-nav-service="${item.service}"` : ''}>${escapeHtml(item.label)}</a></li>`;
   }).join('')}</ul><div class="nav-auth" data-auth-navigation aria-live="polite"></div>`;
 }
 

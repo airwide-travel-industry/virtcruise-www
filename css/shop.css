@@ -30,6 +30,7 @@
 .package-card-body h3{color:#0a2447;font:700 29px/1.05 var(--font-display)}
 .package-meta{display:flex;justify-content:space-between;gap:12px;margin-top:10px;color:#58677a;font-size:12px}
 .package-price-line{margin-top:17px;color:#18324f;font-size:12px}
+.package-summary{margin-top:13px;color:#566579;font-size:12px;line-height:1.55}
 .package-price-line strong{display:block;color:#b67810;font:700 29px/1 var(--font-display)}
 .package-inclusion-preview{display:grid;gap:8px;margin:18px 0 23px;list-style:none;color:#46566a;font-size:12px;line-height:1.45}
 .package-inclusion-preview li{position:relative;padding-left:19px}
