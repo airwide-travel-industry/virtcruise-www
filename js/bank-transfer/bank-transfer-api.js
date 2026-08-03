@@ -30,7 +30,7 @@ async function uploadRequest(path, file, key) {
 
 export function createBankTransferRepository() {
   return Object.freeze({
-    instructions: () => financialRequest(`${reviewPath}/instructions`),
+    instructions: currency => financialRequest(`${reviewPath}/instructions?currency=${encodeURIComponent(currency)}`),
     reviews: () => financialRequest(`${reviewPath}?page=0&size=100&sort=createdAt&direction=desc`),
     review: id => financialRequest(`${reviewPath}/${encodeURIComponent(id)}`),
     create: value => financialRequest(reviewPath, { method: 'POST', body: value, idempotencyKey: crypto.randomUUID() }),
