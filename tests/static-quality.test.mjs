@@ -42,8 +42,8 @@ test('mandatory runtime HTML is independent of public resources', async () => {
   const failures = [];
   for (const file of htmlFiles) {
     const source = await readFile(file, 'utf8');
-    for (const match of source.matchAll(/<(?:link|script|img|iframe)\b[^>]*(?:href|src|srcset)=["']([^"']+)["']/gi)) {
-      const reference = match[1];
+    for (const match of source.matchAll(/<(?:script|img|iframe)\b[^>]*(?:href|src|srcset)=["']([^"']+)["']|<link\b(?=[^>]*rel=["'](?:stylesheet|preload|modulepreload)["'])[^>]*href=["']([^"']+)["']/gi)) {
+      const reference = match[1] || match[2];
       if (/^(?:https?:)?\/\//i.test(reference)) failures.push(`${file}: external runtime resource ${reference}`);
     }
     if (/(?:fonts\.googleapis\.com|fonts\.gstatic\.com|@import\s+url\(\s*["']?https?:)/i.test(source)) {

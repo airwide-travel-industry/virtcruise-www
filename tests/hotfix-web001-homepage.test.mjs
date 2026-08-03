@@ -23,7 +23,7 @@ before(async () => {
   server = startStaticServer({ port: 0 });
   await new Promise(resolve => server.once('listening', resolve));
   origin = `http://127.0.0.1:${server.address().port}`;
-  browser = await chromium.launch({ executablePath: '/usr/bin/google-chrome', headless: true });
+  browser = await chromium.launch({ executablePath: process.env.CHROME_BIN || '/usr/bin/google-chrome', headless: true });
 });
 
 after(async () => {
