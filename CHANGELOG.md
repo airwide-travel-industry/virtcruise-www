@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.8.0-dev — WEB-001
+
+- Added a fail-closed branded public/API runtime configuration boundary.
+- Added robots, sitemap, deterministic WebDev packaging, canonical/OG artifact metadata and checksums.
+- Documented the same-site API topology, WebDev upload, acceptance, DNS/TLS prerequisites and rollback.
+- No DNS, production hosting, merge or deployment was performed.
+
 ## 0.7.0 — 2026-08-03
 
 - Promoted the exact accepted RC4 frontend without rebuilding.

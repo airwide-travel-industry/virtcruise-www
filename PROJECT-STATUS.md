@@ -1,5 +1,9 @@
 # Project Status
 
+WEB-001 engineering is in progress. Static packaging and branded runtime configuration are present.
+WebDev hosting evidence, branded API DNS/TLS/proxy activation, and mandatory real-browser/PostgreSQL
+acceptance remain blockers; Production Beta is unchanged.
+
 ## v0.7.0 final release — 2026-08-03
 
 **V0.7.0 RELEASED.** The RC4 frontend accepted in Production Beta is promoted unchanged. Production

@@ -50,8 +50,10 @@ Release documentation: [Production Beta](docs/PRODUCTION-BETA.md),
 
 Production static frontend for Virtcruise Travels.
 
-- Production: https://virtcruise.airwide.co.uk
-- API: https://api.virtcruise.airwide.co.uk
+- Current v0.7.0 production: https://virtcruise.airwide.co.uk
+- WEB-001 v0.8.0 canonical frontend: https://www.virtcruisetravels.com
+- WEB-001 browser API: https://api.virtcruisetravels.com (same-site proxy to the existing Airwide API)
+- Authoritative upstream API: https://api.virtcruise.airwide.co.uk
 - Release candidate in preparation: `v0.5.0-rc3` (frontend only; not deployed)
 - Current Production Beta release: `v0.6.0`
 - Matching backend: [`airwide-travel-industry/virtcruise-backend`](https://github.com/airwide-travel-industry/virtcruise-backend), `v0.6.0`
@@ -163,6 +165,9 @@ The workflow creates a temporary `_pages/` staging directory on the Actions runn
 Quote drafts remain in `sessionStorage`. Normal site traffic uses the production API at
 `https://api.virtcruise.airwide.co.uk`. Development can explicitly select `?api=mock` for the
 browser-only mock or `?api=local` for a backend at `http://localhost:8080`. Mock modules are loaded
+
+WEB-001 production artifacts instead use the exact validated public configuration in
+`js/runtime-config.js`. Build the deterministic WebDev upload with `npm run build:webdev`.
 dynamically only in explicit mock mode.
 
 ## Enquiry API contract
