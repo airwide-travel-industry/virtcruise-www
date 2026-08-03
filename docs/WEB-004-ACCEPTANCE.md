@@ -1,24 +1,24 @@
 # WEB-004 Acceptance
 
-Status: implementation delivered; acceptance pending environment-backed staff API qualification.
+Run:
 
-Passed static gates:
+```sh
+npm ci
+npx playwright install chromium
+node --test tests/web004-content-studio.test.mjs tests/web004-content-studio-browser.test.mjs
+npm test
+npm run build:webdev
+```
 
-- staff route is `noindex,nofollow`;
-- anonymous and unauthenticated states render an explicit sign-in/access boundary;
-- content roles are explicitly allowlisted;
-- dashboard, package, queue, media, pricing, SEO, version, audit, and settings modules are present;
-- existing `/api/v1/content/packages` boundary is used for authoring;
-- responsive navigation, stacked mobile layouts, labels, focus, ARIA state, and reduced-motion rules
-  are present;
-- public catalogue files and customer rendering were not modified.
+Accepted automated coverage:
 
-Required follow-up acceptance against a running WEB-003 backend:
+- editor, approver and administrator JWT-shaped restored sessions enter the staff shell;
+- customer JWT and anonymous sessions cannot reach Content Studio navigation;
+- desktop 1920×1080, tablet 1024×768 and mobile 390×844 render without horizontal overflow;
+- mobile navigation, labels, focus, ARIA state and reduced-motion behavior are exercised;
+- exact WEB-003 create, read, history, edit, lifecycle, pricing, media and audit routes are centralized;
+- public catalogue files and APIs are untouched.
 
-- real browser editor, preview, media, pricing, review, approval, scheduling, retirement, and
-  restoration journeys;
-- real JWT role matrix for editor, approver, administrator, customer, and anonymous users;
-- stale-edit conflict and safe API error journeys;
-- desktop/tablet/mobile browser and accessibility audit.
+Results on 2026-08-03: focused WEB-004 suite 11/11 passed; complete suite 81 passed, 0 failed and 8 operator-gated skips; webdev build passed with 139 staged files.
 
-WEB-004 does not deploy, migrate production, or begin WEB-005 public catalogue integration.
+Environment-backed end-to-end workflow qualification remains necessary once a complete management collection contract and a running WEB-003 staff environment are available. WEB-004 does not deploy or begin WEB-005.

@@ -1,24 +1,11 @@
 # WEB-004 Content Studio
 
-Workstream: WEB-004  
-Sprint: 3.7  
-Target: v0.8.0
+Workstream WEB-004 provides a private, `noindex,nofollow` staff application at `/content-studio/`. It uses the accepted WEB-003 management boundary exclusively and does not call catalogue APIs or modify public rendering.
 
-Content Studio is a staff-only frontend surface over the existing WEB-003 Content Management
-contracts. It is deliberately separate from the public catalogue and is marked `noindex,nofollow`.
+`ROLE_CONTENT_EDITOR`, `ROLE_CONTENT_APPROVER`, and `ROLE_ADMIN` may enter. Anonymous and customer sessions receive explicit denial screens. Backend authorization, independent approval, lifecycle validation, optimistic locking, media validation, audit, and publication remain authoritative.
 
-The `/content-studio/` route checks the current authenticated user before rendering. Only
-`ROLE_CONTENT_EDITOR`, `ROLE_CONTENT_APPROVER`, and `ROLE_ADMIN` may enter. Customers, anonymous
-visitors, and unrelated staff roles receive an access boundary. The frontend does not make
-authorization decisions for publication; it submits commands to the backend, where role separation,
-approval, optimistic locking, validation, and audit remain authoritative.
+The application supplies Dashboard, Packages, Drafts, Review Queue, Publication Queue, Media, Pricing, SEO, Version History, Audit, and Settings navigation. Supported workflows include package creation and direct ID opening; draft content, highlights, inclusions, exclusions and CTA editing; pricing and media-metadata registration; SEO editing and preview; desktop/tablet/mobile private preview; version history; submit, approve, reject, schedule, publish, retire and restore commands; and package audit retrieval. All mutation requests carry correlation IDs, while schedule/publish carry idempotency keys.
 
-The shell includes Dashboard, Packages, Drafts, Review Queue, Publication Queue, Media, Pricing, SEO,
-Version History, Audit, and Settings navigation. Package creation uses `POST /api/v1/content/packages`;
-package reads and commands remain bounded by the existing WEB-003 API. No public catalogue rendering
-or package JSON was changed.
+WEB-003 does not expose package collection/search/pagination, global counts/activity, package archive/delete, media upload/reorder/update, or settings endpoints. Content Studio therefore uses a session-only working set populated by created or directly opened package IDs. It does not fake these unsupported server capabilities.
 
-Responsive behavior uses a collapsible mobile workspace navigation, stacked forms and tables, and
-touch-sized controls. Labels, focus-visible states, current-navigation state, status/live messaging,
-semantic headings, noindex metadata, and reduced-motion rules are included. Browser acceptance is
-defined in `tests/web004-content-studio.test.mjs`.
+No public catalogue integration, backend redesign, deployment, or production migration is included.

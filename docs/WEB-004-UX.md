@@ -1,14 +1,9 @@
 # WEB-004 Content Studio UX
 
-The Content Studio uses a restrained business-application layout: navy staff header, a compact
-workspace sidebar, white information panels, status chips, and dense but responsive tables. There
-are no decorative animations. Navigation is immediate and each section keeps its heading, context,
-and primary action visible.
+Content Studio is a restrained business application: navy staff header, persistent workspace navigation, white operational panels, dense responsive tables, visible statuses, and direct primary actions. It has no decorative animation.
 
-On narrow screens the sidebar becomes a keyboard-operable disclosure, grids collapse to one column,
-and tables become labelled stacked records. Forms retain visible labels, required constraints, and
-full-width actions. Focus-visible outlines use a high-contrast gold ring; reduced-motion users do
-not receive transitions or animations.
+The package workspace separates stable identity creation from version editing. Staff can open an authoritative package by UUID, edit a mutable draft, add pricing/media metadata, manage SEO, inspect history/audit, preview responsive presentation, and invoke role-appropriate lifecycle commands. Immutable versions disable draft saving. Backend failures and optimistic conflicts remain visible without pretending an operation succeeded.
 
-Preview, approval, scheduling, rollback, media scanning, and publication state remain backend-owned
-WEB-003 behaviors. The browser is an operational surface, not a second workflow engine.
+At 760px the sidebar becomes a keyboard-operated disclosure and tables become labelled records. At 430px cards and actions stack. Controls retain visible labels and touch-sized targets; focus-visible uses a high-contrast ring; live errors use alerts; reduced-motion removes transitions and animation.
+
+Collection-wide search, sort, pagination, dashboards, queues, recent activity, archive/delete, and persistent settings require management APIs absent from WEB-003. Current counts and filters apply only to packages opened during the browser session. Native reason prompts are functional but should become focus-managed application dialogs during hardening.
