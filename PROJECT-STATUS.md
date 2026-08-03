@@ -1,5 +1,16 @@
 # Project Status
 
+## RC-003 — 2026-08-03
+
+Frontend compatibility for the V14 multi-bank customer API is implemented on
+`release/v0.7-rc2`. OPS-001 production values and edge configuration remain external deployment
+prerequisites; no production deployment or activation occurred.
+
+Implementation commit `91cc2ce` is paired with backend `0d3c7f1`. Ordinary regression passed
+50/50 active tests. Real Chrome passed the JPEG and PNG customer replacement executions and the
+same-invoice ZAR 4,000/ZAR 6,000 partial-to-full execution with zero mandatory skips, loopback-only
+network access, responsive viewports and clean browser privacy assertions.
+
 RC-002 v0.7.0-rc1 (2026-08-03): **RC-002 REQUIRES FURTHER HARDENING**. Artifact and read-only
 production pre-flight passed, but mandatory Bank Transfer/proof configuration and V13 NGINX routes
 are not provisioned. Production remains unchanged on v0.6.0.

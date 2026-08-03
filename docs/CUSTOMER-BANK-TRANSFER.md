@@ -1,5 +1,14 @@
 # Customer Bank Transfer Experience
 
+RC-003 removes the flat bank environment contract. The page now requests
+`/api/v1/bank-transfer/reviews/instructions?currency=<invoice currency>` after invoice selection and
+does not enable review creation until the authoritative account is available. Production values are
+maintained by Finance/Operations in the backend V14 configuration model.
+
+RC-003 compatibility is commit `91cc2ce`, paired with backend `0d3c7f1`. The customer never receives
+the destination row ID or Finance reconciliation identifier. Real Chrome accepted JPEG and PNG
+replacement journeys and the ZAR 4,000/ZAR 6,000 partial-to-full journey with public Internet denied.
+
 DEV-005G1 adds a protected, customer-owned bank-transfer journey to the existing portal. It does not treat a document upload as receipt of funds and does not let the customer record a payment.
 
 ## Routes

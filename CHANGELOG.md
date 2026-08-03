@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.7.0-rc2 — RC-003
+
+- Selects authoritative Bank Transfer instructions by invoice currency.
+- Renders approved display name, public account fields, instructions and effective dates.
+- Preserves the accepted responsive/offline upload, replacement, Finance and Financial journeys.
+- Passed 50/50 active ordinary tests plus mandatory real Chrome JPEG, PNG and partial-to-full
+  executions with zero skips in those enabled suites.
+
 ## RC-002 v0.7.0-rc1 production pre-flight — 2026-08-03
 
 - Verified the immutable frontend archive and release metadata and the healthy public frontend/TLS.
