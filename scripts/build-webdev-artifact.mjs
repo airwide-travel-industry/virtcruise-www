@@ -3,12 +3,15 @@ import { cp, mkdir, readFile, readdir, rm, stat, writeFile } from 'node:fs/promi
 import { execFileSync } from 'node:child_process';
 import { dirname, extname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { deploymentProfile } from './deployment-profiles.mjs';
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const output = join(root, 'dist');
-const stage = join(output, 'virtcruise-www-webdev-v0.8.0-dev');
+const profileName = process.argv.find(value => value.startsWith('--profile='))?.split('=', 2)[1] || 'webdev';
+const profile = deploymentProfile(profileName);
+const stage = join(output, profile.stageName);
 const zip = `${stage}.zip`;
-const publicOrigin = 'https://www.virtcruisetravels.com';
+const publicOrigin = profile.publicOrigin;
 const runtimeRoots = ['index.html', 'account', 'auth', 'bank-transfer', 'bookings', 'css', 'dashboard',
   'data', 'finance', 'financial', 'forgot-password', 'images', 'js', 'notifications', 'packages',
   'preferences', 'profile', 'quotes', 'register', 'reset-password', 'signin', 'travellers', 'trips',
@@ -31,7 +34,10 @@ function canonicalPath(path) {
   return `/${name.replace(/index\.html$/, '')}`;
 }
 
-await rm(output, { recursive: true, force: true });
+await mkdir(output, { recursive: true });
+await rm(stage, { recursive: true, force: true });
+await rm(zip, { force: true });
+await rm(`${zip}.sha256`, { force: true });
 await mkdir(stage, { recursive: true });
 for (const name of runtimeRoots) {
   const source = join(root, name);
@@ -39,6 +45,20 @@ for (const name of runtimeRoots) {
   await cp(source, join(stage, name), { recursive: true, preserveTimestamps: false });
 }
 await rm(join(stage, 'images', '.gitkeep'), { force: true });
+
+const runtimeConfigPath = join(stage, 'js', 'runtime-config.js');
+let runtimeConfig = await readFile(runtimeConfigPath, 'utf8');
+runtimeConfig = runtimeConfig
+  .replaceAll('https://www.virtcruisetravels.com', profile.publicOrigin)
+  .replaceAll('https://api.virtcruisetravels.com', profile.apiOrigin);
+await writeFile(runtimeConfigPath, runtimeConfig);
+
+for (const publicFile of ['robots.txt', 'sitemap.xml']) {
+  const path = join(stage, publicFile);
+  const content = (await readFile(path, 'utf8'))
+    .replaceAll('https://www.virtcruisetravels.com', profile.publicOrigin);
+  await writeFile(path, content);
+}
 
 for (const path of (await files(stage)).filter(value => extname(value) === '.html')) {
   let html = await readFile(path, 'utf8');
@@ -50,8 +70,8 @@ for (const path of (await files(stage)).filter(value => extname(value) === '.htm
 
 const runtimeEntryCount = (await files(stage)).length;
 await writeFile(join(stage, 'DEPLOYMENT-MANIFEST.json'), `${JSON.stringify({
-  release: 'v0.8.0-dev', publicOrigin, apiOrigin: 'https://api.virtcruisetravels.com',
-  upstreamApiOrigin: 'https://api.virtcruise.airwide.co.uk', routeStrategy: 'physical-index-files',
+  release: profile.release, publicOrigin, apiOrigin: profile.apiOrigin,
+  upstreamApiOrigin: profile.upstreamApiOrigin, routeStrategy: 'physical-index-files',
   generatedAt: '1980-01-01T00:00:00.000Z', checksummedEntries: runtimeEntryCount + 1
 }, null, 2)}\n`);
 
