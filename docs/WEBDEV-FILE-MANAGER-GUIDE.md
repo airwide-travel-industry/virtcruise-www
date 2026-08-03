@@ -13,3 +13,6 @@ not public write. Never upload `.git`, `node_modules`, tests, environment files,
 After activation open the homepage and representative nested routes in a private browser window,
 refresh them, and inspect MIME/cache headers. On failure stop, restore the backup, and follow the
 rollback checklist. Record timestamps and checksums, never credentials.
+
+WEB-001A did not receive File Manager authorization or credentials and therefore performed no
+upload, extraction, staging or public-root inspection. These remain mandatory operator steps.

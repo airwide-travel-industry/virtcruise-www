@@ -39,3 +39,17 @@ meta tags cannot supply HSTS, `frame-ancestors` or `X-Content-Type-Options`. No 
 Activation is blocked until the API subdomain DNS, valid TLS certificate, Airwide proxy route,
 branded CORS environment and branded email-link origin are proven in a real browser. Escalation:
 Engineering Operations and the domain owner.
+
+## WEB-001A qualification — 2026-08-03
+
+Read-only DNS still shows no record for `api.virtcruisetravels.com`. Consequently public TLS and
+proxy health cannot exist yet. The live Airwide health endpoint returns 200, but its production CORS
+currently returns 403 for the branded origin and continues to accept the v0.7.0 Airwide frontend.
+No DNS, certificate, proxy, CORS or WebDev file was changed.
+
+An isolated HTTPS test mapped the exact `www` and `api` hostnames to a local TLS/static/proxy
+boundary and used the extracted accepted artifact, PostgreSQL 18.4 and the real backend. Chrome
+passed registration, verification, login, Secure/HttpOnly/SameSite=Lax cookie inspection, refresh
+restoration, CSRF, logout, logout-all, password reset, back protection, storage inspection, 15
+physical routes and all three viewports. The temporary certificate was test-only and is not public
+TLS evidence.

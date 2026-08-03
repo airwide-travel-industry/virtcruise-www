@@ -4,6 +4,10 @@ WEB-001 engineering is in progress. Static packaging and branded runtime configu
 WebDev hosting evidence, branded API DNS/TLS/proxy activation, and mandatory real-browser/PostgreSQL
 acceptance remain blockers; Production Beta is unchanged.
 
+WEB-001A has now passed isolated PostgreSQL 18.4, zero-skip real suites and exact-host HTTPS Chrome.
+Public deployment remains blocked by absent API DNS/TLS/proxy, denied production branded CORS and
+missing WebDev staging/upload authorization.
+
 ## v0.7.0 final release — 2026-08-03
 
 **V0.7.0 RELEASED.** The RC4 frontend accepted in Production Beta is promoted unchanged. Production

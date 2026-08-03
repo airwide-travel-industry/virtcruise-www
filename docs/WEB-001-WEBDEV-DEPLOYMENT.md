@@ -40,3 +40,9 @@ any TLS, route, cookie, CSRF, CORS, console, normal-path network, privacy or ove
 Target headers where supported: CSP with `connect-src 'self' https://api.virtcruisetravels.com` and
 required Blob viewing, `frame-ancestors 'none'`, `X-Content-Type-Options: nosniff`, strict
 Referrer-Policy, minimal Permissions-Policy and correctly owned HSTS. Test CSP before activation.
+
+WEB-001A read-only evidence found Apache serving `www` with `Content-Type`, length, modification and
+range headers, but no observed CSP, frame policy, nosniff, Referrer-Policy, Permissions-Policy,
+HSTS, compression or explicit cache policy. File Manager document root, upload/rename limit and
+`.htaccess` remain operator-only facts. Do not activate the artifact until those capabilities and
+the existing-file backup are recorded.

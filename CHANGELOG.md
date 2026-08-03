@@ -7,6 +7,12 @@
 - Documented the same-site API topology, WebDev upload, acceptance, DNS/TLS prerequisites and rollback.
 - No DNS, production hosting, merge or deployment was performed.
 
+### WEB-001A
+
+- Added a real isolated HTTPS branded-host acceptance harness.
+- Executed all eight formerly skipped real PostgreSQL/browser gates with zero skips.
+- Recorded unresolved public API DNS/TLS/proxy, production CORS and WebDev authorization gates.
+
 ## 0.7.0 — 2026-08-03
 
 - Promoted the exact accepted RC4 frontend without rebuilding.

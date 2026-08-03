@@ -168,6 +168,8 @@ browser-only mock or `?api=local` for a backend at `http://localhost:8080`. Mock
 
 WEB-001 production artifacts instead use the exact validated public configuration in
 `js/runtime-config.js`. Build the deterministic WebDev upload with `npm run build:webdev`.
+The isolated branded-host acceptance harness is `npm run accept:web001a:branded-https`; it requires
+explicit temporary TLS paths, a real configured backend and the accepted extracted artifact.
 dynamically only in explicit mock mode.
 
 ## Enquiry API contract

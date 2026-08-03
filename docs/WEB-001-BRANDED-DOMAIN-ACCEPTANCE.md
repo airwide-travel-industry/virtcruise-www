@@ -20,6 +20,15 @@ proof bytes, financial DTOs, internal comments, credentials and stack traces mus
 persistent browser storage and logs. Verify skip link, headings, landmarks, labels, focus, keyboard,
 dialogs/live regions, reduced motion and no horizontal overflow. No accessibility score is claimed.
 
-Current result: runtime-origin unit tests and static reference tests are implemented. Real same-site
-TLS browser, WebDev behavior, PostgreSQL 18.4/Flyway V1–V14 and full journey evidence remain mandatory;
-therefore mandatory skipped/not-executed gates are non-zero and WEB-001 is not deployable yet.
+WEB-001A executed the eight previously skipped frontend tests with zero skips. Results: Finance
+4/4; Financial Portal 1/1; Manual Finance 1/1; customer Bank Transfer 1/1 with both JPEG and PNG
+replacement variants; partial-to-full Self Service 1/1 with deterministic SMTP. The unchanged
+ordinary frontend selection passed 55/55. Full backend PostgreSQL verification ran 619 tests with
+zero failures/errors; its one real-ClamAV conditional test was then enabled separately and passed.
+Flyway V1–V14, Hibernate validation, PostgreSQL 18.4/UTF-8/UTC/SCRAM and real Chrome passed.
+
+The isolated branded HTTPS result passed registration, verification, login/restoration, Secure
+HttpOnly Lax refresh cookie, Lax CSRF cookie/header bootstrap, logout, logout-all, password reset,
+back protection, no token storage, 15 routes and three viewports. Public acceptance remains blocked:
+the API hostname is unresolved, public TLS/proxy do not exist, production branded CORS is denied,
+and the accepted artifact has not been staged or uploaded to WebDev.
