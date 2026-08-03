@@ -1,5 +1,10 @@
 # Project Status
 
+## RC-005 — 2026-08-03
+
+No frontend product correction was required. RC3 behavior remains the RC4 frontend baseline and
+must pass ordinary and mandatory real-environment regression before artifact acceptance.
+
 ## RC-004 — 2026-08-03
 
 Manual Finance customer presentation and representative SELF_SERVICE regression pass. OPS-001 still

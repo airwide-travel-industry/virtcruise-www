@@ -1,5 +1,8 @@
 # Virtcruise Frontend
 
+The v0.7.0-rc4 frontend preserves the accepted RC3 Manual Finance and Self Service presentation;
+the bounded scanner correction is backend-only.
+
 RC-004 (`0.7.0-rc3`) supports the backend's explicit MANUAL_FINANCE contact journey while retaining
 the RC-003 SELF_SERVICE flow.
 

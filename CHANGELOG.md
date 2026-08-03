@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.7.0-rc4 — RC-005
+
+- Reissued the unchanged accepted customer experience under the RC4 artifact identity.
+- No scanner-specific detail or new customer capability was added.
+
 ## 0.7.0-rc3 — RC-004
 
 - Added capability-driven manual Finance contact presentation with no hardcoded payment details.
