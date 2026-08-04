@@ -1,5 +1,12 @@
 # Production Beta Operations
 
+## v0.8.0-beta.1 packaging status
+
+REL-HARDEN-002 replaces the obsolete Airwide hotfix package with the immutable
+`dist/virtcruise-www-0.8.0-beta.1.zip` production-beta artifact. Its production runtime has no
+local/mock selector, loopback origin, mock code, mock dataset, source map, or legacy canonical
+origin. See `docs/release/PRODUCTION-BETA-FRONTEND.md` for its checksum and validation evidence.
+
 ## Topology
 
 ```text
