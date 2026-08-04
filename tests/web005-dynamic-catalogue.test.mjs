@@ -52,6 +52,16 @@ test('published featured and slug routes never fall back to management APIs', as
   assert.deepEqual(requests, ['https://api.example/api/v1/catalogue/packages/featured', 'https://api.example/api/v1/catalogue/packages/cape-escape']);
 });
 
+test('collection distinguishes an empty page from a malformed public response', async () => {
+  Object.defineProperty(globalThis, 'navigator', { value: { onLine: true }, configurable: true });
+  globalThis.localStorage = { getItem: () => null, setItem: () => {} };
+  const repository = createPackageRepository({ apiBaseUrl: 'https://malformed.example', dynamicCatalogueEnabled: true });
+  globalThis.fetch = async () => response({ content: [], page: 0, size: 12, totalElements: 0, totalPages: 0 });
+  assert.deepEqual(await repository.list({ forceRefresh: true }), []);
+  globalThis.fetch = async () => response({ unexpected: true });
+  await assert.rejects(repository.list({ forceRefresh: true }), error => error.code === 'MALFORMED_RESPONSE');
+});
+
 test('WEB-005 public code has an explicit rollback flag and no private API routes', async () => {
   const files = await Promise.all(['js/repositories/package-repository.js', 'js/shop.js', 'js/package-page.js', 'js/main.js'].map(file => readFile(file, 'utf8')));
   const code = files.join('\n');

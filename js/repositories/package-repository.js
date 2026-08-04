@@ -107,6 +107,9 @@ export function createPackageRepository({ apiBaseUrl = '', source = 'production'
     if (result.etag) etags.set(key, result.etag);
     const payload = result.body;
     const raw = Array.isArray(payload) ? payload : payload?.content;
+    if (!Array.isArray(raw)) {
+      throw new RepositoryError('The published catalogue response is malformed.', { code: 'MALFORMED_RESPONSE' });
+    }
     const packages = validatePackages(array(raw).map(normalisePackage));
     lastPage = Array.isArray(payload)
       ? { number: Number(options.page || 0), size: packages.length, totalElements: packages.length, totalPages: packages.length ? 1 : 0 }
