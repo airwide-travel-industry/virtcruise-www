@@ -1,0 +1,6 @@
+import { apiRequest } from './api-client.js';
+const base='/api/v1/operational';
+const request=(path,method='GET',body)=>apiRequest(`${base}${path}`,{method,...(body===undefined?{}:{body:JSON.stringify(body)}),headers:{'X-Correlation-ID':crypto.randomUUID()}});
+export const operationalApi=Object.freeze({
+ dashboard:release=>request(`/dashboard?release=${encodeURIComponent(release)}`),assignments:release=>request(`/assignments?release=${encodeURIComponent(release)}`),assignment:id=>request(`/assignments/${id}`),createAssignment:body=>request('/assignments','POST',body),updateAssignment:(id,body)=>request(`/assignments/${id}`,'PUT',body),templates:()=>request('/templates'),changes:release=>request(`/change-requests?release=${encodeURIComponent(release)}`),createChange:body=>request('/change-requests','POST',body),changeStatus:(id,status)=>request(`/change-requests/${id}/status`,'PATCH',{status}),incidents:release=>request(`/incidents?release=${encodeURIComponent(release)}`),createIncident:body=>request('/incidents','POST',body),signoffs:release=>request(`/sign-offs?release=${encodeURIComponent(release)}`),signoff:body=>request('/sign-offs','POST',body),audit:(type,id)=>request(`/audit/${type}/${id}`),report:(type,release)=>request(`/reports/${type}?release=${encodeURIComponent(release)}`)
+});
