@@ -70,14 +70,15 @@ function normalisePackage(pkg) {
       days: Number(pkg.durationDays || 0), nights: Math.max(0, Number(pkg.durationDays || 0) - 1),
       label: `${Number(pkg.durationDays || 0)} day${Number(pkg.durationDays) === 1 ? '' : 's'}`
     },
-    featured: Boolean(pkg.featured), highlights, categories: [], inclusions: [], exclusions: [],
-    optionalExtras: [], itinerary: [], bookingTerms: [], faq: [], prices,
+    featured: Boolean(pkg.featured), tripAddOn: Boolean(pkg.tripAddOn || pkg.packageType === 'TRIP_ADD_ON'),
+    highlights, categories: [], inclusions: array(pkg.inclusions), exclusions: array(pkg.exclusions),
+    optionalExtras: [], itinerary: array(pkg.itinerary), bookingTerms: array(pkg.customerNotes), faq: [], prices,
     priceFrom: price.priceOnRequest ? null : Number(price.amount), currency: price.currency || 'USD',
     priceUnit: price.displayBasis || price.qualifier || 'per person', priceOnRequest: Boolean(price.priceOnRequest || !prices.length),
     image: cover?.src || FALLBACK_IMAGE, imageAlt: cover?.alt || `${pkg.title} in ${pkg.destination}`,
     gallery: displayed.map(item => item.src), galleryAlts: displayed.map(item => item.alt),
     galleryCaptions: displayed.map(item => item.caption), seo: pkg.seo || {}, callToAction: pkg.callToAction || {},
-    publishedAt: pkg.publishedAt || ''
+    publishedAt: pkg.effectiveFrom || pkg.publishedAt || '', effectiveUntil: pkg.effectiveUntil || ''
   };
 }
 
@@ -92,7 +93,7 @@ function validatePackages(value) {
 export function createPackageRepository({ apiBaseUrl = '', source = 'production', dynamicCatalogueEnabled = true } = {}) {
   const dynamic = dynamicCatalogueEnabled && source !== 'mock' && Boolean(apiBaseUrl);
   let lastSource = dynamic ? 'published-api' : 'legacy-catalogue';
-  let lastPage = { number: 0, size: 12, totalElements: 0, totalPages: 0 };
+  let lastPage = { number: 0, size: 12, totalElements: 0, totalPages: 0, hasNext: false, hasPrevious: false };
   const etags = new Map();
 
   async function load(url, options = {}) {
@@ -109,7 +110,9 @@ export function createPackageRepository({ apiBaseUrl = '', source = 'production'
     const packages = validatePackages(array(raw).map(normalisePackage));
     lastPage = Array.isArray(payload)
       ? { number: Number(options.page || 0), size: packages.length, totalElements: packages.length, totalPages: packages.length ? 1 : 0 }
-      : { number: payload.number ?? payload.page ?? 0, size: payload.size ?? packages.length, totalElements: payload.totalElements ?? packages.length, totalPages: payload.totalPages ?? (packages.length ? 1 : 0) };
+      : { number: payload.number ?? payload.page ?? 0, size: payload.size ?? packages.length,
+        totalElements: payload.totalElements ?? packages.length, totalPages: payload.totalPages ?? (packages.length ? 1 : 0),
+        hasNext: Boolean(payload.hasNext), hasPrevious: Boolean(payload.hasPrevious) };
     cache.set(key, packages);
     cacheOfflineCatalog(packages);
     return packages;
@@ -124,7 +127,8 @@ export function createPackageRepository({ apiBaseUrl = '', source = 'production'
   return {
     get source() { return lastSource; },
     get pagination() { return { ...lastPage }; },
-    async list({ page = 0, size = 12, search = '', destination = '', type = '', featured = false, forceRefresh = false, signal } = {}) {
+    async list({ page = 0, size = 12, search = '', destination = '', type = '', tripAddOn,
+      featured, sort = 'title', direction = 'asc', forceRefresh = false, signal } = {}) {
       if (!dynamic) return legacy({ signal });
       if (navigator.onLine === false) {
         const offline = readOfflineCatalog();
@@ -134,7 +138,9 @@ export function createPackageRepository({ apiBaseUrl = '', source = 'production'
       const url = new URL(PUBLIC_CATALOGUE_PATH, `${apiBaseUrl.replace(/\/+$/, '')}/`);
       if (page) url.searchParams.set('page', page); url.searchParams.set('size', size);
       if (search) url.searchParams.set('search', search); if (destination) url.searchParams.set('destination', destination);
-      if (type) url.searchParams.set('type', type); if (featured) url.searchParams.set('featured', 'true');
+      if (type) url.searchParams.set('type', type); if (tripAddOn !== undefined) url.searchParams.set('tripAddOn', tripAddOn);
+      if (featured !== undefined) url.searchParams.set('featured', featured);
+      url.searchParams.set('sort', sort); url.searchParams.set('direction', direction);
       lastSource = 'published-api';
       return load(url, { page, forceRefresh, signal });
     },

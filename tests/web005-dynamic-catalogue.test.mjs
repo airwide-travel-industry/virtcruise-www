@@ -7,14 +7,16 @@ const published = {
   id: '11111111-1111-1111-1111-111111111111', code: 'PKG-CAPE', slug: 'cape-escape',
   packageType: 'HOLIDAY_PACKAGE', title: 'Cape Escape', summary: 'A published escape',
   description: 'Published description', destination: 'Cape Town', durationDays: 4, featured: true,
-  highlights: ['Table Mountain'], seo: { title: 'Cape SEO', description: 'Cape description' },
+  highlights: ['Table Mountain'], inclusions: ['Breakfast'], exclusions: ['Flights'],
+  itinerary: [{ day: 1, title: 'Arrival' }], customerNotes: ['Passport required'],
+  seo: { title: 'Cape SEO', description: 'Cape description' },
   callToAction: { label: 'Plan Cape Town' },
   pricing: [{ currency: 'USD', amount: 500, displayBasis: 'per person' }],
   media: [
     { reference: 'images/cape.webp', role: 'COVER', order: 0, altText: 'Cape Town mountain view' },
     { reference: 'managed/private.webp', role: 'GALLERY', order: 1, altText: 'private' },
     { reference: 'images/beach.webp', role: 'GALLERY', order: 2, altText: 'Cape beach', caption: 'Atlantic coast' }
-  ], publishedAt: '2026-08-03T00:00:00Z'
+  ], effectiveFrom: '2026-08-03T00:00:00Z', effectiveUntil: null
 };
 
 function response(body, { status = 200, etag = '"publication-1"' } = {}) {
@@ -33,7 +35,10 @@ test('dynamic catalogue uses only published endpoints and maps public projection
   assert.doesNotMatch(requests[0].url, /content|draft|review|audit/i);
   assert.equal(packages[0].name, 'Cape Escape'); assert.equal(packages[0].priceFrom, 500);
   assert.deepEqual(packages[0].gallery, ['images/beach.webp']);
-  assert.deepEqual(repository.pagination, { number: 1, size: 12, totalElements: 13, totalPages: 2 });
+  assert.deepEqual(packages[0].inclusions, ['Breakfast']);
+  assert.deepEqual(packages[0].bookingTerms, ['Passport required']);
+  assert.deepEqual(repository.pagination, { number: 1, size: 12, totalElements: 13, totalPages: 2,
+    hasNext: false, hasPrevious: false });
 });
 
 test('published featured and slug routes never fall back to management APIs', async () => {
