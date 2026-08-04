@@ -1,21 +1,11 @@
 # WEB-005 Acceptance
 
-## Evidence
+- Required six browser failures reproduced before implementation: three readiness timeouts and three guest-navigation catalogue 404/console failures.
+- Focused browser regression: 15 passed, 0 failed, 0 skipped across desktop/tablet/mobile.
+- Full frontend suite: 92 tests, 84 passed, 0 failed, 0 errors, 8 pre-existing operator-gated real-environment skips.
+- Backend unit suite: 570 discovered in the unit-mode report set, 0 failures and 0 errors; PostgreSQL-gated classes remain skipped unless explicitly enabled.
+- Focused PostgreSQL 18.4 catalogue/content run: public route, security, projection, scheduler, Flyway and Hibernate checks passed with no failure/error/skip in the selected classes.
+- Flyway V1–V17 migrated and validated on a disposable UTF-8, UTC, SCRAM cluster; Hibernate schema validation passed.
+- Public performance sample used 1,007 projected packages and 500 iterations per operation. Local p50/p95/p99 milliseconds: list 0.1835/0.6722/1.1890, destination 0.0390/0.0520/0.4761, featured 0.0400/0.0540/0.4790, slug 0.3410/0.8609/1.3530. A 12-row page projection was 13,054 bytes. Lock waits and deadlocks were zero.
 
-- Baseline: frontend `95be8e0ae3754ad477e34be3c6800787b51bddac`; backend `f84f337142e6c95eaa80757d131679391d1cacc5`; both clean on the expected branch.
-- Focused catalogue, runtime configuration and static regression: 17/17 passed, zero failures, zero skips.
-- JavaScript syntax checks: passed for repository, shop, homepage and package-detail modules.
-- Full `npm test`: 89 discovered; 37 passed, 44 failed, 8 existing environment-gated skips. Every browser failure was caused before test execution by missing host library `libgbm.so.1`.
-- Static representative footprint: selected homepage catalogue HTML/CSS/JS/data is 150,942 bytes uncompressed; repository images total 4,261,550 bytes across 25 assets. Runtime LCP, request count, API payload, p50 and p95 were not measurable because Chromium could not launch and no accepted PostgreSQL-backed API instance was provided.
-
-## Security and privacy review
-
-Automated tests assert published routes only, no management routes or staff metadata, explicit feature flag, ETag request support, and rejection of storage-like media references. The frontend does not request authorization for public catalogue calls and does not expose backend errors or stack traces to customers.
-
-## Accessibility review
-
-Loading and error regions use status/alert semantics; result counts are live; pagination is keyboard-sized and focus-visible; images use published/fallback alt text; existing desktop/tablet/mobile and reduced-motion styles remain. Browser keyboard, responsive and accessibility verification is blocked by the missing Chromium dependency and is not accepted.
-
-## Decision
-
-Acceptance is withheld. End-to-end server pagination/search, several required detail fields, PostgreSQL fixtures, browser coverage, accessibility runtime checks and performance percentiles remain incomplete for reasons documented above.
+The eight frontend skips and backend opt-in skips are existing real-environment/operator-gated suites outside WEB-005A; they are not acceptance passes. WEB-005A mandatory focused coverage has zero skips.
