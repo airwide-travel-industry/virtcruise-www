@@ -123,10 +123,13 @@ async function mockAuthentication(page, authenticated) {
         })
       });
     }
-    if (url.pathname.startsWith('/api/v1/packages')) {
+    if (url.pathname.startsWith('/api/v1/catalogue/packages')) {
       return route.fulfill({
         contentType: 'application/json',
-        body: JSON.stringify({ success: true, data: [] })
+        body: JSON.stringify(url.pathname.endsWith('/featured') ? [] : {
+          content: [], page: 0, size: 12, totalElements: 0, totalPages: 0,
+          hasNext: false, hasPrevious: false
+        })
       });
     }
     return route.fulfill({ status: 404, contentType: 'application/json', body: '{}' });

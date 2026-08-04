@@ -18,6 +18,20 @@ const homepageText = homepage.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
 let browser;
 let origin;
 let server;
+const publicPackages = ['Zimbabwe Safari', 'European City Break', 'Tropical Paradise'].map((title, index) => ({
+  id: `package-${index + 1}`,
+  code: `PKG-${index + 1}`,
+  slug: title.toLowerCase().replaceAll(' ', '-'),
+  packageType: 'HOLIDAY_PACKAGE',
+  title,
+  summary: `Published summary for ${title}`,
+  description: `Published description for ${title}`,
+  destination: ['Zimbabwe', 'Europe', 'Zanzibar'][index],
+  durationDays: 7,
+  featured: true,
+  highlights: [], seo: {}, callToAction: {}, pricing: [], media: [],
+  effectiveFrom: '2026-08-01T00:00:00Z', effectiveUntil: null
+}));
 
 before(async () => {
   server = startStaticServer({ port: 0 });
@@ -66,14 +80,23 @@ for (const viewport of [
 ]) test(`${viewport.name} homepage keeps the About and contact update accessible`, async () => {
   const page = await browser.newPage({ viewport });
   const errors = [];
-  await page.route('https://api.virtcruisetravels.com/**', route => route.fulfill({
-    contentType: 'application/json',
-    body: JSON.stringify({ success: true, data: { authenticated: false, refreshable: false } })
-  }));
+  await page.route('https://api.virtcruisetravels.com/**', route => {
+    const path = new URL(route.request().url()).pathname;
+    if (path === '/api/v1/catalogue/packages/featured') return route.fulfill({
+      contentType: 'application/json', body: JSON.stringify(publicPackages)
+    });
+    if (path === '/api/v1/catalogue/packages') return route.fulfill({
+      contentType: 'application/json', body: JSON.stringify({ content: publicPackages, page: 0, size: 12,
+        totalElements: 3, totalPages: 1, hasNext: false, hasPrevious: false })
+    });
+    return route.fulfill({ contentType: 'application/json',
+      body: JSON.stringify({ success: true, data: { authenticated: false, refreshable: false } }) });
+  });
   page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
   page.on('requestfailed', request => errors.push(`${request.method()} ${request.url()}`));
   await page.goto(origin, { waitUntil: 'load' });
-  await page.waitForFunction(() => document.querySelectorAll('#featuredToursGrid .tour-card').length === 3);
+  await page.waitForFunction(() => document.documentElement.dataset.catalogueReady === 'complete');
+  assert.equal(await page.locator('#featuredToursGrid .tour-card').count(), 3);
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth), false);
   await page.evaluate(() => document.querySelector('a[href="#aboutVirtcruiseTitle"]').click());
   assert.equal(await page.evaluate(() => location.hash), '#aboutVirtcruiseTitle');

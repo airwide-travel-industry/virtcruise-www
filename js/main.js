@@ -324,21 +324,29 @@ document.addEventListener('submit', event => {
 });
 
 async function init() {
-  const [catalog, featured] = await Promise.all([
-    initPackageShop(),
-    apiClient.packages.featured().catch(error => {
-      console.error('Virtcruise featured packages failed to load:', error);
-      return [];
-    })
-  ]);
-  packageCatalog = [...catalog];
-  featured.forEach(pkg => {
-    if (!packageCatalog.some(entry => entry.id === pkg.id)) packageCatalog.push(pkg);
-  });
-  setPackageChoices(packageCatalog);
-  hydrateFeaturedTours(featured);
-  hydrateVictoriaFalls();
-  syncFeaturedTourButtons();
-  applyRoute();
+  document.documentElement.dataset.catalogueReady = 'loading';
+  try {
+    const [catalog, featured] = await Promise.all([
+      initPackageShop(),
+      apiClient.packages.featured().catch(() => [])
+    ]);
+    packageCatalog = [...catalog];
+    featured.forEach(pkg => {
+      if (!packageCatalog.some(entry => entry.id === pkg.id)) packageCatalog.push(pkg);
+    });
+    setPackageChoices(packageCatalog);
+    hydrateFeaturedTours(featured);
+    hydrateVictoriaFalls();
+    syncFeaturedTourButtons();
+    applyRoute();
+  } finally {
+    document.documentElement.dataset.catalogueReady = 'complete';
+    document.dispatchEvent(new CustomEvent('virtcruise:catalogue-ready'));
+  }
 }
-init();
+init().catch(() => {
+  hydrateFeaturedTours([]);
+  hydrateVictoriaFalls();
+  document.documentElement.dataset.catalogueReady = 'complete';
+  document.dispatchEvent(new CustomEvent('virtcruise:catalogue-ready'));
+});
