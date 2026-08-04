@@ -6,12 +6,13 @@ export const deploymentProfiles = Object.freeze({
     apiOrigin: 'https://api.virtcruisetravels.com',
     upstreamApiOrigin: 'https://api.virtcruise.airwide.co.uk'
   }),
-  'airwide-hotfix': Object.freeze({
-    stageName: 'virtcruise-www-airwide-hotfix-e9662ea',
-    release: 'hotfix-e9662ea',
+  'production-beta': Object.freeze({
+    stageName: 'virtcruise-www-0.8.0-beta.1',
+    release: '0.8.0-beta.1',
     publicOrigin: 'https://virtcruise.airwide.co.uk',
     apiOrigin: 'https://api.virtcruise.airwide.co.uk',
-    upstreamApiOrigin: 'https://api.virtcruise.airwide.co.uk'
+    upstreamApiOrigin: 'https://api.virtcruise.airwide.co.uk',
+    productionRuntime: true
   })
 });
 
