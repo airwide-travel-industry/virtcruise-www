@@ -77,7 +77,7 @@ async function renderDashboard() {
 }
 
 function renderAdminDashboard() {
-  setPage(`${pageHeading('ADMINISTRATION', 'Operations Dashboard', 'Manage Virtcruise operational and financial administration.')}
+  setPage(`${pageHeading('ADMINISTRATION', 'Administration Dashboard', 'Manage Virtcruise administration and financial operations.')}
     <section class="dashboard-grid" aria-label="Administration operations">
       <a class="dashboard-card" href="${portalUrl('/finance/')}"><span aria-hidden="true">$</span><strong>Finance Operations</strong><small>Manage financial administration, invoices, payments, bank transfers, receipts and refunds.</small><span>Open Finance Operations →</span></a>
     </section>`);
