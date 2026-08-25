@@ -59,6 +59,30 @@ const hasFinanceAccess = user => {
     || permissions.has('BANK_TRANSFER_REVIEW') || permissions.has('BANK_TRANSFER_ADMIN');
 };
 
+const isAdminOrStaff = user => {
+  const roles = new Set(Array.isArray(user?.roles) ? user.roles : []);
+  return roles.has('ROLE_ADMIN') || user?.accountType === 'STAFF';
+};
+
+const isCustomerPersona = user => {
+  const roles = new Set(Array.isArray(user?.roles) ? user.roles : []);
+  return user?.accountType === 'CUSTOMER' && roles.has('ROLE_CUSTOMER') && !isAdminOrStaff(user);
+};
+
+function portalItemsForUser(user) {
+  if (isAdminOrStaff(user)) {
+    return hasFinanceAccess(user) ? [['/finance/', 'Finance Operations']] : [];
+  }
+  if (!isCustomerPersona(user)) return [];
+  return [
+    ['/dashboard/', 'Dashboard'], ['/quotes/', 'My Quotes'], ['/bookings/', 'My Bookings'],
+    ['/financial/', 'Finances'],
+    ['/bank-transfer/', 'Pay by Bank Transfer'],
+    ['/trips/', 'My Trips'],
+    ['/travellers/', 'Travellers'], ['/profile/', 'Profile'], ['/notifications/', 'Notifications']
+  ];
+}
+
 const desktopNav = document.querySelector('[data-site-navigation], #mainNavigation, .detail-nav-links');
 let menuButton = document.querySelector('[data-mobile-navigation-toggle], .mobile-btn');
 const dropdowns = new Map();
@@ -101,14 +125,7 @@ function renderAuthNavigation({ status, user }) {
   if (!desktop || !mobile) return;
   if (status === 'authenticated' && user) {
     const name = escapeHtml(user.givenName || 'Traveller');
-    const portalItems = [
-      ['/dashboard/', 'Dashboard'], ['/quotes/', 'My Quotes'], ['/bookings/', 'My Bookings'],
-      ['/financial/', 'Finances'],
-      ['/bank-transfer/', 'Pay by Bank Transfer'],
-      ['/trips/', 'My Trips'],
-      ['/travellers/', 'Travellers'], ['/profile/', 'Profile'], ['/notifications/', 'Notifications']
-    ];
-    if (hasFinanceAccess(user)) portalItems.splice(1, 0, ['/finance/', 'Finance Operations']);
+    const portalItems = portalItemsForUser(user);
     const portalLinks = portalItems.map(([path, label]) =>
       `<a href="${authPageUrl(path)}">${label}</a>`
     ).join('');
