@@ -137,12 +137,21 @@ function renderAuthNavigation({ status, user }) {
   }
 }
 
+function positionAccountMenu(toggle, menu) {
+  if (!toggle || !menu) return;
+  const rect = toggle.getBoundingClientRect();
+  menu.style.top = `${rect.bottom + 10}px`;
+  menu.style.right = `${Math.max(16, window.innerWidth - rect.right)}px`;
+}
+
 async function handleAuthAction(event) {
   const accountToggle = event.target.closest('.account-menu-toggle');
   if (accountToggle) {
     const open = accountToggle.getAttribute('aria-expanded') !== 'true';
     accountToggle.setAttribute('aria-expanded', String(open));
-    document.getElementById('accountMenu')?.classList.toggle('is-open', open);
+    const menu = document.getElementById('accountMenu');
+    if (open) positionAccountMenu(accountToggle, menu);
+    menu?.classList.toggle('is-open', open);
     return;
   }
   if (!event.target.closest('[data-auth-logout]')) return;
