@@ -73,7 +73,7 @@ export function portalShell(user, active) {
     </div></header>
     <div class="portal-layout">
       <aside class="portal-sidebar"><button class="portal-menu-toggle" type="button" aria-expanded="false" aria-controls="portalNavigation">${admin ? 'Administration menu' : 'Customer menu'} <span aria-hidden="true">⌄</span></button>
-        <nav id="portalNavigation" aria-label="${admin ? 'Administration' : 'Customer portal'}">${(admin ? [['finance', '/finance/', 'Finance Operations']] : navigation).map(([id, href, label]) =>
+        <nav id="portalNavigation" aria-label="${admin ? 'Administration' : 'Customer portal'}">${(admin ? [['finance', '/finance/', 'Finance Operations'], ['operations-preview', '/operations-preview/', 'Operations Preview']] : navigation).map(([id, href, label]) =>
           `<a href="${portalUrl(href)}" class="${active === id ? 'active' : ''}" ${active === id ? 'aria-current="page"' : ''}>${escapeHtml(label)}</a>`
         ).join('')}</nav>
         ${admin ? '' : `<a class="portal-support" href="${portalUrl('/index.html#footerContact')}"><span aria-hidden="true">✦</span><strong>Need help?</strong><small>Contact Virtcruise support</small></a>`}
