@@ -1,5 +1,6 @@
 import { authenticationProvider } from '../auth/authentication-provider.js';
 import { requireAuthentication } from '../auth/route-guard.js';
+import { isAdminOrStaff } from '../auth/persona.js';
 import { createPortalRepository } from './portal-repository.js';
 import {
   announce, confirmAction, emptyState, errorState, escapeHtml, formatDate, formatMoney,
@@ -73,6 +74,13 @@ async function renderDashboard() {
         <a href="${portalUrl('/index.html#service=holiday-packages')}">Create quote</a><a href="${portalUrl('/index.html#allPackages')}">Browse packages</a><a href="${portalUrl('/quotes/')}">View quotes</a><a href="${portalUrl('/bookings/')}">View bookings</a><a href="${portalUrl('/travellers/')}">Manage travellers</a><a href="${portalUrl('/profile/')}">Edit profile</a><a href="${portalUrl('/index.html#footerContact')}">Support</a>
       </div><div class="security-summary"><span aria-hidden="true">✓</span><div><strong>Security status</strong><small>${user.emailVerified ? 'Email verified · account protected' : 'Email verification required'}</small></div></div></aside>
     </div>`);
+}
+
+function renderAdminDashboard() {
+  setPage(`${pageHeading('ADMINISTRATION', 'Operations Dashboard', 'Manage Virtcruise operational and financial administration.')}
+    <section class="dashboard-grid" aria-label="Administration operations">
+      <a class="dashboard-card" href="${portalUrl('/finance/')}"><span aria-hidden="true">$</span><strong>Finance Operations</strong><small>Manage financial administration, invoices, payments, bank transfers, receipts and refunds.</small><span>Open Finance Operations →</span></a>
+    </section>`);
 }
 
 async function renderQuotes() {
@@ -424,7 +432,6 @@ const renderers = {
 async function initialize() {
   user = await requireAuthentication();
   if (!user) return;
-  repository = createPortalRepository(user);
   root.innerHTML = portalShell(user, page?.replace('-details', ''));
   root.addEventListener('click', async event => {
     const menu = event.target.closest('.portal-menu-toggle');
@@ -458,6 +465,11 @@ async function initialize() {
       await renderers[page]();
     }
   });
+  if (isAdminOrStaff(user)) {
+    renderAdminDashboard();
+    return;
+  }
+  repository = createPortalRepository(user);
   try {
     await renderers[page]();
   } catch (error) {

@@ -1,4 +1,5 @@
 import { authPageUrl } from '../auth/config.js';
+import { isAdminOrStaff } from '../auth/persona.js';
 
 export const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, character => ({
   '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
@@ -62,6 +63,7 @@ const navigation = [
 ];
 
 export function portalShell(user, active) {
+  const admin = isAdminOrStaff(user);
   const name = user.givenName || 'Traveller';
   const initials = `${user.givenName?.[0] || ''}${user.familyName?.[0] || ''}`.toUpperCase() || 'VC';
   return `<a class="skip-link" href="#portalContent">Skip to portal content</a>
@@ -70,11 +72,11 @@ export function portalShell(user, active) {
       <div class="portal-user"><span class="portal-avatar" aria-hidden="true">${escapeHtml(initials)}</span><span>Welcome, <strong>${escapeHtml(name)}</strong></span><button type="button" data-portal-logout>Logout</button></div>
     </div></header>
     <div class="portal-layout">
-      <aside class="portal-sidebar"><button class="portal-menu-toggle" type="button" aria-expanded="false" aria-controls="portalNavigation">Customer menu <span aria-hidden="true">⌄</span></button>
-        <nav id="portalNavigation" aria-label="Customer portal">${navigation.map(([id, href, label]) =>
+      <aside class="portal-sidebar"><button class="portal-menu-toggle" type="button" aria-expanded="false" aria-controls="portalNavigation">${admin ? 'Administration menu' : 'Customer menu'} <span aria-hidden="true">⌄</span></button>
+        <nav id="portalNavigation" aria-label="${admin ? 'Administration' : 'Customer portal'}">${(admin ? [['finance', '/finance/', 'Finance Operations']] : navigation).map(([id, href, label]) =>
           `<a href="${portalUrl(href)}" class="${active === id ? 'active' : ''}" ${active === id ? 'aria-current="page"' : ''}>${escapeHtml(label)}</a>`
         ).join('')}</nav>
-        <a class="portal-support" href="${portalUrl('/index.html#footerContact')}"><span aria-hidden="true">✦</span><strong>Need help?</strong><small>Contact Virtcruise support</small></a>
+        ${admin ? '' : `<a class="portal-support" href="${portalUrl('/index.html#footerContact')}"><span aria-hidden="true">✦</span><strong>Need help?</strong><small>Contact Virtcruise support</small></a>`}
       </aside>
       <main class="portal-main" id="portalContent" tabindex="-1"><div id="portalLive" class="visually-hidden" role="status" aria-live="polite"></div><div id="portalPage">${skeleton()}</div></main>
     </div><dialog class="portal-confirmation" id="portalConfirmation" aria-labelledby="confirmationTitle"><form method="dialog"><p class="portal-eyebrow">Please confirm</p><h2 id="confirmationTitle">Confirm this action</h2><p data-confirmation-message></p><div><button class="portal-button secondary" value="cancel">Cancel</button><button class="portal-button" value="confirm">Confirm</button></div></form></dialog>`;

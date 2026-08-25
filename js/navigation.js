@@ -1,3 +1,5 @@
+import { isAdminOrStaff, isCustomerPersona } from './auth/persona.js';
+
 const packages = [
   ['Explore All Packages', 'allPackages'],
   ['Featured Tours', 'featuredToursTitle'],
@@ -57,16 +59,6 @@ const hasFinanceAccess = user => {
   const permissions = new Set(Array.isArray(user?.permissions) ? user.permissions : []);
   return roles.has('ROLE_FINANCE') || roles.has('ROLE_ADMIN')
     || permissions.has('BANK_TRANSFER_REVIEW') || permissions.has('BANK_TRANSFER_ADMIN');
-};
-
-const isAdminOrStaff = user => {
-  const roles = new Set(Array.isArray(user?.roles) ? user.roles : []);
-  return roles.has('ROLE_ADMIN') || user?.accountType === 'STAFF';
-};
-
-const isCustomerPersona = user => {
-  const roles = new Set(Array.isArray(user?.roles) ? user.roles : []);
-  return user?.accountType === 'CUSTOMER' && roles.has('ROLE_CUSTOMER') && !isAdminOrStaff(user);
 };
 
 function portalItemsForUser(user) {
