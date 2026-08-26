@@ -101,6 +101,14 @@ export function createPortalRepository(user) {
     }
   }
 
+  async function acceptQuote(id) {
+    const value = await protectedRequest(`/api/v1/quotes/${encodeURIComponent(id)}/accept`, {
+      method: 'POST'
+    });
+    cache.clear();
+    return value;
+  }
+
   const localCollection = resource => ({
     list: () => readLocal(user, resource, []),
     save(item) {
@@ -130,6 +138,7 @@ export function createPortalRepository(user) {
     profile,
     quotes,
     quote,
+    acceptQuote,
     async trips() {
       const result = await quotes();
       const booked = result.items.filter(item => ['BOOKED', 'COMPLETED', 'CANCELLED'].includes(String(item.status).toUpperCase()));

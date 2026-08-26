@@ -30,14 +30,16 @@ function setPage(markup, { focus = true } = {}) {
 
 function quoteCard(quote) {
   const id = quoteId(quote);
-  const bookingAction = String(quote.status).toUpperCase() === 'ACCEPTED'
-    ? `<button class="portal-button" type="button" data-create-booking="${escapeHtml(id)}">Accept quote</button>`
-    : '';
+  const quoteAction = String(quote.status).toUpperCase() === 'SENT'
+    ? `<button class="portal-button" type="button" data-accept-quote="${escapeHtml(id)}">Accept Quote</button>`
+    : String(quote.status).toUpperCase() === 'ACCEPTED'
+      ? '<span class="portal-button accepted-state">Quote Accepted</span>'
+      : '';
   return `<article class="quote-card">
     <div class="quote-card-top"><div><small>Quote number</small><strong>${escapeHtml(quoteNumber(quote))}</strong></div>${statusBadge(quote.status)}</div>
     <h2>${escapeHtml(quoteDestination(quote))}</h2>
     <dl class="quote-meta"><div><dt>Travel</dt><dd>${formatDate(quoteStart(quote))} – ${formatDate(quoteEnd(quote))}</dd></div><div><dt>Travellers</dt><dd>${escapeHtml(quoteTravellers(quote) || 'To confirm')}</dd></div><div><dt>Estimate</dt><dd>${formatMoney(quoteValue(quote), quoteCurrency(quote))}</dd></div><div><dt>Created</dt><dd>${formatDate(quote.createdAt)}</dd></div></dl>
-    <div class="quote-actions">${bookingAction}<a class="portal-button secondary" href="${portalUrl('/quotes/details/', { id })}">View details</a><button class="portal-link" type="button" data-print-quote="${escapeHtml(id)}">Print</button><button class="portal-link" type="button" data-placeholder="PDF downloads are planned for Sprint 3.5.">Download PDF</button><button class="portal-link" type="button" data-placeholder="A consultant update request will be available in Sprint 3.6.">Request update</button></div>
+    <div class="quote-actions">${quoteAction}<a class="portal-button secondary" href="${portalUrl('/quotes/details/', { id })}">View details</a><button class="portal-link" type="button" data-print-quote="${escapeHtml(id)}">Print</button><button class="portal-link" type="button" data-placeholder="PDF downloads are planned for Sprint 3.5.">Download PDF</button><button class="portal-link" type="button" data-placeholder="A consultant update request will be available in Sprint 3.6.">Request update</button></div>
   </article>`;
 }
 
@@ -245,9 +247,11 @@ async function renderQuoteDetails() {
     ['Transfers', ['TRANSFER', 'CAR_RENTAL']], ['Visa services', ['VISA']],
     ['Activities', ['ACTIVITY', 'HOLIDAY_PACKAGE', 'PACKAGE']], ['Insurance', ['INSURANCE']]
   ];
-  const acceptAction = String(quote.status).toUpperCase() === 'ACCEPTED'
-    ? `<button class="portal-button" type="button" data-create-booking="${escapeHtml(id)}">Accept quote</button>`
-    : '';
+  const acceptAction = String(quote.status).toUpperCase() === 'SENT'
+    ? `<button class="portal-button" type="button" data-accept-quote="${escapeHtml(id)}">Accept Quote</button>`
+    : String(quote.status).toUpperCase() === 'ACCEPTED'
+      ? '<span class="portal-button accepted-state">Quote Accepted</span>'
+      : '';
   setPage(`${pageHeading('Quote details', quote.quoteNumber || 'Your quote', quoteDestination(quote), `${acceptAction}<button class="portal-button secondary" type="button" data-print>Print quote</button>`)}
     <section class="quote-hero-summary"><div>${statusBadge(quote.status)}<h2>${escapeHtml(quoteDestination(quote))}</h2><p>${formatDate(quoteStart(quote))} – ${formatDate(quoteEnd(quote))}</p></div><div><small>Estimated quote value</small><strong>${formatMoney(quoteValue(quote), quoteCurrency(quote))}</strong><span>Subject to availability and final confirmation</span></div></section>
     <div class="detail-layout"><div>
@@ -460,6 +464,19 @@ async function initialize() {
       } catch (error) {
         announce(error.message);
         createBooking.disabled = false;
+      }
+    }
+    const acceptQuote = event.target.closest('[data-accept-quote]');
+    if (acceptQuote) {
+      if (!await confirmAction('This confirms that you wish to proceed with the quoted travel arrangement.', 'Accept this quotation?')) return;
+      acceptQuote.disabled = true;
+      try {
+        await repository.acceptQuote(acceptQuote.dataset.acceptQuote);
+        announce('Quote accepted.');
+        await renderQuoteDetails();
+      } catch (error) {
+        announce(error.message);
+        acceptQuote.disabled = false;
       }
     }
     const placeholder = event.target.closest('[data-placeholder]');
