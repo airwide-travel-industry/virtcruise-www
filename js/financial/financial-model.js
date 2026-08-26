@@ -71,6 +71,7 @@ export function mapInvoice(value) {
     id: text(source.id, 'Invoice identifier'),
     number: text(source.number, 'Invoice number'),
     bookingReference: text(source.bookingReference, 'Booking reference', { optional: true }),
+    sourceQuoteId: text(source.sourceQuoteId, 'Source quote identifier', { optional: true }),
     status: text(source.status, 'Invoice status'),
     lines: Array.isArray(source.lines) ? source.lines.map(mapInvoiceLine) : [],
     net: mapMoney(source.net, 'Invoice net'),

@@ -68,7 +68,7 @@ function invoiceCard(invoice) {
   return `<article class="financial-card">
     <div class="financial-card-heading"><div><small>Invoice</small><h2>${escapeHtml(invoice.number)}</h2></div>${financialStatus(invoice.status)}</div>
     <dl class="financial-facts">
-      <div><dt>Booking</dt><dd>${bookingLink(invoice.bookingReference)}</dd></div>
+      <div><dt>Booking</dt><dd>${bookingLink(invoice.bookingReference)}</dd></div>${invoice.sourceQuoteId ? `<div><dt>Source Quote</dt><dd><a href="${portalUrl('/admin/quotes/details/', { id: invoice.sourceQuoteId })}">${escapeHtml(invoice.sourceQuoteId)}</a></dd></div>` : ''}
       <div><dt>Currency</dt><dd>${escapeHtml(invoice.total.currency)}</dd></div>
       <div><dt>Total</dt><dd>${amountDescription(invoice.total, 'Invoice total')}</dd></div>
       <div><dt>Amount paid</dt><dd>${amountDescription(invoice.allocated, 'Amount paid')}</dd></div>
@@ -169,7 +169,7 @@ async function renderInvoiceDetails() {
   }
   const invoice = await repository.invoice(id);
   setPage(`${pageHeading('Invoice detail', invoice.number, 'Read-only details supplied by the Virtcruise financial service.', `<button class="portal-button secondary" type="button" data-print-financial>Print invoice view</button>`)}
-    <section class="financial-invoice-hero"><div>${financialStatus(invoice.status)}<p>Booking ${bookingLink(invoice.bookingReference)}</p></div><div><small>Outstanding balance</small>${amountDescription(invoice.outstanding, 'Outstanding balance')}</div></section>
+    <section class="financial-invoice-hero"><div>${financialStatus(invoice.status)}<p>Booking ${bookingLink(invoice.bookingReference)}</p>${invoice.sourceQuoteId ? `<p>Source Quote <a href="${portalUrl('/admin/quotes/details/', { id: invoice.sourceQuoteId })}">${escapeHtml(invoice.sourceQuoteId)}</a></p>` : ''}</div><div><small>Outstanding balance</small>${amountDescription(invoice.outstanding, 'Outstanding balance')}</div></section>
     <section class="portal-panel financial-line-items"><h2>Invoice items</h2>
       <div class="financial-table-scroll"><table><caption>Line items for invoice ${escapeHtml(invoice.number)}</caption><thead><tr><th scope="col">Description</th><th scope="col">Quantity</th><th scope="col">Unit amount</th><th scope="col">Tax rate</th><th scope="col">Tax</th><th scope="col">Total</th></tr></thead><tbody>
         ${invoice.lines.map(line => `<tr><th scope="row">${escapeHtml(line.description)}</th><td data-label="Quantity">${escapeHtml(line.quantity)}</td><td data-label="Unit amount">${amountDescription(line.unitPrice, 'Unit amount')}</td><td data-label="Tax rate">${escapeHtml(line.taxRate)}</td><td data-label="Tax">${amountDescription(line.tax, 'Tax')}</td><td data-label="Total">${amountDescription(line.total, 'Line total')}</td></tr>`).join('')}
