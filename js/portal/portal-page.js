@@ -31,7 +31,7 @@ function setPage(markup, { focus = true } = {}) {
 function quoteCard(quote) {
   const id = quoteId(quote);
   const quoteAction = String(quote.status).toUpperCase() === 'SENT'
-    ? `<button class="portal-button" type="button" data-accept-quote="${escapeHtml(id)}">Accept Quote</button>`
+    ? `<div class="quote-acceptance-action"><button class="portal-button" type="button" data-accept-quote="${escapeHtml(id)}">Accept Quote</button><p class="portal-action-message" data-quote-acceptance-message role="status" aria-live="polite"></p></div>`
     : String(quote.status).toUpperCase() === 'ACCEPTED'
       ? '<span class="portal-button accepted-state">Quote Accepted</span>'
       : '';
@@ -248,7 +248,7 @@ async function renderQuoteDetails() {
     ['Activities', ['ACTIVITY', 'HOLIDAY_PACKAGE', 'PACKAGE']], ['Insurance', ['INSURANCE']]
   ];
   const acceptAction = String(quote.status).toUpperCase() === 'SENT'
-    ? `<button class="portal-button" type="button" data-accept-quote="${escapeHtml(id)}">Accept Quote</button>`
+    ? `<div class="quote-acceptance-action"><button class="portal-button" type="button" data-accept-quote="${escapeHtml(id)}">Accept Quote</button><p class="portal-action-message" data-quote-acceptance-message role="status" aria-live="polite"></p></div>`
     : String(quote.status).toUpperCase() === 'ACCEPTED'
       ? '<span class="portal-button accepted-state">Quote Accepted</span>'
       : '';
@@ -469,13 +469,19 @@ async function initialize() {
     const acceptQuote = event.target.closest('[data-accept-quote]');
     if (acceptQuote) {
       if (!await confirmAction('This confirms that you wish to proceed with the quoted travel arrangement.', 'Accept this quotation?')) return;
+      const message = acceptQuote.closest('.quote-acceptance-action')?.querySelector('[data-quote-acceptance-message]');
       acceptQuote.disabled = true;
+      acceptQuote.textContent = 'Accepting…';
+      if (message) message.textContent = 'Accepting…';
       try {
         await repository.acceptQuote(acceptQuote.dataset.acceptQuote);
         announce('Quote accepted.');
-        await renderQuoteDetails();
+        await (page === 'quote-details' ? renderQuoteDetails() : renderQuotes());
       } catch (error) {
-        announce(error.message);
+        const failure = error?.message || 'We could not accept this quote. Please try again.';
+        announce(failure);
+        if (message) message.textContent = failure;
+        acceptQuote.textContent = 'Accept Quote';
         acceptQuote.disabled = false;
       }
     }
