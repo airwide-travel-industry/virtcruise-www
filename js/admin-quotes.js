@@ -70,6 +70,14 @@ function segmentsPanel(segments) {
   return `<section class="portal-panel"><h2>Trip segments</h2><ul class="admin-quote-timeline">${items}</ul></section>`;
 }
 
+function acceptedCommercialSummary(quote) {
+  if (status(quote.status) !== 'ACCEPTED') return '';
+  const currency = quote.currency || '';
+  const amount = value => `${escapeHtml(currency)} ${money(value)}`;
+  const lines = (quote.items || []).map(item => `<tr><th scope="row">${escapeHtml(item.description || 'Quote item')}</th><td>${escapeHtml(item.quantity)}</td><td>${amount(item.unitPrice)}</td><td>${amount(item.lineTotal)}</td></tr>`).join('');
+  return sectionWrap('Commercial Summary', `<section class="portal-panel admin-commercial-summary"><dl class="admin-quote-dl"><dt>Currency</dt><dd>${escapeHtml(currency)}</dd><dt>Subtotal</dt><dd>${amount(quote.estimatedValue)}</dd><dt>Total accepted</dt><dd><strong>${amount(quote.estimatedValue)}</strong></dd></dl><div class="admin-quote-table-wrap"><table class="admin-quote-table"><caption>Accepted commercial terms</caption><thead><tr><th scope="col">Item</th><th scope="col">Quantity</th><th scope="col">Unit Price</th><th scope="col">Line Total</th></tr></thead><tbody>${lines}</tbody></table></div><p class="admin-commercial-summary-note">Taxes, fees and discounts are not represented by the current quote model.</p></section>`);
+}
+
 function pricingRow(item, currency) {
   const quantity = finiteAmount(item.quantity);
   const unitPrice = finiteAmount(item.unitPrice);
@@ -89,10 +97,11 @@ async function loadDetail(id) {
     const items = detailList('Quote items', quote.items, item => `<li><strong>${escapeHtml(item.type)}</strong><span>${escapeHtml(item.description || 'Quote item')} · ${escapeHtml(item.quantity)} × ${escapeHtml(item.unitPrice ?? '0')} ${escapeHtml(quote.currency || '')}</span></li>`);
     const travellers = detailList('Travellers', quote.travellers, traveller => `<li><strong>${escapeHtml(customerName(traveller))}</strong><span>${escapeHtml(traveller.type || 'Traveller')}</span></li>`);
     const requestOverview = sectionWrap('Request Overview', `<div class="admin-quote-section-grid">${summary}${items}${travellers}</div>`);
+    const commercialSummary = acceptedCommercialSummary(quote);
     const travelPlan = sectionWrap('Travel Plan', segmentsPanel(trip?.segments));
     const canPrepare = currentUser?.roles?.includes('ROLE_ADMIN') || currentUser?.permissions?.includes('QUOTE_CHANGE_STATUS');
     const quotation = canPrepare && ['SUBMITTED', 'SENT'].includes(status(quote.status)) ? sectionWrap('Prepare Quotation', `<section class="portal-panel admin-quotation"><p class="portal-eyebrow">Staff pricing</p><form data-quotation-form><div class="admin-quote-pricing-grid">${(quote.items || []).map(item => pricingRow(item, quote.currency)).join('')}</div><div class="admin-quote-footer-grid"><label class="admin-quote-field">Quotation Valid Until<input type="date" name="validUntil" value="${escapeHtml(quote.validUntil || '')}"></label><label class="admin-quote-field">Customer-visible Notes<textarea name="notes" rows="3">${escapeHtml(quote.notes || '')}</textarea></label></div><div class="admin-quote-total-row"><span class="vc-eyebrow">Quotation Total</span><strong data-quotation-total>${escapeHtml(quote.currency || '')} ${money(quoteGrandTotal(quote.items))}</strong></div><div class="admin-quote-actions"><button class="portal-button" type="submit">Save Quotation</button>${status(quote.status) === 'SUBMITTED' ? '<button class="portal-button secondary" type="button" data-issue-quotation>Send Quote to Customer</button>' : ''}<p role="status" data-quotation-message></p></div></form></section>`) : '';
-    document.querySelector('#portalPage').innerHTML = `${header}${hero}<div class="admin-quote-live">LIVE · existing quote pricing · staff protected</div>${requestOverview}${travelPlan}${quotation}`;
+    document.querySelector('#portalPage').innerHTML = `${header}${hero}<div class="admin-quote-live">LIVE · existing quote pricing · staff protected</div>${commercialSummary}${requestOverview}${travelPlan}${quotation}`;
     bindQuotation(id);
   } catch (error) { errorPage(error); }
 }

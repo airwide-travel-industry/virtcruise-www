@@ -20,6 +20,10 @@
 .admin-quote-hero-meta strong{color:var(--navy,#031a38)}
 
 .admin-quote-section{margin-bottom:28px}
+.admin-commercial-summary{display:grid;gap:20px}
+.admin-commercial-summary .admin-quote-dl{max-width:520px}
+.admin-commercial-summary .admin-quote-table{min-width:640px}
+.admin-commercial-summary-note{margin:0;color:var(--vc-muted,#607087);font-size:13px}
 .admin-quote-section-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
 .admin-quote-full{grid-column:1/-1}
 
