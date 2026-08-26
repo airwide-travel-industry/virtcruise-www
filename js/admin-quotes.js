@@ -3,6 +3,7 @@ import { authenticationProvider } from './auth/authentication-provider.js';
 import { authPageUrl } from './auth/config.js';
 import { isAdminOrStaff } from './auth/persona.js';
 import { escapeHtml, pageHeading, portalShell, portalUrl } from './portal/portal-components.js';
+import { finiteAmount, formatQuoteAmount, quoteGrandTotal, quoteLineTotal } from './quote-total.js';
 
 const root = document.querySelector('#portalRoot');
 const detailMode = document.body.dataset.adminQuotes === 'detail';
@@ -17,7 +18,7 @@ const date = value => value ? new Intl.DateTimeFormat(undefined, { dateStyle: 'm
 const status = value => String(value || '').toUpperCase();
 const customerName = customer => [customer?.firstName, customer?.lastName].filter(Boolean).join(' ') || 'Customer';
 const errorText = error => error instanceof AuthError && error.status ? `Customer Quotes could not be loaded (HTTP ${error.status}).` : 'Customer Quotes could not be loaded. Please try again.';
-const money = value => Number.isFinite(Number(value)) ? Number(value).toFixed(2) : '0.00';
+const money = formatQuoteAmount;
 const statusBadge = value => `<span class="vc-badge vc-badge--${badgeTone[status(value)] || 'draft'}">${escapeHtml(status(value))}</span>`;
 
 function setShell(user, active) {
@@ -70,10 +71,10 @@ function segmentsPanel(segments) {
 }
 
 function pricingRow(item, currency) {
-  const quantity = Number(item.quantity) || 0;
-  const unitPrice = Number(item.unitPrice ?? 0) || 0;
+  const quantity = finiteAmount(item.quantity);
+  const unitPrice = finiteAmount(item.unitPrice);
   const label = item.description || 'Quote item';
-  return `<div class="admin-quote-pricing-row" data-pricing-row><div class="admin-quote-pricing-row-name"><strong>${escapeHtml(label)}</strong><small>${escapeHtml(item.type || 'Quote item')}</small></div><label class="admin-quote-field">Quantity<input value="${escapeHtml(quantity)}" disabled></label><label class="admin-quote-field">Unit Price<span class="admin-quote-price-input" data-currency="${escapeHtml(currency || '')}"><input required min="0" step="0.01" type="number" data-item-id="${escapeHtml(item.id)}" data-quantity="${quantity}" value="${escapeHtml(unitPrice)}" aria-label="Unit price for ${escapeHtml(label)}"></span></label><div class="admin-quote-line-total"><small>Line Total</small><strong data-line-total-for="${escapeHtml(item.id)}">${escapeHtml(currency || '')} ${money(quantity * unitPrice)}</strong></div></div>`;
+  return `<div class="admin-quote-pricing-row" data-pricing-row><div class="admin-quote-pricing-row-name"><strong>${escapeHtml(label)}</strong><small>${escapeHtml(item.type || 'Quote item')}</small></div><label class="admin-quote-field">Quantity<input value="${escapeHtml(quantity)}" data-quantity-input disabled></label><label class="admin-quote-field">Unit Price<span class="admin-quote-price-input" data-currency="${escapeHtml(currency || '')}"><input required min="0" step="0.01" type="number" data-item-id="${escapeHtml(item.id)}" value="${escapeHtml(unitPrice)}" aria-label="Unit price for ${escapeHtml(label)}"></span></label><div class="admin-quote-line-total"><small>Line Total</small><strong data-line-total-for="${escapeHtml(item.id)}">${escapeHtml(currency || '')} ${money(quoteLineTotal(quantity, unitPrice))}</strong></div></div>`;
 }
 
 async function loadDetail(id) {
@@ -90,30 +91,42 @@ async function loadDetail(id) {
     const requestOverview = sectionWrap('Request Overview', `<div class="admin-quote-section-grid">${summary}${items}${travellers}</div>`);
     const travelPlan = sectionWrap('Travel Plan', segmentsPanel(trip?.segments));
     const canPrepare = currentUser?.roles?.includes('ROLE_ADMIN') || currentUser?.permissions?.includes('QUOTE_CHANGE_STATUS');
-    const quotation = canPrepare && ['SUBMITTED', 'SENT'].includes(status(quote.status)) ? sectionWrap('Prepare Quotation', `<section class="portal-panel admin-quotation"><p class="portal-eyebrow">Staff pricing</p><form data-quotation-form><div class="admin-quote-pricing-grid">${(quote.items || []).map(item => pricingRow(item, quote.currency)).join('')}</div><div class="admin-quote-footer-grid"><label class="admin-quote-field">Quotation Valid Until<input type="date" name="validUntil" value="${escapeHtml(quote.validUntil || '')}"></label><label class="admin-quote-field">Customer-visible Notes<textarea name="notes" rows="3">${escapeHtml(quote.notes || '')}</textarea></label></div><div class="admin-quote-total-row"><span class="vc-eyebrow">Quotation Total</span><strong data-quotation-total>${escapeHtml(quote.totalAmount ?? 0)} ${escapeHtml(quote.currency || '')}</strong></div><div class="admin-quote-actions"><button class="portal-button" type="submit">Save Quotation</button>${status(quote.status) === 'SUBMITTED' ? '<button class="portal-button secondary" type="button" data-issue-quotation>Send Quote to Customer</button>' : ''}<p role="status" data-quotation-message></p></div></form></section>`) : '';
+    const quotation = canPrepare && ['SUBMITTED', 'SENT'].includes(status(quote.status)) ? sectionWrap('Prepare Quotation', `<section class="portal-panel admin-quotation"><p class="portal-eyebrow">Staff pricing</p><form data-quotation-form><div class="admin-quote-pricing-grid">${(quote.items || []).map(item => pricingRow(item, quote.currency)).join('')}</div><div class="admin-quote-footer-grid"><label class="admin-quote-field">Quotation Valid Until<input type="date" name="validUntil" value="${escapeHtml(quote.validUntil || '')}"></label><label class="admin-quote-field">Customer-visible Notes<textarea name="notes" rows="3">${escapeHtml(quote.notes || '')}</textarea></label></div><div class="admin-quote-total-row"><span class="vc-eyebrow">Quotation Total</span><strong data-quotation-total>${escapeHtml(quote.currency || '')} ${money(quoteGrandTotal(quote.items))}</strong></div><div class="admin-quote-actions"><button class="portal-button" type="submit">Save Quotation</button>${status(quote.status) === 'SUBMITTED' ? '<button class="portal-button secondary" type="button" data-issue-quotation>Send Quote to Customer</button>' : ''}<p role="status" data-quotation-message></p></div></form></section>`) : '';
     document.querySelector('#portalPage').innerHTML = `${header}${hero}<div class="admin-quote-live">LIVE · existing quote pricing · staff protected</div>${requestOverview}${travelPlan}${quotation}`;
     bindQuotation(id);
   } catch (error) { errorPage(error); }
 }
 
 function bindLinePreview(form) {
-  form.querySelectorAll('[data-item-id]').forEach(input => {
+  form.querySelectorAll('[data-item-id], [data-quantity-input]').forEach(input => {
     input.addEventListener('input', () => {
       const row = input.closest('[data-pricing-row]');
       const currency = row?.querySelector('.admin-quote-price-input')?.dataset.currency || '';
-      const target = form.querySelector(`[data-line-total-for="${CSS.escape(input.dataset.itemId)}"]`);
+      const priceInput = row?.querySelector('[data-item-id]');
+      const target = priceInput && form.querySelector(`[data-line-total-for="${CSS.escape(priceInput.dataset.itemId)}"]`);
       if (!target) return;
-      const quantity = Number(input.dataset.quantity) || 0;
-      const price = Number(input.value) || 0;
-      target.textContent = `${currency} ${(quantity * price).toFixed(2)}`;
+      const quantity = finiteAmount(row?.querySelector('[data-quantity-input]')?.value);
+      target.textContent = `${currency} ${money(quoteLineTotal(quantity, priceInput.value))}`;
+      renderGrandTotal(form);
     });
   });
+}
+
+function renderGrandTotal(form) {
+  const items = [...form.querySelectorAll('[data-item-id]')].map(input => ({
+    quantity: input.closest('[data-pricing-row]')?.querySelector('[data-quantity-input]')?.value,
+    unitPrice: input.value
+  }));
+  const target = form.querySelector('[data-quotation-total]');
+  const currency = form.querySelector('.admin-quote-price-input')?.dataset.currency || '';
+  if (target) target.textContent = `${currency} ${money(quoteGrandTotal(items))}`;
 }
 
 function bindQuotation(id) {
   const form = document.querySelector('[data-quotation-form]');
   if (!form) return;
   bindLinePreview(form);
+  renderGrandTotal(form);
   form.addEventListener('submit', async event => {
     event.preventDefault(); const button = form.querySelector('[type="submit"]'); button.disabled = true;
     try { await read(`/api/v1/quotes/${encodeURIComponent(id)}/quotation`, { method: 'PUT', body: JSON.stringify({ items: [...form.querySelectorAll('[data-item-id]')].map(input => ({ id: input.dataset.itemId, unitPrice: input.value })), validUntil: form.validUntil.value || null, notes: form.notes.value.trim() || null }) }); await loadDetail(id); }
