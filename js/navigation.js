@@ -123,6 +123,7 @@ function renderAuthNavigation({ status, user }) {
   const desktop = document.querySelector('[data-auth-navigation]');
   const mobile = document.querySelector('[data-mobile-auth-navigation]');
   if (!desktop || !mobile) return;
+  document.getElementById('accountMenu')?.remove();
   if (status === 'authenticated' && user) {
     const name = escapeHtml(user.givenName || 'Traveller');
     const portalItems = portalItemsForUser(user);
@@ -144,13 +145,32 @@ function positionAccountMenu(toggle, menu) {
   menu.style.right = `${Math.max(16, window.innerWidth - rect.right)}px`;
 }
 
+function portalAccountMenu(menu) {
+  if (!menu) return;
+  let root = document.getElementById('account-menu-overlay-root');
+  if (!root) {
+    root = document.createElement('div');
+    root.id = 'account-menu-overlay-root';
+    document.body.append(root);
+  }
+  if (menu.parentElement !== root) root.append(menu);
+}
+
+function closeAccountMenu() {
+  document.querySelector('.account-menu-toggle')?.setAttribute('aria-expanded', 'false');
+  document.getElementById('accountMenu')?.classList.remove('is-open');
+}
+
 async function handleAuthAction(event) {
   const accountToggle = event.target.closest('.account-menu-toggle');
   if (accountToggle) {
     const open = accountToggle.getAttribute('aria-expanded') !== 'true';
     accountToggle.setAttribute('aria-expanded', String(open));
     const menu = document.getElementById('accountMenu');
-    if (open) positionAccountMenu(accountToggle, menu);
+    if (open) {
+      portalAccountMenu(menu);
+      positionAccountMenu(accountToggle, menu);
+    }
     menu?.classList.toggle('is-open', open);
     return;
   }
@@ -352,8 +372,7 @@ if (desktopNav && menuButton) {
 
   document.addEventListener('click', event => {
     if (!event.target.closest('.account-menu')) {
-      document.querySelector('.account-menu-toggle')?.setAttribute('aria-expanded', 'false');
-      document.getElementById('accountMenu')?.classList.remove('is-open');
+      closeAccountMenu();
     }
     if (openDropdownId && !event.target.closest('.nav-dropdown,[data-dropdown-toggle]')) closeDropdown();
     if (document.getElementById('mobileNavigation')?.classList.contains('is-open') &&
@@ -361,16 +380,26 @@ if (desktopNav && menuButton) {
   });
   document.addEventListener('keydown', event => {
     if (event.key !== 'Escape') return;
+    if (document.getElementById('accountMenu')?.classList.contains('is-open')) {
+      closeAccountMenu();
+      return;
+    }
     if (openDropdownId) closeDropdown({ restoreFocus: true });
     else if (document.getElementById('mobileNavigation')?.classList.contains('is-open')) closeMobileNavigation({ restoreFocus: true });
   });
   window.addEventListener('resize', () => {
     if (openDropdownId) positionDropdown(openDropdownId);
+    const accountToggle = document.querySelector('.account-menu-toggle');
+    const accountMenu = document.getElementById('accountMenu');
+    if (accountMenu?.classList.contains('is-open')) positionAccountMenu(accountToggle, accountMenu);
     setMobileTop();
     if (window.innerWidth > 1050) closeMobileNavigation();
   });
   window.addEventListener('scroll', () => {
     if (openDropdownId) positionDropdown(openDropdownId);
+    const accountToggle = document.querySelector('.account-menu-toggle');
+    const accountMenu = document.getElementById('accountMenu');
+    if (accountMenu?.classList.contains('is-open')) positionAccountMenu(accountToggle, accountMenu);
     setMobileTop();
   }, { passive: true });
   window.addEventListener('hashchange', updateActiveState);

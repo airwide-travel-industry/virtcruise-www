@@ -99,6 +99,11 @@
   overflow-y: auto;
 }
 
+#account-menu-overlay-root {
+  position: relative;
+  z-index: 2000;
+}
+
 .account-dropdown.is-open {
   display: grid;
 }
