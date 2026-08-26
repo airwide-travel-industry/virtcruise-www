@@ -71,6 +71,13 @@
   color: #fff;
   font-weight: 700;
   cursor: pointer;
+  transition: background .15s, border-color .15s, transform .15s;
+}
+
+.account-menu-toggle:hover {
+  border-color: rgba(228, 179, 64, .85);
+  background: rgba(3, 26, 56, .7);
+  transform: translateY(-1px);
 }
 
 .account-avatar {
@@ -93,9 +100,10 @@
   display: none;
   padding: 8px;
   border: 1px solid rgba(228, 179, 64, .45);
+  border-top: 2px solid #e4b340;
   border-radius: 10px;
   background: #031a38;
-  box-shadow: 0 16px 34px rgba(0, 0, 0, .3);
+  box-shadow: 0 20px 44px rgba(0, 0, 0, .35);
   overflow-y: auto;
 }
 
@@ -121,6 +129,7 @@
   font-weight: 700;
   text-shadow: none !important;
   cursor: pointer;
+  transition: background .15s, color .15s;
 }
 
 .account-dropdown a:hover,
