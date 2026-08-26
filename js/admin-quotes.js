@@ -13,7 +13,7 @@ let currentStatus = 'ALL';
 let currentUser;
 
 const read = (path, options) => authenticationProvider.withAccess(() => authRequest(path, options));
-const collection = value => Array.isArray(value) ? value : value?.content || value?.items || [];
+const collection = value => Array.isArray(value) ? value : value?.content || value?.items || value?.data || [];
 const date = value => value ? new Intl.DateTimeFormat(undefined, { dateStyle: 'medium' }).format(new Date(value)) : '—';
 const status = value => String(value || '').toUpperCase();
 const customerName = customer => [customer?.firstName, customer?.lastName].filter(Boolean).join(' ') || 'Customer';
@@ -27,7 +27,7 @@ function setShell(user, active) {
 }
 
 function errorPage(error) {
-  document.querySelector('#portalPage').innerHTML = `${pageHeading('CUSTOMER QUOTES', 'Customer Quotes', 'Review quote requests submitted by customers.')}<div class="portal-error" role="alert"><strong>${escapeHtml(errorText(error))}</strong><p>This read-only admin view uses the V14 quote service.</p><button class="portal-button secondary" type="button" data-retry>Retry</button></div>`;
+  document.querySelector('#portalPage').innerHTML = `${pageHeading('CUSTOMER QUOTES', 'Customer Quotes', 'Review quote requests submitted by customers.')}<div class="portal-error" role="alert"><strong>${escapeHtml(errorText(error))}</strong><p>Review and manage customer quotation requests.</p><button class="portal-button secondary" type="button" data-retry>Retry</button></div>`;
   document.querySelector('[data-retry]')?.addEventListener('click', () => loadList());
 }
 
