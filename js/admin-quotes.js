@@ -6,10 +6,11 @@ import { escapeHtml, pageHeading, portalShell, portalUrl } from './portal/portal
 
 const root = document.querySelector('#portalRoot');
 const detailMode = document.body.dataset.adminQuotes === 'detail';
-const statusLabels = ['ALL', 'DRAFT', 'SUBMITTED'];
+const statusLabels = ['ALL', 'DRAFT', 'SUBMITTED', 'SENT', 'ACCEPTED'];
 let currentStatus = 'ALL';
+let currentUser;
 
-const read = path => authenticationProvider.withAccess(() => authRequest(path));
+const read = (path, options) => authenticationProvider.withAccess(() => authRequest(path, options));
 const collection = value => Array.isArray(value) ? value : value?.content || value?.items || [];
 const date = value => value ? new Intl.DateTimeFormat(undefined, { dateStyle: 'medium' }).format(new Date(value)) : '—';
 const status = value => String(value || '').toUpperCase();
@@ -31,16 +32,13 @@ function summaryCard(label, count, active) {
 }
 
 function quoteRow(quote) {
-  const detail = quote.detail;
-  const customer = detail?.customer;
-  const destination = detail?.itinerary?.destination || detail?.itinerary?.title || '—';
-  return `<tr><td><strong>${escapeHtml(quote.quoteNumber || quote.id)}</strong></td><td>${escapeHtml(customerName(customer))}</td><td>${escapeHtml(destination)}</td><td><span class="admin-quote-status">${escapeHtml(status(quote.status))}</span></td><td>${date(quote.createdAt)}</td><td>${date(detail?.submittedAt)}</td><td><a class="portal-button secondary" href="${portalUrl('/admin/quotes/details/', { id: quote.id })}">View</a></td></tr>`;
+  return `<tr><td><strong>${escapeHtml(quote.quoteNumber || quote.id)}</strong></td><td><strong>${escapeHtml(quote.customerDisplayName || customerName(quote.detail?.customer))}</strong>${quote.customerEmail ? `<small>${escapeHtml(quote.customerEmail)}</small>` : ''}</td><td>${date(quote.travelDate)}</td><td>${escapeHtml(quote.travellerCount ?? '—')}</td><td><span class="admin-quote-status">${escapeHtml(status(quote.status))}</span></td><td>${date(quote.createdAt)}</td><td><a class="portal-button secondary" href="${portalUrl('/admin/quotes/details/', { id: quote.id })}">View</a></td></tr>`;
 }
 
 function renderList(quotes) {
-  const counts = { ALL: quotes.length, DRAFT: quotes.filter(item => status(item.status) === 'DRAFT').length, SUBMITTED: quotes.filter(item => status(item.status) === 'SUBMITTED').length };
+  const counts = Object.fromEntries(statusLabels.map(label => [label, label === 'ALL' ? quotes.length : quotes.filter(item => status(item.status) === label).length]));
   const visible = currentStatus === 'ALL' ? quotes : quotes.filter(item => status(item.status) === currentStatus);
-  document.querySelector('#portalPage').innerHTML = `${pageHeading('CUSTOMER QUOTES', 'Customer Quotes', 'Review quote requests submitted by customers.')}<div class="admin-quote-live">LIVE · V14 quote data · read-only</div><div class="admin-quote-summary">${statusLabels.map(label => summaryCard(label, counts[label], currentStatus === label)).join('')}</div><div class="admin-quote-table-wrap"><table class="admin-quote-table"><caption>Customer quote requests</caption><thead><tr><th>Quote</th><th>Customer</th><th>Trip / Destination</th><th>Status</th><th>Created</th><th>Submitted</th><th>Action</th></tr></thead><tbody>${visible.length ? visible.map(quoteRow).join('') : '<tr><td colspan="7">No quotes match this status.</td></tr>'}</tbody></table></div>`;
+  document.querySelector('#portalPage').innerHTML = `${pageHeading('CUSTOMER QUOTES', 'Customer Quotes', 'Review and prepare quote requests submitted by customers.')}<div class="admin-quote-live">LIVE · existing quote pricing · staff protected</div><div class="admin-quote-summary">${statusLabels.map(label => summaryCard(label, counts[label], currentStatus === label)).join('')}</div><div class="admin-quote-table-wrap"><table class="admin-quote-table"><caption>Customer quote requests</caption><thead><tr><th>Quote</th><th>Customer</th><th>Travel Date</th><th>Travellers</th><th>Status</th><th>Created</th><th>Action</th></tr></thead><tbody>${visible.length ? visible.map(quoteRow).join('') : '<tr><td colspan="7">No quotes match this status.</td></tr>'}</tbody></table></div>`;
   document.querySelectorAll('[data-status]').forEach(button => button.addEventListener('click', () => { currentStatus = button.dataset.status; renderList(quotes); }));
 }
 
@@ -65,18 +63,33 @@ async function loadDetail(id) {
     const trip = quote.itinerary;
     const title = `Quote ${escapeHtml(quote.quoteNumber || id)}`;
     const header = pageHeading('CUSTOMER QUOTES', title, '<a class="portal-button secondary" href="/admin/quotes/">Back to Customer Quotes</a>');
-    const items = detailList('Quote items', quote.items, item => `<li><strong>${escapeHtml(item.type)}</strong><span>${escapeHtml(item.description || 'Quote item')}</span></li>`);
+    const items = detailList('Quote items', quote.items, item => `<li><strong>${escapeHtml(item.type)}</strong><span>${escapeHtml(item.description || 'Quote item')} · ${escapeHtml(item.quantity)} × ${escapeHtml(item.unitPrice ?? '0')} ${escapeHtml(quote.currency || '')}</span></li>`);
     const travellers = detailList('Travellers', quote.travellers, traveller => `<li><strong>${escapeHtml(customerName(traveller))}</strong><span>${escapeHtml(traveller.type || 'Traveller')}</span></li>`);
     const segments = detailList('Trip segments', trip?.segments, segment => `<li><strong>${escapeHtml(segment.title || segment.type)}</strong><span>${escapeHtml(segment.location || segment.description || 'Segment')}</span></li>`);
-    document.querySelector('#portalPage').innerHTML = `${header}<div class="admin-quote-live">LIVE · V14 quote data · read-only</div><section class="admin-quote-detail-grid"><section class="portal-panel"><h2>Quote summary</h2><dl class="admin-quote-dl"><dt>Status</dt><dd>${escapeHtml(status(quote.status))}</dd><dt>Customer</dt><dd>${escapeHtml(customerName(customer))}</dd><dt>Created</dt><dd>${date(quote.createdAt)}</dd><dt>Submitted</dt><dd>${date(quote.submittedAt)}</dd><dt>Trip</dt><dd>${escapeHtml(trip?.title || '—')}</dd><dt>Destination</dt><dd>${escapeHtml(trip?.destination || '—')}</dd></dl></section>${items}${travellers}${segments}</section>`;
+    const canPrepare = currentUser?.roles?.includes('ROLE_ADMIN') || currentUser?.permissions?.includes('QUOTE_CHANGE_STATUS');
+    const quotation = canPrepare && ['SUBMITTED', 'SENT'].includes(status(quote.status)) ? `<section class="portal-panel admin-quotation"><p class="portal-eyebrow">Staff pricing</p><h2>Prepare Quotation</h2><form data-quotation-form><div class="admin-quote-items">${(quote.items || []).map(item => `<label>${escapeHtml(item.description || 'Quote item')}<span>${escapeHtml(item.quantity)} ×</span><input required min="0" step="0.01" type="number" data-item-id="${escapeHtml(item.id)}" value="${escapeHtml(item.unitPrice ?? 0)}" aria-label="Unit price for ${escapeHtml(item.description || 'quote item')}"></label>`).join('')}</div><label>Valid until<input type="date" name="validUntil" value="${escapeHtml(quote.validUntil || '')}"></label><label>Customer-visible notes<textarea name="notes" rows="3">${escapeHtml(quote.notes || '')}</textarea></label><p>Total: <strong data-quotation-total>${escapeHtml(quote.totalAmount ?? 0)} ${escapeHtml(quote.currency || '')}</strong></p><button class="portal-button" type="submit">Save Quotation</button>${status(quote.status) === 'SUBMITTED' ? '<button class="portal-button secondary" type="button" data-issue-quotation>Send Quote to Customer</button>' : ''}<p role="status" data-quotation-message></p></form></section>` : '';
+    document.querySelector('#portalPage').innerHTML = `${header}<div class="admin-quote-live">LIVE · existing quote pricing · staff protected</div><section class="admin-quote-detail-grid"><section class="portal-panel"><h2>Quote summary</h2><dl class="admin-quote-dl"><dt>Status</dt><dd>${escapeHtml(status(quote.status))}</dd><dt>Customer</dt><dd>${escapeHtml(customerName(customer))}<br><small>${escapeHtml(customer?.email || '')}</small></dd><dt>Created</dt><dd>${date(quote.createdAt)}</dd><dt>Submitted</dt><dd>${date(quote.submittedAt)}</dd><dt>Trip</dt><dd>${escapeHtml(trip?.title || '—')}</dd><dt>Destination</dt><dd>${escapeHtml(trip?.destination || '—')}</dd></dl></section>${items}${travellers}${segments}${quotation}</section>`;
+    bindQuotation(id);
   } catch (error) { errorPage(error); }
+}
+
+function bindQuotation(id) {
+  const form = document.querySelector('[data-quotation-form]');
+  if (!form) return;
+  form.addEventListener('submit', async event => {
+    event.preventDefault(); const button = form.querySelector('[type="submit"]'); button.disabled = true;
+    try { await read(`/api/v1/quotes/${encodeURIComponent(id)}/quotation`, { method: 'PUT', body: JSON.stringify({ items: [...form.querySelectorAll('[data-item-id]')].map(input => ({ id: input.dataset.itemId, unitPrice: input.value })), validUntil: form.validUntil.value || null, notes: form.notes.value.trim() || null }) }); await loadDetail(id); }
+    catch (error) { form.querySelector('[data-quotation-message]').textContent = errorText(error); button.disabled = false; }
+  });
+  form.querySelector('[data-issue-quotation]')?.addEventListener('click', async event => { event.currentTarget.disabled = true; try { await read(`/api/v1/quotes/${encodeURIComponent(id)}/issue`, { method: 'POST' }); await loadDetail(id); } catch (error) { form.querySelector('[data-quotation-message]').textContent = errorText(error); event.currentTarget.disabled = false; } });
 }
 
 async function start() {
   const user = await authenticationProvider.initialize();
   if (!user) { location.replace(authPageUrl('/signin/', { returnTo: location.pathname })); return; }
   if (!isAdminOrStaff(user)) { root.innerHTML = '<main class="portal-main"><div class="portal-error" role="alert"><strong>Access denied.</strong><p>Customer Quotes is restricted to administrator/staff users.</p></div></main>'; return; }
-  setShell(user, detailMode ? 'admin-quotes' : 'admin-quotes');
+  currentUser = user;
+  setShell(user, 'admin-quotes');
   if (detailMode) await loadDetail(new URLSearchParams(location.search).get('id')); else await loadList();
 }
 start();
