@@ -82,7 +82,7 @@ async function loadDetail(id) {
     const customer = quote.customer;
     const trip = quote.itinerary;
     const title = `Quote ${escapeHtml(quote.quoteNumber || id)}`;
-    const header = pageHeading('CUSTOMER QUOTES', title, '<a class="portal-button secondary" href="/admin/quotes/">Back to Customer Quotes</a>');
+    const header = pageHeading('CUSTOMER QUOTES', title, '', '<a class="portal-button secondary" href="/admin/quotes/">Back to Customer Quotes</a>');
     const hero = `<div class="admin-quote-hero"><div class="admin-quote-hero-meta">${statusBadge(quote.status)}<span><strong>${escapeHtml(customerName(customer))}</strong></span><span>${escapeHtml(trip?.destination || 'Destination to be confirmed')}</span><span>Submitted ${date(quote.submittedAt || quote.createdAt)}</span></div></div>`;
     const summary = `<section class="portal-panel admin-quote-full"><h2>Quote summary</h2><dl class="admin-quote-dl"><dt>Status</dt><dd>${escapeHtml(status(quote.status))}</dd><dt>Customer</dt><dd>${escapeHtml(customerName(customer))}<br><small>${escapeHtml(customer?.email || '')}</small></dd><dt>Created</dt><dd>${date(quote.createdAt)}</dd><dt>Submitted</dt><dd>${date(quote.submittedAt)}</dd><dt>Trip</dt><dd>${escapeHtml(trip?.title || '—')}</dd><dt>Destination</dt><dd>${escapeHtml(trip?.destination || '—')}</dd></dl></section>`;
     const items = detailList('Quote items', quote.items, item => `<li><strong>${escapeHtml(item.type)}</strong><span>${escapeHtml(item.description || 'Quote item')} · ${escapeHtml(item.quantity)} × ${escapeHtml(item.unitPrice ?? '0')} ${escapeHtml(quote.currency || '')}</span></li>`);
