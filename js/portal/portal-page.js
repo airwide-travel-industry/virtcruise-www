@@ -1,5 +1,6 @@
 import { authenticationProvider } from '../auth/authentication-provider.js';
 import { requireAuthentication } from '../auth/route-guard.js';
+import { isAdminOrStaff } from '../auth/persona.js';
 import { createPortalRepository } from './portal-repository.js';
 import {
   announce, confirmAction, emptyState, errorState, escapeHtml, formatDate, formatMoney,
@@ -73,6 +74,17 @@ async function renderDashboard() {
         <a href="${portalUrl('/index.html#service=holiday-packages')}">Create quote</a><a href="${portalUrl('/index.html#allPackages')}">Browse packages</a><a href="${portalUrl('/quotes/')}">View quotes</a><a href="${portalUrl('/bookings/')}">View bookings</a><a href="${portalUrl('/travellers/')}">Manage travellers</a><a href="${portalUrl('/profile/')}">Edit profile</a><a href="${portalUrl('/index.html#footerContact')}">Support</a>
       </div><div class="security-summary"><span aria-hidden="true">✓</span><div><strong>Security status</strong><small>${user.emailVerified ? 'Email verified · account protected' : 'Email verification required'}</small></div></div></aside>
     </div>`);
+}
+
+function renderAdminDashboard() {
+  const roles = new Set(Array.isArray(user?.roles) ? user.roles : []);
+  const permissions = new Set(Array.isArray(user?.permissions) ? user.permissions : []);
+  const cards = [['Administration', 'Manage staff-facing Virtcruise workspaces and controls.', '/dashboard/']];
+  if (roles.has('ROLE_CONTENT_EDITOR') || roles.has('ROLE_CONTENT_APPROVER') || roles.has('ROLE_ADMIN')) cards.push(['Content Studio', 'Manage the versioned public travel catalogue.', '/content-studio/']);
+  if (permissions.has('QUOTE_READ_ALL') || roles.has('ROLE_CONSULTANT') || roles.has('ROLE_ADMIN')) cards.push(['Customer Quotes', 'Review customer-submitted quote requests without changing ownership.', '/admin/quotes/']);
+  if (roles.has('ROLE_FINANCE') || roles.has('ROLE_ADMIN') || permissions.has('BANK_TRANSFER_REVIEW') || permissions.has('BANK_TRANSFER_ADMIN')) cards.push(['Finance Operations', 'Review bank-transfer cases and finance work queues.', '/finance/']);
+  if (roles.has('ROLE_OPERATIONS') || roles.has('ROLE_MANAGER') || roles.has('ROLE_ADMIN')) cards.push(['Operations', 'Open the live API-backed operational readiness workspace.', '/operational-readiness/']);
+  setPage(`${pageHeading('STAFF WORKSPACE', 'Administration Dashboard', 'Access the staff workspaces enabled for your assigned roles.')}<section class="dashboard-grid" aria-label="Administration modules">${cards.map(([title, description, href]) => `<a class="dashboard-card" href="${portalUrl(href)}"><strong>${escapeHtml(title)}</strong><small>${escapeHtml(description)}</small><span>Open workspace →</span></a>`).join('')}</section>`);
 }
 
 async function renderQuotes() {
@@ -424,7 +436,6 @@ const renderers = {
 async function initialize() {
   user = await requireAuthentication();
   if (!user) return;
-  repository = createPortalRepository(user);
   root.innerHTML = portalShell(user, page?.replace('-details', ''));
   root.addEventListener('click', async event => {
     const menu = event.target.closest('.portal-menu-toggle');
@@ -458,6 +469,11 @@ async function initialize() {
       await renderers[page]();
     }
   });
+  if (isAdminOrStaff(user)) {
+    renderAdminDashboard();
+    return;
+  }
+  repository = createPortalRepository(user);
   try {
     await renderers[page]();
   } catch (error) {

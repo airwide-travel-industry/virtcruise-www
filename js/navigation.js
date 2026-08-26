@@ -55,12 +55,33 @@ const escapeHtml = value => String(value).replace(/[&<>"']/g, character => ({
   '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
 })[character]);
 
+import { isAdminOrStaff, isCustomerPersona } from './auth/persona.js';
+
 const hasFinanceAccess = user => {
   const roles = new Set(Array.isArray(user?.roles) ? user.roles : []);
   const permissions = new Set(Array.isArray(user?.permissions) ? user.permissions : []);
   return roles.has('ROLE_FINANCE') || roles.has('ROLE_ADMIN')
     || permissions.has('BANK_TRANSFER_REVIEW') || permissions.has('BANK_TRANSFER_ADMIN');
 };
+
+function portalItemsForUser(user) {
+  if (isAdminOrStaff(user)) {
+    const roles = new Set(Array.isArray(user?.roles) ? user.roles : []);
+    const permissions = new Set(Array.isArray(user?.permissions) ? user.permissions : []);
+    const items = [['/dashboard/', 'Administration']];
+    if (roles.has('ROLE_CONTENT_EDITOR') || roles.has('ROLE_CONTENT_APPROVER') || roles.has('ROLE_ADMIN')) items.push(['/content-studio/', 'Content Studio']);
+    if (permissions.has('QUOTE_READ_ALL') || roles.has('ROLE_ADMIN') || roles.has('ROLE_CONSULTANT')) items.push(['/admin/quotes/', 'Customer Quotes']);
+    if (hasFinanceAccess(user)) items.push(['/finance/', 'Finance Operations']);
+    if (roles.has('ROLE_OPERATIONS') || roles.has('ROLE_MANAGER') || roles.has('ROLE_ADMIN')) items.push(['/operational-readiness/', 'Operations']);
+    return items;
+  }
+  if (!isCustomerPersona(user)) return [];
+  return [
+    ['/dashboard/', 'Dashboard'], ['/quotes/', 'My Quotes'], ['/bookings/', 'My Bookings'],
+    ['/financial/', 'Finances'], ['/bank-transfer/', 'Pay by Bank Transfer'],
+    ['/trips/', 'My Trips'], ['/travellers/', 'Travellers'], ['/profile/', 'Profile'], ['/notifications/', 'Notifications']
+  ];
+}
 
 const desktopNav = document.querySelector('[data-site-navigation], #mainNavigation, .detail-nav-links');
 let menuButton = document.querySelector('[data-mobile-navigation-toggle], .mobile-btn');
@@ -102,16 +123,10 @@ function renderAuthNavigation({ status, user }) {
   const desktop = document.querySelector('[data-auth-navigation]');
   const mobile = document.querySelector('[data-mobile-auth-navigation]');
   if (!desktop || !mobile) return;
+  document.getElementById('accountMenu')?.remove();
   if (status === 'authenticated' && user) {
     const name = escapeHtml(user.givenName || 'Traveller');
-    const portalItems = [
-      ['/dashboard/', 'Dashboard'], ['/quotes/', 'My Quotes'], ['/bookings/', 'My Bookings'],
-      ['/financial/', 'Finances'],
-      ['/bank-transfer/', 'Pay by Bank Transfer'],
-      ['/trips/', 'My Trips'],
-      ['/travellers/', 'Travellers'], ['/profile/', 'Profile'], ['/notifications/', 'Notifications']
-    ];
-    if (hasFinanceAccess(user)) portalItems.splice(1, 0, ['/finance/', 'Finance Operations']);
+    const portalItems = portalItemsForUser(user);
     const portalLinks = portalItems.map(([path, label]) =>
       `<a href="${authPageUrl(path)}">${label}</a>`
     ).join('');
@@ -123,12 +138,40 @@ function renderAuthNavigation({ status, user }) {
   }
 }
 
+function positionAccountMenu(toggle, menu) {
+  if (!toggle || !menu) return;
+  const rect = toggle.getBoundingClientRect();
+  menu.style.top = `${rect.bottom + 10}px`;
+  menu.style.right = `${Math.max(16, window.innerWidth - rect.right)}px`;
+}
+
+function portalAccountMenu(menu) {
+  if (!menu) return;
+  let root = document.getElementById('account-menu-overlay-root');
+  if (!root) {
+    root = document.createElement('div');
+    root.id = 'account-menu-overlay-root';
+    document.body.append(root);
+  }
+  if (menu.parentElement !== root) root.append(menu);
+}
+
+function closeAccountMenu() {
+  document.querySelector('.account-menu-toggle')?.setAttribute('aria-expanded', 'false');
+  document.getElementById('accountMenu')?.classList.remove('is-open');
+}
+
 async function handleAuthAction(event) {
   const accountToggle = event.target.closest('.account-menu-toggle');
   if (accountToggle) {
     const open = accountToggle.getAttribute('aria-expanded') !== 'true';
     accountToggle.setAttribute('aria-expanded', String(open));
-    document.getElementById('accountMenu')?.classList.toggle('is-open', open);
+    const menu = document.getElementById('accountMenu');
+    if (open) {
+      portalAccountMenu(menu);
+      positionAccountMenu(accountToggle, menu);
+    }
+    menu?.classList.toggle('is-open', open);
     return;
   }
   if (!event.target.closest('[data-auth-logout]')) return;
@@ -329,8 +372,7 @@ if (desktopNav && menuButton) {
 
   document.addEventListener('click', event => {
     if (!event.target.closest('.account-menu')) {
-      document.querySelector('.account-menu-toggle')?.setAttribute('aria-expanded', 'false');
-      document.getElementById('accountMenu')?.classList.remove('is-open');
+      closeAccountMenu();
     }
     if (openDropdownId && !event.target.closest('.nav-dropdown,[data-dropdown-toggle]')) closeDropdown();
     if (document.getElementById('mobileNavigation')?.classList.contains('is-open') &&
@@ -338,16 +380,26 @@ if (desktopNav && menuButton) {
   });
   document.addEventListener('keydown', event => {
     if (event.key !== 'Escape') return;
+    if (document.getElementById('accountMenu')?.classList.contains('is-open')) {
+      closeAccountMenu();
+      return;
+    }
     if (openDropdownId) closeDropdown({ restoreFocus: true });
     else if (document.getElementById('mobileNavigation')?.classList.contains('is-open')) closeMobileNavigation({ restoreFocus: true });
   });
   window.addEventListener('resize', () => {
     if (openDropdownId) positionDropdown(openDropdownId);
+    const accountToggle = document.querySelector('.account-menu-toggle');
+    const accountMenu = document.getElementById('accountMenu');
+    if (accountMenu?.classList.contains('is-open')) positionAccountMenu(accountToggle, accountMenu);
     setMobileTop();
     if (window.innerWidth > 1050) closeMobileNavigation();
   });
   window.addEventListener('scroll', () => {
     if (openDropdownId) positionDropdown(openDropdownId);
+    const accountToggle = document.querySelector('.account-menu-toggle');
+    const accountMenu = document.getElementById('accountMenu');
+    if (accountMenu?.classList.contains('is-open')) positionAccountMenu(accountToggle, accountMenu);
     setMobileTop();
   }, { passive: true });
   window.addEventListener('hashchange', updateActiveState);

@@ -88,9 +88,8 @@
 .account-dropdown {
   min-width: 215px;
   max-height: min(430px, calc(100vh - 120px));
-  position: absolute;
-  right: 0;
-  top: calc(100% + 10px);
+  position: fixed;
+  z-index: 991;
   display: none;
   padding: 8px;
   border: 1px solid rgba(228, 179, 64, .45);
@@ -98,6 +97,11 @@
   background: #031a38;
   box-shadow: 0 16px 34px rgba(0, 0, 0, .3);
   overflow-y: auto;
+}
+
+#account-menu-overlay-root {
+  position: relative;
+  z-index: 2000;
 }
 
 .account-dropdown.is-open {

@@ -214,12 +214,28 @@ for (const viewport of viewports) {
     assert.equal(await container.getByRole('link', { name: 'Sign In', exact: true }).count(), 0);
     await assertVisible(container.locator('.account-avatar'), `${viewport.name} account avatar`);
     await assertVisible(container.getByText('Amina', { exact: true }), `${viewport.name} customer name`);
-    if (!viewport.mobile) await container.locator('.account-menu-toggle').click();
-    const logout = container.getByRole('button', { name: 'Logout', exact: true });
+    if (!viewport.mobile) {
+      const toggle = container.locator('.account-menu-toggle');
+      await toggle.click();
+      const menu = page.locator('#accountMenu');
+      assert.equal(await menu.evaluate(element => Boolean(element.closest('#account-menu-overlay-root') && !element.closest('.nav-shell'))), true);
+      assert.equal(await toggle.getAttribute('aria-expanded'), 'true');
+      await assertVisible(menu, `${viewport.name} account menu`);
+      assert.equal(await menu.getByRole('link', { name: 'Dashboard', exact: true }).getAttribute('href'), '/dashboard/');
+      await page.mouse.click(12, 12);
+      assert.equal(await toggle.getAttribute('aria-expanded'), 'false');
+      await toggle.click();
+      await page.keyboard.press('Escape');
+      assert.equal(await toggle.getAttribute('aria-expanded'), 'false');
+      await toggle.click();
+    }
+    const logout = viewport.mobile
+      ? container.getByRole('button', { name: 'Logout', exact: true })
+      : page.locator('#accountMenu').getByRole('button', { name: 'Logout', exact: true });
     await logout.scrollIntoViewIfNeeded();
     await assertVisible(logout,
       `${viewport.name} Logout`);
-    await assertVisible(container.getByRole('link', { name: 'Dashboard', exact: true }),
+    await assertVisible((viewport.mobile ? container : page.locator('#accountMenu')).getByRole('link', { name: 'Dashboard', exact: true }),
       `${viewport.name} My Account navigation`);
     await context.close();
   });
