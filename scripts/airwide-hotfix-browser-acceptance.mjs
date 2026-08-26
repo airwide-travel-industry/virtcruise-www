@@ -8,7 +8,7 @@ import { launchChromium } from '../tests/helpers/playwright-runtime.mjs';
 const frontendHost = 'virtcruise.airwide.co.uk';
 const frontendOrigin = `https://${frontendHost}`;
 const apiOrigin = 'https://api.virtcruise.airwide.co.uk';
-const root = resolve(process.env.PRODUCTION_BETA_ARTIFACT_ROOT || 'dist/virtcruise-www-0.8.0-beta.1');
+const root = resolve(process.env.PRODUCTION_BETA_ARTIFACT_ROOT || 'dist/virtcruise-www-0.8.0-beta.2');
 const key = await readFile(process.env.AIRWIDE_HOTFIX_TLS_KEY);
 const cert = await readFile(process.env.AIRWIDE_HOTFIX_TLS_CERT);
 const types = { '.css':'text/css; charset=utf-8','.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.json':'application/json','.png':'image/png','.jpg':'image/jpeg','.webp':'image/webp','.xml':'application/xml' };

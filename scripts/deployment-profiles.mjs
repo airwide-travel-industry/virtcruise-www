@@ -7,8 +7,8 @@ export const deploymentProfiles = Object.freeze({
     upstreamApiOrigin: 'https://api.virtcruise.airwide.co.uk'
   }),
   'production-beta': Object.freeze({
-    stageName: 'virtcruise-www-0.8.0-beta.1',
-    release: '0.8.0-beta.1',
+    stageName: 'virtcruise-www-0.8.0-beta.2',
+    release: '0.8.0-beta.2',
     publicOrigin: 'https://virtcruise.airwide.co.uk',
     apiOrigin: 'https://api.virtcruise.airwide.co.uk',
     upstreamApiOrigin: 'https://api.virtcruise.airwide.co.uk',

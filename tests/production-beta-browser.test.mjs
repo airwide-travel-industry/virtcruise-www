@@ -5,7 +5,7 @@ import { launchChromium } from './helpers/playwright-runtime.mjs';
 import { startStaticServer } from '../scripts/safe-static-server.mjs';
 
 const apiOrigin = 'https://api.virtcruise.airwide.co.uk';
-const artifactRoot = resolve('dist/virtcruise-www-0.8.0-beta.1');
+const artifactRoot = resolve('dist/virtcruise-www-0.8.0-beta.2');
 const packages = ['Zimbabwe Safari', 'European City Break', 'Tropical Paradise'].map((title, index) => ({
   id: `published-${index + 1}`, code: `PKG-${index + 1}`,
   slug: title.toLowerCase().replaceAll(' ', '-'), packageType: 'HOLIDAY_PACKAGE', title,
