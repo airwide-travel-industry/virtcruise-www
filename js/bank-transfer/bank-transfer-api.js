@@ -31,7 +31,7 @@ async function uploadRequest(path, file, key) {
 export function createBankTransferRepository() {
   return Object.freeze({
     capability: invoiceId => financialRequest(`${reviewPath}/capability${invoiceId ? `?invoiceId=${encodeURIComponent(invoiceId)}` : ''}`),
-    instructions: currency => financialRequest(`${reviewPath}/instructions?currency=${encodeURIComponent(currency)}`),
+    instructions: invoiceId => financialRequest(`${reviewPath}/instructions?invoiceId=${encodeURIComponent(invoiceId)}`),
     reviews: () => financialRequest(`${reviewPath}?page=0&size=100&sort=createdAt&direction=desc`),
     review: id => financialRequest(`${reviewPath}/${encodeURIComponent(id)}`),
     create: value => financialRequest(reviewPath, { method: 'POST', body: value, idempotencyKey: crypto.randomUUID() }),
