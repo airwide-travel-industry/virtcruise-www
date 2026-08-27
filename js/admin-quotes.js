@@ -22,6 +22,7 @@ const status = value => String(value || '').toUpperCase();
 const customerName = customer => [customer?.firstName, customer?.lastName].filter(Boolean).join(' ') || 'Customer';
 const errorText = error => error instanceof AuthError && error.status ? `Customer Quotes could not be loaded (HTTP ${error.status}).` : 'Customer Quotes could not be loaded. Please try again.';
 const money = formatQuoteAmount;
+const maskedAccount = value => { const text = String(value || ''); return text.length > 4 ? `••••${text.slice(-4)}` : '••••'; };
 const statusBadge = value => `<span class="vc-badge vc-badge--${badgeTone[status(value)] || 'draft'}">${escapeHtml(status(value))}</span>`;
 
 function setShell(user, active) {
@@ -81,9 +82,11 @@ function acceptedCommercialSummary(quote) {
   return sectionWrap('Commercial Summary', `<section class="portal-panel admin-commercial-summary"><dl class="admin-quote-dl"><dt>Currency</dt><dd>${escapeHtml(currency)}</dd><dt>Subtotal</dt><dd>${amount(quote.estimatedValue)}</dd><dt>Total accepted</dt><dd><strong>${amount(quote.estimatedValue)}</strong></dd></dl><div class="admin-quote-table-wrap"><table class="admin-quote-table"><caption>Accepted commercial terms</caption><thead><tr><th scope="col">Item</th><th scope="col">Quantity</th><th scope="col">Unit Price</th><th scope="col">Line Total</th></tr></thead><tbody>${lines}</tbody></table></div><p class="admin-commercial-summary-note">Taxes, fees and discounts are not represented by the current quote model.</p></section>`);
 }
 
-function invoicePanel(quote, linkedInvoice) {
+function invoicePanel(quote, linkedInvoice, bankAccounts = [], assignment = null, instruction = null) {
   if (linkedInvoice) {
-    return sectionWrap('Invoice', `<section class="portal-panel admin-commercial-summary"><p><strong>${escapeHtml(linkedInvoice.number)}</strong> ${statusBadge(linkedInvoice.status)}</p><p>${escapeHtml(linkedInvoice.total.currency)} ${money(linkedInvoice.total.amount)}</p><a class="portal-button" href="/financial/invoices/details/?id=${encodeURIComponent(linkedInvoice.id)}">View Invoice</a>${linkedInvoice.status === 'DRAFT' && currentUser?.roles?.includes('ROLE_ADMIN') ? ` <button class="portal-button secondary" type="button" data-issue-invoice>Issue Invoice</button>` : ''}<p role="status" data-invoice-message></p></section>`);
+    const eligible = bankAccounts.filter(account => account.active && account.currency === linkedInvoice.total.currency);
+    const destination = linkedInvoice.status === 'DRAFT' ? (eligible.length ? `<section class="payment-destination"><h3>Payment Destination</h3><label>Receiving Bank Account<select data-bank-assignment><option value="">Select account</option>${eligible.map(account => `<option value="${account.bankAccountId}" ${assignment?.bankAccountId === account.bankAccountId ? 'selected' : ''}>${escapeHtml(account.displayName)} · ${escapeHtml(account.bankName)} · ${escapeHtml(account.currency)} · ${maskedAccount(account.accountNumber)}</option>`).join('')}</select></label><button class="portal-button secondary" type="button" data-save-bank-account>Save</button></section>` : `<section class="payment-destination"><p>No active ${escapeHtml(linkedInvoice.total.currency)} receiving account is configured.</p><a class="portal-button secondary" href="/finance/bank-accounts/">Manage Bank Accounts</a></section>`) : instruction ? `<section class="payment-destination"><h3>Payment Instructions</h3><dl><div><dt>Bank</dt><dd>${escapeHtml(instruction.bankName)}</dd></div><div><dt>Account Name</dt><dd>${escapeHtml(instruction.accountName)}</dd></div><div><dt>Account</dt><dd>${maskedAccount(instruction.accountNumber)}</dd></div><div><dt>Branch</dt><dd>${escapeHtml(instruction.branchCode)}</dd></div><div><dt>SWIFT/BIC</dt><dd>${escapeHtml(instruction.swift || 'Not required')}</dd></div><div><dt>Currency</dt><dd>${escapeHtml(instruction.currency)}</dd></div><div><dt>Payment Reference</dt><dd>${escapeHtml(instruction.customerReference)}</dd></div></dl></section>` : '';
+    return sectionWrap('Invoice', `<section class="portal-panel admin-commercial-summary"><p><strong>${escapeHtml(linkedInvoice.number)}</strong> ${statusBadge(linkedInvoice.status)}</p><p>${escapeHtml(linkedInvoice.total.currency)} ${money(linkedInvoice.total.amount)}</p><a class="portal-button" href="/financial/invoices/details/?id=${encodeURIComponent(linkedInvoice.id)}">View Invoice</a>${destination}${linkedInvoice.status === 'DRAFT' && currentUser?.roles?.includes('ROLE_ADMIN') ? ` <button class="portal-button secondary" type="button" data-issue-invoice>Issue Invoice</button>` : ''}<p role="status" data-invoice-message></p></section>`);
   }
   if (!canCreateInvoice(quote, currentUser)) return '';
   const total = `${escapeHtml(quote.currency || '')} ${money(quote.estimatedValue)}`;
@@ -101,8 +104,19 @@ async function loadDetail(id) {
   try {
     const quote = await read(`/api/v1/quotes/${encodeURIComponent(id)}/details`);
     let linkedInvoice = null;
+    let bankAccounts = [];
+    let assignment = null;
+    let instruction = null;
     if (status(quote.status) === 'ACCEPTED') {
       try { linkedInvoice = await adminQuotes.existingInvoice(id); } catch (error) { if (!(error instanceof AuthError && error.status === 404)) throw error; }
+      if (linkedInvoice) {
+        if (linkedInvoice.status === 'DRAFT') {
+          bankAccounts = collection(await adminQuotes.bankAccounts());
+          assignment = await adminQuotes.bankAssignment(linkedInvoice.id);
+        } else {
+          try { instruction = await adminQuotes.paymentInstructions(linkedInvoice.id); } catch (error) { if (!(error instanceof AuthError && error.status === 404)) throw error; }
+        }
+      }
     }
     const customer = quote.customer;
     const trip = quote.itinerary;
@@ -117,7 +131,7 @@ async function loadDetail(id) {
     const travelPlan = sectionWrap('Travel Plan', segmentsPanel(trip?.segments));
     const canPrepare = currentUser?.roles?.includes('ROLE_ADMIN') || currentUser?.permissions?.includes('QUOTE_CHANGE_STATUS');
     const quotation = canPrepare && ['SUBMITTED', 'SENT'].includes(status(quote.status)) ? sectionWrap('Prepare Quotation', `<section class="portal-panel admin-quotation"><p class="portal-eyebrow">Staff pricing</p><form data-quotation-form><div class="admin-quote-pricing-grid">${(quote.items || []).map(item => pricingRow(item, quote.currency)).join('')}</div><div class="admin-quote-footer-grid"><label class="admin-quote-field">Quotation Valid Until<input type="date" name="validUntil" value="${escapeHtml(quote.validUntil || '')}"></label><label class="admin-quote-field">Customer-visible Notes<textarea name="notes" rows="3">${escapeHtml(quote.notes || '')}</textarea></label></div><div class="admin-quote-total-row"><span class="vc-eyebrow">Quotation Total</span><strong data-quotation-total>${escapeHtml(quote.currency || '')} ${money(quoteGrandTotal(quote.items))}</strong></div><div class="admin-quote-actions"><button class="portal-button" type="submit">Save Quotation</button>${status(quote.status) === 'SUBMITTED' ? '<button class="portal-button secondary" type="button" data-issue-quotation>Send Quote to Customer</button>' : ''}<p role="status" data-quotation-message></p></div></form></section>`) : '';
-    document.querySelector('#portalPage').innerHTML = `${header}${hero}<div class="admin-quote-live">LIVE · existing quote pricing · staff protected</div>${commercialSummary}${invoicePanel(quote, linkedInvoice)}${requestOverview}${travelPlan}${quotation}`;
+    document.querySelector('#portalPage').innerHTML = `${header}${hero}<div class="admin-quote-live">LIVE · existing quote pricing · staff protected</div>${commercialSummary}${invoicePanel(quote, linkedInvoice, bankAccounts, assignment, instruction)}${requestOverview}${travelPlan}${quotation}`;
     bindQuotation(id);
     bindInvoice(id, quote, linkedInvoice);
   } catch (error) { errorPage(error); }
@@ -126,6 +140,13 @@ async function loadDetail(id) {
 function bindInvoice(id, quote, linkedInvoice) {
   const create = document.querySelector('[data-create-invoice]');
   const message = document.querySelector('[data-invoice-message]');
+  document.querySelector('[data-save-bank-account]')?.addEventListener('click', async event => {
+    const bankAccountId = document.querySelector('[data-bank-assignment]')?.value;
+    if (!bankAccountId) { if (message) message.textContent = 'Select a receiving bank account before saving.'; return; }
+    event.currentTarget.disabled = true;
+    try { await adminQuotes.assignBankAccount(linkedInvoice.id, bankAccountId); await loadDetail(id); }
+    catch (error) { if (message) message.textContent = errorText(error); event.currentTarget.disabled = false; }
+  });
   create?.addEventListener('click', async () => {
     if (!window.confirm(`Create Invoice\n\nQuote: ${quote.quoteNumber}\nCustomer: ${customerName(quote.customer)}\nCurrency: ${quote.currency}\nTotal: ${quote.currency} ${money(quote.estimatedValue)}\n\nThis will create a DRAFT invoice from the accepted quotation.`)) return;
     create.disabled = true;
