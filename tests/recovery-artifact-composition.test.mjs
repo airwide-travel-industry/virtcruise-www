@@ -14,6 +14,7 @@ test('recovery production artifact retains every accepted V20 surface', () => {
     'virtcruise-www-0.8.0-beta.2/admin/index.html',
     'virtcruise-www-0.8.0-beta.2/admin/quotes/index.html',
     'virtcruise-www-0.8.0-beta.2/admin/quotes/details/index.html',
+    'virtcruise-www-0.8.0-beta.2/js/quote-total.js',
     'virtcruise-www-0.8.0-beta.2/finance/index.html',
     'virtcruise-www-0.8.0-beta.2/operational-readiness/index.html'
   ]) assert.match(listing, new RegExp(`^${route.replaceAll('/', '\\/')}$`, 'm'), `missing packaged route ${route}`);
