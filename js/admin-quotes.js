@@ -2,6 +2,8 @@ import { authRequest, AuthError } from './auth/auth-api.js';
 import { authenticationProvider } from './auth/authentication-provider.js';
 import { authPageUrl } from './auth/config.js';
 import { isAdminOrStaff } from './auth/persona.js';
+import { canCreateInvoice } from './admin-invoice-eligibility.js';
+import { createAdminQuotesRepository } from './admin-quotes-repository.js';
 import { escapeHtml, pageHeading, portalShell, portalUrl } from './portal/portal-components.js';
 import { finiteAmount, formatQuoteAmount, quoteGrandTotal, quoteLineTotal } from './quote-total.js';
 
@@ -13,6 +15,7 @@ let currentStatus = 'ALL';
 let currentUser;
 
 const read = (path, options) => authenticationProvider.withAccess(() => authRequest(path, options));
+const adminQuotes = createAdminQuotesRepository({ request: read });
 const collection = value => Array.isArray(value) ? value : value?.content || value?.items || value?.data || [];
 const date = value => value ? new Intl.DateTimeFormat(undefined, { dateStyle: 'medium' }).format(new Date(value)) : '—';
 const status = value => String(value || '').toUpperCase();
@@ -79,11 +82,10 @@ function acceptedCommercialSummary(quote) {
 }
 
 function invoicePanel(quote, linkedInvoice) {
-  if (status(quote.status) !== 'ACCEPTED') return '';
   if (linkedInvoice) {
     return sectionWrap('Invoice', `<section class="portal-panel admin-commercial-summary"><p><strong>${escapeHtml(linkedInvoice.number)}</strong> ${statusBadge(linkedInvoice.status)}</p><p>${escapeHtml(linkedInvoice.total.currency)} ${money(linkedInvoice.total.amount)}</p><a class="portal-button" href="/financial/invoices/details/?id=${encodeURIComponent(linkedInvoice.id)}">View Invoice</a>${linkedInvoice.status === 'DRAFT' && currentUser?.roles?.includes('ROLE_ADMIN') ? ` <button class="portal-button secondary" type="button" data-issue-invoice>Issue Invoice</button>` : ''}<p role="status" data-invoice-message></p></section>`);
   }
-  if (!currentUser?.roles?.includes('ROLE_ADMIN')) return '';
+  if (!canCreateInvoice(quote, currentUser)) return '';
   const total = `${escapeHtml(quote.currency || '')} ${money(quote.estimatedValue)}`;
   return sectionWrap('Create Invoice', `<section class="portal-panel admin-commercial-summary"><p>This will create a <strong>DRAFT</strong> invoice from the accepted quotation.</p><dl class="admin-quote-dl"><dt>Quote</dt><dd>${escapeHtml(quote.quoteNumber)}</dd><dt>Customer</dt><dd>${escapeHtml(customerName(quote.customer))}</dd><dt>Currency</dt><dd>${escapeHtml(quote.currency)}</dd><dt>Total</dt><dd>${total}</dd></dl><button class="portal-button" type="button" data-create-invoice>Create Invoice</button><p role="status" data-invoice-message></p></section>`);
 }
@@ -100,7 +102,7 @@ async function loadDetail(id) {
     const quote = await read(`/api/v1/quotes/${encodeURIComponent(id)}/details`);
     let linkedInvoice = null;
     if (status(quote.status) === 'ACCEPTED') {
-      try { linkedInvoice = await read(`/api/v1/admin/quotes/${encodeURIComponent(id)}/invoice`); } catch (error) { if (!(error instanceof AuthError && error.status === 404)) throw error; }
+      try { linkedInvoice = await adminQuotes.existingInvoice(id); } catch (error) { if (!(error instanceof AuthError && error.status === 404)) throw error; }
     }
     const customer = quote.customer;
     const trip = quote.itinerary;
@@ -127,12 +129,12 @@ function bindInvoice(id, quote, linkedInvoice) {
   create?.addEventListener('click', async () => {
     if (!window.confirm(`Create Invoice\n\nQuote: ${quote.quoteNumber}\nCustomer: ${customerName(quote.customer)}\nCurrency: ${quote.currency}\nTotal: ${quote.currency} ${money(quote.estimatedValue)}\n\nThis will create a DRAFT invoice from the accepted quotation.`)) return;
     create.disabled = true;
-    try { await read(`/api/v1/admin/quotes/${encodeURIComponent(id)}/invoice`, { method: 'POST' }); await loadDetail(id); }
+    try { await adminQuotes.createInvoice(id); await loadDetail(id); }
     catch (error) { if (message) message.textContent = errorText(error); create.disabled = false; }
   });
   document.querySelector('[data-issue-invoice]')?.addEventListener('click', async event => {
     event.currentTarget.disabled = true;
-    try { await read(`/api/v1/financial/invoices/${encodeURIComponent(linkedInvoice.id)}/issue`, { method: 'POST' }); await loadDetail(id); }
+    try { await adminQuotes.issueInvoice(linkedInvoice.id); await loadDetail(id); }
     catch (error) { if (message) message.textContent = errorText(error); event.currentTarget.disabled = false; }
   });
 }
