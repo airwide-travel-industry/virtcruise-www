@@ -12,7 +12,7 @@ const profile = deploymentProfile(profileName);
 const stage = join(output, profile.stageName);
 const zip = `${stage}.zip`;
 const publicOrigin = profile.publicOrigin;
-const runtimeRoots = ['index.html', 'account', 'auth', 'bank-transfer', 'bookings', 'content-studio',
+const runtimeRoots = ['index.html', 'account', 'admin', 'auth', 'bank-transfer', 'bookings', 'content-studio',
   'css', 'dashboard', 'data', 'finance', 'financial', 'fonts', 'forgot-password', 'images', 'js',
   'notifications', 'operational-readiness', 'packages', 'preferences', 'profile', 'quotes', 'register',
   'reset-password', 'signin', 'travellers', 'trips', 'verify-email', 'robots.txt', 'sitemap.xml'];

@@ -9,6 +9,14 @@ const source = file => readFileSync(`${root}${file}`, 'utf8');
 const artifact = file => execFileSync('unzip', ['-p', archive, file], { encoding: 'utf8' });
 
 test('recovery production artifact retains every accepted V20 surface', () => {
+  const listing = execFileSync('unzip', ['-Z1', archive], { encoding: 'utf8' });
+  for (const route of [
+    'virtcruise-www-0.8.0-beta.2/admin/index.html',
+    'virtcruise-www-0.8.0-beta.2/admin/quotes/index.html',
+    'virtcruise-www-0.8.0-beta.2/admin/quotes/details/index.html',
+    'virtcruise-www-0.8.0-beta.2/finance/index.html',
+    'virtcruise-www-0.8.0-beta.2/operational-readiness/index.html'
+  ]) assert.match(listing, new RegExp(`^${route.replaceAll('/', '\\/')}$`, 'm'), `missing packaged route ${route}`);
   const navigation = artifact('virtcruise-www-0.8.0-beta.2/js/navigation.js');
   const components = artifact('virtcruise-www-0.8.0-beta.2/js/portal/portal-components.js');
   const adminQuotes = artifact('virtcruise-www-0.8.0-beta.2/js/admin-quotes.js');
