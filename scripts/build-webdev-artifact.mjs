@@ -168,6 +168,30 @@ await rm(join(stage, 'images', '.gitkeep'), { force: true });
 
 if (profile.productionRuntime) await hardenProductionRuntime();
 
+if (profileName === 'reconciled-v21') {
+  const featureChecks = {
+    CREATE_INVOICE: ['js/admin-quotes.js', /Create Invoice/],
+    CUSTOMER_QUOTES: ['js/admin-quotes.js', /Customer Quotes/],
+    FINANCE_BANK_ACCOUNTS: ['js/finance/bank-accounts-page.js', /Add Bank Account/],
+    FINANCE_INVOICES: ['js/financial/financial-page.js', /renderFinanceInvoices/],
+    LEGACY_PAYMENT_INSTRUCTIONS: ['js/financial/financial-page.js', /Issue Payment Instructions/],
+    DRAFT_BANK_SELECTOR: ['js/admin-quotes.js', /data-bank-assignment/],
+    ACCOUNT_OVERLAY: ['js/navigation.js', /account-menu-overlay-root.*portalAccountMenu|portalAccountMenu.*account-menu-overlay-root/s],
+    PERSONA_BOUNDARY: ['js/auth/persona.js', /isAdminOrStaff.*isCustomerPersona/s],
+    CONTENT_STUDIO: ['content-studio/index.html', /content-studio\.js/],
+    OPERATIONS: ['operational-readiness/index.html', /operational-readiness\.js/]
+  };
+  const checks = {};
+  for (const [name, [file, pattern]] of Object.entries(featureChecks)) {
+    let content = '';
+    try { content = await readFile(join(stage, file), 'utf8'); } catch {}
+    checks[name] = pattern.test(content) ? 'PRESENT' : 'MISSING';
+  }
+  const featureManifest = { release: profile.release, artifact: `${stage.slice(output.length + 1)}.zip`, features: checks, allPresent: Object.values(checks).every(value => value === 'PRESENT') };
+  await writeFile(join(stage, 'FEATURE-MANIFEST.json'), `${JSON.stringify(featureManifest, null, 2)}\n`);
+  if (!featureManifest.allPresent) throw new Error(`Feature composition gate failed: ${JSON.stringify(checks)}`);
+}
+
 const runtimeConfigPath = join(stage, 'js', 'runtime-config.js');
 let runtimeConfig = await readFile(runtimeConfigPath, 'utf8');
 runtimeConfig = runtimeConfig

@@ -1,8 +1,9 @@
 import { authenticationProvider } from '../auth/authentication-provider.js';
-import { requireAuthentication } from '../auth/route-guard.js';
+import { hasFinanceAccess, requireAuthentication } from '../auth/route-guard.js';
 import {
   announce, emptyState, errorState, escapeHtml, formatDate, pageHeading, portalShell, portalUrl
 } from '../portal/portal-components.js';
+import { financeShell } from '../finance/finance-components.js';
 import { debounce, searchableText } from '../portal/debounced-search.js';
 import { createFinancialRepository } from './financial-repository.js';
 import {
@@ -15,6 +16,7 @@ const pageSize = 10;
 let repository;
 let user;
 let currentPage = 0;
+let financeMode = false;
 
 function setPage(markup, { focus = true } = {}) {
   const page = document.getElementById('portalPage');
@@ -76,6 +78,52 @@ function invoiceCard(invoice) {
     </dl>
     <a class="portal-button secondary" href="${portalUrl('/financial/invoices/details/', { id: invoice.id })}">View invoice ${escapeHtml(invoice.number)}</a>
   </article>`;
+}
+
+const maskedAccount = value => {
+  const text = String(value || '');
+  return text.length > 4 ? `••••${text.slice(-4)}` : '••••';
+};
+
+function financeInvoiceRow(invoice) {
+  return `<tr><th scope="row">${escapeHtml(invoice.number)}</th><td>${escapeHtml(invoice.customerId || 'Customer')}</td><td>${escapeHtml(invoice.sourceQuoteId || '—')}</td><td>${escapeHtml(invoice.status)}</td><td>${escapeHtml(invoice.total.currency)}</td><td>${amountDescription(invoice.total, 'Invoice total')}</td><td>${amountDescription(invoice.allocated, 'Amount paid')}</td><td>${amountDescription(invoice.outstanding, 'Outstanding balance')}</td><td><a class="portal-button secondary" href="${portalUrl('/financial/invoices/details/', { id: invoice.id })}">Open invoice</a></td></tr>`;
+}
+
+async function renderFinanceInvoices() {
+  const page = await repository.invoices({ page: currentPage, size: pageSize });
+  setPage(`${pageHeading('Finance Operations', 'Invoices', 'Manage invoice payment readiness and approved receiving-account instructions.')}
+    <div class="finance-table-wrap"><table class="finance-table"><caption>Finance invoices</caption><thead><tr><th>Invoice number</th><th>Customer</th><th>Source Quote</th><th>Status</th><th>Currency</th><th>Total</th><th>Amount Paid</th><th>Outstanding Balance</th><th>Action</th></tr></thead><tbody>${page.items.map(financeInvoiceRow).join('')}</tbody></table></div>${pagination(page, 'Invoice')}`);
+  bindPagination(renderFinanceInvoices);
+}
+
+function instructionView(instruction) {
+  return `<section class="portal-panel payment-destination"><h2>PAYMENT INSTRUCTIONS</h2><dl class="financial-facts"><div><dt>Bank</dt><dd>${escapeHtml(instruction.bankName)}</dd></div><div><dt>Account Name</dt><dd>${escapeHtml(instruction.accountName)}</dd></div><div><dt>Account</dt><dd>${escapeHtml(maskedAccount(instruction.accountNumber))}</dd></div><div><dt>Branch</dt><dd>${escapeHtml(instruction.branchCode || 'Not configured')}</dd></div><div><dt>SWIFT/BIC</dt><dd>${escapeHtml(instruction.swift || 'Not configured')}</dd></div><div><dt>Currency</dt><dd>${escapeHtml(instruction.currency)}</dd></div><div><dt>Reference</dt><dd>${escapeHtml(instruction.customerReference)}</dd></div></dl></section>`;
+}
+
+async function renderFinanceInvoiceDetails() {
+  const id = new URLSearchParams(location.search).get('id');
+  if (!id) { await renderFinanceInvoices(); return; }
+  const invoice = await repository.invoice(id);
+  let instruction = null;
+  try { instruction = await repository.paymentInstruction(id); } catch (error) { if (error.status !== 404) throw error; }
+  const eligible = instruction ? [] : (await repository.receivingAccounts()).filter(account => account.active && String(account.currency).toUpperCase() === invoice.total.currency);
+  const blocked = ['PAID', 'PARTIALLY_PAID', 'SETTLED', 'CLEARED'].includes(String(invoice.status).toUpperCase()) || Number(invoice.allocated.amount) > 0;
+  const recovery = !instruction && !blocked && invoice.status === 'ISSUED' && eligible.length
+    ? `<section class="portal-panel payment-destination"><h2>PAYMENT INSTRUCTIONS</h2><p>No payment instructions have been issued for this invoice.</p><label>Receiving Bank Account<select data-legacy-bank-account required><option value="">Select receiving account</option>${eligible.map(account => `<option value="${escapeHtml(account.bankAccountId)}">${escapeHtml(account.displayName)} · ${escapeHtml(account.currency)} · ${escapeHtml(maskedAccount(account.accountNumber))}</option>`).join('')}</select></label><button class="portal-button" type="button" data-issue-payment>Issue Payment Instructions</button><p role="status" data-invoice-message></p></section>` : '';
+  setPage(`${pageHeading('Finance Invoice', invoice.number, 'Finance-controlled invoice detail workspace.', '<button class="portal-button secondary" type="button" data-print-financial>Print invoice view</button>')}
+    <section class="financial-invoice-hero"><div>${financialStatus(invoice.status)}<p>Source Quote ${escapeHtml(invoice.sourceQuoteId || 'Not linked')}</p></div><div><small>Outstanding balance</small>${amountDescription(invoice.outstanding, 'Outstanding balance')}</div></section>
+    <section class="portal-panel financial-line-items"><h2>Invoice items</h2><div class="financial-table-scroll"><table><caption>Line items for invoice ${escapeHtml(invoice.number)}</caption><thead><tr><th>Description</th><th>Quantity</th><th>Unit amount</th><th>Tax rate</th><th>Tax</th><th>Total</th></tr></thead><tbody>${invoice.lines.map(line => `<tr><th>${escapeHtml(line.description)}</th><td>${escapeHtml(line.quantity)}</td><td>${amountDescription(line.unitPrice, 'Unit amount')}</td><td>${escapeHtml(line.taxRate)}</td><td>${amountDescription(line.tax, 'Tax')}</td><td>${amountDescription(line.total, 'Line total')}</td></tr>`).join('')}</tbody></table></div><dl class="financial-totals"><div><dt>Total</dt><dd>${amountDescription(invoice.total, 'Invoice total')}</dd></div><div><dt>Amount paid</dt><dd>${amountDescription(invoice.allocated, 'Amount paid')}</dd></div><div class="total"><dt>Outstanding balance</dt><dd>${amountDescription(invoice.outstanding, 'Outstanding balance')}</dd></div></dl></section>${instruction ? instructionView(instruction) : recovery}`);
+  document.querySelector('[data-print-financial]')?.addEventListener('click', () => window.print());
+  document.querySelector('[data-issue-payment]')?.addEventListener('click', async event => {
+    const select = document.querySelector('[data-legacy-bank-account]');
+    if (!select.value) { document.querySelector('[data-invoice-message]').textContent = 'Select an ACTIVE matching-currency receiving account.'; return; }
+    const account = select.selectedOptions[0].textContent;
+    const confirmed = window.confirm(`Issue bank-transfer instructions?\n\nInvoice: ${invoice.number}\nAmount: ${formatFinancialMoney(invoice.total)}\nReceiving account: ${account}\n\nThis will create immutable payment instructions for this invoice.`);
+    if (!confirmed) return;
+    event.currentTarget.disabled = true;
+    try { await repository.issuePaymentInstruction(id, select.value); repository.clear(); await renderFinanceInvoiceDetails(); announce('Payment instructions issued.'); }
+    catch (error) { document.querySelector('[data-invoice-message]').textContent = error.message; event.currentTarget.disabled = false; }
+  });
 }
 
 async function renderOverview() {
@@ -245,11 +293,12 @@ const renderers = {
 async function initialize() {
   user = await requireAuthentication();
   if (!user) return;
+  financeMode = hasFinanceAccess(user) && ['invoices', 'invoice-details'].includes(pageName);
   repository = createFinancialRepository();
-  const activeNavigation = pageName === 'overview'
+  if (financeMode) root.innerHTML = financeShell(user, 'invoices');
+  else root.innerHTML = portalShell(user, pageName === 'overview'
     ? 'financial'
-    : pageName === 'invoice-details' ? 'invoices' : pageName;
-  root.innerHTML = portalShell(user, activeNavigation);
+    : pageName === 'invoice-details' ? 'invoices' : pageName);
   root.addEventListener('click', async event => {
     const menu = event.target.closest('.portal-menu-toggle');
     if (menu) {
@@ -265,11 +314,11 @@ async function initialize() {
     if (event.target.closest('[data-print-financial]')) window.print();
     if (event.target.closest('[data-retry]')) {
       repository.clear();
-      await renderers[pageName]();
+      await (financeMode ? (pageName === 'invoices' ? renderFinanceInvoices() : renderFinanceInvoiceDetails()) : renderers[pageName]());
     }
   });
   try {
-    await renderers[pageName]();
+    await (financeMode ? (pageName === 'invoices' ? renderFinanceInvoices() : renderFinanceInvoiceDetails()) : renderers[pageName]());
   } catch (error) {
     setPage(`${pageHeading('Your finances', 'Financial information unavailable', 'Your account remains secure.')}
       ${errorMarkup(error)}`);

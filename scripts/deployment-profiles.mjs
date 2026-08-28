@@ -21,6 +21,14 @@ export const deploymentProfiles = Object.freeze({
     apiOrigin: 'https://api.virtcruise.airwide.co.uk',
     upstreamApiOrigin: 'https://api.virtcruise.airwide.co.uk',
     productionRuntime: true
+  }),
+  'reconciled-v21': Object.freeze({
+    stageName: 'virtcruise-www-0.8.0-beta.3-hotfix-v21-frontend-reconciled-001',
+    release: '0.8.0-beta.3-hotfix-v21-frontend-reconciled-001',
+    publicOrigin: 'https://virtcruise.airwide.co.uk',
+    apiOrigin: 'https://api.virtcruise.airwide.co.uk',
+    upstreamApiOrigin: 'https://api.virtcruise.airwide.co.uk',
+    productionRuntime: true
   })
 });
 

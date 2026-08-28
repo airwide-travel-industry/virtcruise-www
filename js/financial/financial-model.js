@@ -70,6 +70,7 @@ export function mapInvoice(value) {
   const result = {
     id: text(source.id, 'Invoice identifier'),
     number: text(source.number, 'Invoice number'),
+    customerId: text(source.customerId, 'Invoice customer', { optional: true }),
     bookingReference: text(source.bookingReference, 'Booking reference', { optional: true }),
     sourceQuoteId: text(source.sourceQuoteId, 'Source quote identifier', { optional: true }),
     status: text(source.status, 'Invoice status'),

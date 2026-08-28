@@ -54,6 +54,18 @@ export function createFinancialRepository() {
           `/api/v1/financial/invoices/${encodeURIComponent(id)}`
         )), options);
     },
+    receivingAccounts(options = {}) {
+      return read('receiving-accounts', async () => financialRequest('/api/v1/finance/bank-account-configurations'), options);
+    },
+    paymentInstruction(id, options = {}) {
+      return read(`payment-instruction:${id}`, async () => financialRequest(`/api/v1/finance/invoices/${encodeURIComponent(id)}/payment-instructions`), options);
+    },
+    paymentInstructionAssignment(id, options = {}) {
+      return read(`payment-assignment:${id}`, async () => financialRequest(`/api/v1/finance/invoices/${encodeURIComponent(id)}/payment-instructions/assignment`), options);
+    },
+    issuePaymentInstruction(id, bankAccountId, options = {}) {
+      return financialRequest(`/api/v1/finance/invoices/${encodeURIComponent(id)}/payment-instructions`, { method: 'POST', body: { bankAccountId }, idempotencyKey: options.idempotencyKey || globalThis.crypto?.randomUUID?.() });
+    },
     payments(options = {}) {
       const { page = 0, size = 20 } = options;
       return read(`payments:${page}:${size}`, async () =>
