@@ -18,6 +18,10 @@ let user;
 let currentPage = 0;
 let financeMode = false;
 
+export function invoiceDetailMode(user, page) {
+  return page === 'invoice-details' && hasFinanceAccess(user) ? 'finance' : 'customer';
+}
+
 function setPage(markup, { focus = true } = {}) {
   const page = document.getElementById('portalPage');
   page.innerHTML = markup;
@@ -293,7 +297,7 @@ const renderers = {
 async function initialize() {
   user = await requireAuthentication();
   if (!user) return;
-  financeMode = hasFinanceAccess(user) && ['invoices', 'invoice-details'].includes(pageName);
+  financeMode = invoiceDetailMode(user, pageName) === 'finance' || (hasFinanceAccess(user) && pageName === 'invoices');
   repository = createFinancialRepository();
   if (financeMode) root.innerHTML = financeShell(user, 'invoices');
   else root.innerHTML = portalShell(user, pageName === 'overview'

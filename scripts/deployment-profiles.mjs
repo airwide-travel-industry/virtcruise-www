@@ -29,6 +29,14 @@ export const deploymentProfiles = Object.freeze({
     apiOrigin: 'https://api.virtcruise.airwide.co.uk',
     upstreamApiOrigin: 'https://api.virtcruise.airwide.co.uk',
     productionRuntime: true
+  }),
+  'finance-invoice-detail-route': Object.freeze({
+    stageName: 'virtcruise-www-0.8.0-beta.3-hotfix-finance-invoice-detail-route-001',
+    release: '0.8.0-beta.3-hotfix-finance-invoice-detail-route-001',
+    publicOrigin: 'https://virtcruise.airwide.co.uk',
+    apiOrigin: 'https://api.virtcruise.airwide.co.uk',
+    upstreamApiOrigin: 'https://api.virtcruise.airwide.co.uk',
+    productionRuntime: true
   })
 });
 

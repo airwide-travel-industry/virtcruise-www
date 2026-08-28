@@ -29,6 +29,7 @@ test('same source build composes Create Invoice and Finance payment recovery', (
   assert.match(finance, /Issue Payment Instructions/);
   assert.match(finance, /data-legacy-bank-account/);
   assert.match(financialRepository, /issuePaymentInstruction/);
+  assert.match(finance, /invoiceDetailMode/);
   for (const label of ['Finance Overview', 'Bank Accounts', 'Invoices', 'Review Queue', 'My Assigned Cases', 'Unassigned Cases', 'Overdue Cases', 'Completed Reviews']) assert.match(navigation, new RegExp(label));
 });
 
@@ -45,7 +46,7 @@ test('built artifact contains executable coexistence evidence and all routes', (
   const navigation = artifactFile('js/navigation.js');
   const featureManifest = JSON.parse(artifactFile('FEATURE-MANIFEST.json'));
   assert.equal(featureManifest.allPresent, true);
-  for (const feature of ['CREATE_INVOICE', 'CUSTOMER_QUOTES', 'FINANCE_BANK_ACCOUNTS', 'FINANCE_INVOICES', 'LEGACY_PAYMENT_INSTRUCTIONS', 'DRAFT_BANK_SELECTOR', 'ACCOUNT_OVERLAY', 'PERSONA_BOUNDARY', 'CONTENT_STUDIO', 'OPERATIONS']) assert.equal(featureManifest.features[feature], 'PRESENT', feature);
+  for (const feature of ['CREATE_INVOICE', 'CUSTOMER_QUOTES', 'FINANCE_BANK_ACCOUNTS', 'FINANCE_INVOICES', 'FINANCE_OPERATIONAL_INVOICE_DETAIL', 'CUSTOMER_READ_ONLY_INVOICE_DETAIL', 'LEGACY_PAYMENT_INSTRUCTIONS', 'DRAFT_BANK_SELECTOR', 'ACCOUNT_OVERLAY', 'PERSONA_BOUNDARY', 'CONTENT_STUDIO', 'OPERATIONS']) assert.equal(featureManifest.features[feature], 'PRESENT', feature);
   assert.match(quotes, /Create Invoice/);
   assert.match(quotes, /adminQuotes\.createInvoice/);
   assert.match(finance, /Issue Payment Instructions/);
@@ -55,4 +56,5 @@ test('built artifact contains executable coexistence evidence and all routes', (
   assert.match(artifactFile('js/admin-quotes.js'), /Customer Quotes/);
   assert.match(navigation, /account-menu-overlay-root/);
   assert.match(navigation, /portalAccountMenu/);
+  for (const feature of ['ADMIN_QUOTE_LIST_ROUTE', 'ADMIN_QUOTE_DETAIL_ROUTE', 'CUSTOMER_BANK_TRANSFER', 'UI_FACELIFT']) assert.equal(featureManifest.features[feature], 'PRESENT', feature);
 });

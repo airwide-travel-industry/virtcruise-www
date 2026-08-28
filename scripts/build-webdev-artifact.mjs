@@ -168,18 +168,24 @@ await rm(join(stage, 'images', '.gitkeep'), { force: true });
 
 if (profile.productionRuntime) await hardenProductionRuntime();
 
-if (profileName === 'reconciled-v21') {
+if (['reconciled-v21', 'finance-invoice-detail-route'].includes(profileName)) {
   const featureChecks = {
     CREATE_INVOICE: ['js/admin-quotes.js', /Create Invoice/],
     CUSTOMER_QUOTES: ['js/admin-quotes.js', /Customer Quotes/],
     FINANCE_BANK_ACCOUNTS: ['js/finance/bank-accounts-page.js', /Add Bank Account/],
     FINANCE_INVOICES: ['js/financial/financial-page.js', /renderFinanceInvoices/],
+    FINANCE_OPERATIONAL_INVOICE_DETAIL: ['js/financial/financial-page.js', /renderFinanceInvoiceDetails/],
+    CUSTOMER_READ_ONLY_INVOICE_DETAIL: ['js/financial/financial-page.js', /Read-only details supplied by the Virtcruise financial service/],
     LEGACY_PAYMENT_INSTRUCTIONS: ['js/financial/financial-page.js', /Issue Payment Instructions/],
     DRAFT_BANK_SELECTOR: ['js/admin-quotes.js', /data-bank-assignment/],
     ACCOUNT_OVERLAY: ['js/navigation.js', /account-menu-overlay-root.*portalAccountMenu|portalAccountMenu.*account-menu-overlay-root/s],
     PERSONA_BOUNDARY: ['js/auth/persona.js', /isAdminOrStaff.*isCustomerPersona/s],
     CONTENT_STUDIO: ['content-studio/index.html', /content-studio\.js/],
     OPERATIONS: ['operational-readiness/index.html', /operational-readiness\.js/]
+    ,ADMIN_QUOTE_LIST_ROUTE: ['admin/quotes/index.html', /admin-quotes\.js/]
+    ,ADMIN_QUOTE_DETAIL_ROUTE: ['admin/quotes/details/index.html', /admin-quotes\.js/]
+    ,CUSTOMER_BANK_TRANSFER: ['bank-transfer/index.html', /bank-transfer-page\.js/]
+    ,UI_FACELIFT: ['css/styles.css', /approved desktop/]
   };
   const checks = {};
   for (const [name, [file, pattern]] of Object.entries(featureChecks)) {
