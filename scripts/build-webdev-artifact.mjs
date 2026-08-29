@@ -168,7 +168,7 @@ await rm(join(stage, 'images', '.gitkeep'), { force: true });
 
 if (profile.productionRuntime) await hardenProductionRuntime();
 
-if (['reconciled-v21', 'finance-invoice-detail-route', 'customer-payment-instructions-002'].includes(profileName)) {
+if (['reconciled-v21', 'finance-invoice-detail-route', 'customer-payment-instructions-002', 'payment-proof-upload-001'].includes(profileName)) {
   const featureChecks = {
     CREATE_INVOICE: ['js/admin-quotes.js', /Create Invoice/],
     CUSTOMER_QUOTES: ['js/admin-quotes.js', /Customer Quotes/],
@@ -185,6 +185,8 @@ if (['reconciled-v21', 'finance-invoice-detail-route', 'customer-payment-instruc
     ,ADMIN_QUOTE_LIST_ROUTE: ['admin/quotes/index.html', /admin-quotes\.js/]
     ,ADMIN_QUOTE_DETAIL_ROUTE: ['admin/quotes/details/index.html', /admin-quotes\.js/]
     ,CUSTOMER_BANK_TRANSFER: ['bank-transfer/index.html', /bank-transfer-page\.js/]
+    ,CUSTOMER_PAYMENT_PROOF: ['js/bank-transfer/proof-upload.js', /openProofUpload/]
+    ,RECEIPTS_PROOF_FAB: ['js/financial/financial-page.js', /proof-upload-fab.*Upload Proof of Payment/s]
     ,UI_FACELIFT: ['css/styles.css', /approved desktop/]
   };
   const checks = {};

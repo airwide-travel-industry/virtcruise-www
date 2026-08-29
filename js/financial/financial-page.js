@@ -6,6 +6,8 @@ import {
 import { financeShell } from '../finance/finance-components.js';
 import { debounce, searchableText } from '../portal/debounced-search.js';
 import { createFinancialRepository } from './financial-repository.js';
+import { createBankTransferRepository } from '../bank-transfer/bank-transfer-api.js';
+import { openProofUpload } from '../bank-transfer/proof-upload.js';
 import {
   amountDescription, bookingLink, financialStatus, formatFinancialMoney, pagination, supportDetails
 } from './financial-components.js';
@@ -17,6 +19,7 @@ let repository;
 let user;
 let currentPage = 0;
 let financeMode = false;
+let proofRepository;
 
 export function invoiceDetailMode(user, page) {
   return page === 'invoice-details' && hasFinanceAccess(user) ? 'finance' : 'customer';
@@ -276,13 +279,14 @@ async function renderHistory() {
   setPage(`${pageHeading(config.eyebrow, config.title, config.intro)}
     ${filterBar({ searchLabel: config.search, placeholder: config.placeholder, statuses })}
     <div class="financial-list" data-financial-list></div>${pagination(page, config.title)}
-    <p class="financial-data-note">The current customer API does not provide record dates or a separate detail endpoint for this history.</p>`);
+    <p class="financial-data-note">The current customer API does not provide record dates or a separate detail endpoint for this history.</p>${pageName === 'receipts' ? '<button class="proof-upload-fab" type="button" data-upload-proof aria-label="Upload Proof of Payment">＋ Upload Proof of Payment</button>' : ''}`);
   bindListControls(page.items, items => {
     document.querySelector('[data-financial-list]').innerHTML = items.length
       ? items.map(item => historyCard(config.type, item)).join('')
       : emptyState({ title: config.empty[0], message: config.empty[1] });
   }, config.text, page);
   bindPagination(renderHistory);
+  document.querySelector('[data-upload-proof]')?.addEventListener('click', () => openProofUpload({ repository: proofRepository, onSubmitted: () => renderHistory() }));
 }
 
 const renderers = {
@@ -299,6 +303,7 @@ async function initialize() {
   if (!user) return;
   financeMode = invoiceDetailMode(user, pageName) === 'finance' || (hasFinanceAccess(user) && pageName === 'invoices');
   repository = createFinancialRepository();
+  proofRepository = createBankTransferRepository();
   if (financeMode) root.innerHTML = financeShell(user, 'invoices');
   else root.innerHTML = portalShell(user, pageName === 'overview'
     ? 'financial'

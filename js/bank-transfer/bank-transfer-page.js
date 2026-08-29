@@ -2,6 +2,7 @@ import { authenticationProvider } from '../auth/authentication-provider.js';
 import { requireAuthentication } from '../auth/route-guard.js';
 import { announce, emptyState, errorState, escapeHtml, formatDate, formatMoney, pageHeading, portalShell, portalUrl, statusBadge } from '../portal/portal-components.js';
 import { createBankTransferRepository } from './bank-transfer-api.js';
+import { openProofUpload } from './proof-upload.js';
 
 const page = document.body.dataset.bankTransferPage;
 const root = document.getElementById('portalRoot');
@@ -54,14 +55,15 @@ async function renderHome() {
   }
   const reviews = capability.selfServiceAvailable ? await repository.reviews() : [];
   const values = list(reviews);
-  const action = capability.selfServiceAvailable ? `<a class="portal-button" href="${portalUrl('/bank-transfer/new/')}">Create review case</a>` : '';
+  const action = capability.selfServiceAvailable ? '<button class="portal-button" type="button" data-upload-proof>Upload Proof of Payment</button>' : '';
   setPage(`${pageHeading('Secure payment option', 'Pay by Bank Transfer', 'Transfer funds using the authoritative details below, then send proof for independent Finance verification.', action)}
     <section class="portal-panel transfer-warning" role="note"><strong>Uploading proof does not mean payment has been received.</strong><p>Finance will independently verify the funds. Payment is recorded only after approval, and your booking is confirmed separately.</p></section>
-    ${instructions ? instructionPanel(instructions, outstanding, true) : '<section class="portal-panel"><h2>Bank instructions</h2><p>Contact Finance for approved payment instructions for this invoice.</p></section>'}
+    ${instructions ? `${instructionPanel(instructions, outstanding, true)}<p><button class="portal-button" type="button" data-upload-proof>Upload Proof of Payment</button> <span class="financial-data-note">Paid already? Upload your bank transfer confirmation for Finance review.</span></p>` : '<section class="portal-panel"><h2>Bank instructions</h2><p>Contact Finance for approved payment instructions for this invoice.</p></section>'}
     <section class="portal-panel"><div class="panel-heading"><div><p class="portal-eyebrow">Your cases</p><h2>Recent transfer reviews</h2></div><a href="${portalUrl('/bank-transfer/status/')}">View all</a></div>${values.length ? `<div class="transfer-case-list">${values.slice(0,3).map(card).join('')}</div>` : emptyState({title:'No bank transfer reviews yet',message:'Create a review after making your transfer.'})}</section>`);
   const instructionRoot = document.querySelector('[data-bank-instructions]');
   instructionRoot?.querySelector('[data-copy-account]')?.addEventListener('click', async () => { await navigator.clipboard.writeText(instructions.accountNumber); announce('Account number copied.'); });
   instructionRoot?.querySelector('[data-copy-reference]')?.addEventListener('click', async () => { await navigator.clipboard.writeText(instructions.customerReference); announce('Payment reference copied.'); });
+  document.querySelectorAll('[data-upload-proof]').forEach(button => button.addEventListener('click', () => openProofUpload({ repository, invoiceId: outstanding?.id, onSubmitted: () => renderHome() })));
 }
 function instructionPanel(instructions, invoice, showReference = false) { return `<section class="portal-panel" data-bank-instructions><p class="portal-eyebrow">Payment destination</p><h2>${escapeHtml(instructions.bankName)}</h2><dl class="instruction-grid">${[['Bank',instructions.bankName],['Account name',instructions.accountName],['Account number',instructions.accountNumber],['Branch code',instructions.branchCode],['SWIFT/BIC',instructions.swift || 'Not required'],['Currency',instructions.currency],...(showReference?[['Payment reference',instructions.customerReference]]:[]),['Amount due',formatMoney(instructions.amountDue,instructions.currency)]].map(([k,v])=>`<div><dt>${k}</dt><dd>${escapeHtml(v)}</dd></div>`).join('')}</dl><button type="button" class="portal-button secondary" data-copy-account>Copy account number</button><button type="button" class="portal-button secondary" data-copy-reference>Copy reference</button></section>`; }
 function card(value) { return `<article class="transfer-case"><div><small>Reference</small><strong>${escapeHtml(value.transferReference)}</strong><span>${formatMoney(value.amount,value.currency)}</span></div>${statusBadge(value.reviewStatus)}<a class="portal-button secondary" href="${portalUrl('/bank-transfer/details/',{id:value.id})}">Track progress</a></article>`; }
