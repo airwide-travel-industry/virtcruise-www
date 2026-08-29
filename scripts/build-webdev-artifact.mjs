@@ -168,7 +168,7 @@ await rm(join(stage, 'images', '.gitkeep'), { force: true });
 
 if (profile.productionRuntime) await hardenProductionRuntime();
 
-if (['reconciled-v21', 'finance-invoice-detail-route', 'customer-payment-instructions-002', 'payment-proof-upload-001'].includes(profileName)) {
+if (['reconciled-v21', 'finance-invoice-detail-route', 'customer-payment-instructions-002', 'payment-proof-upload-001', 'production-beta4'].includes(profileName)) {
   const featureChecks = {
     CREATE_INVOICE: ['js/admin-quotes.js', /Create Invoice/],
     CUSTOMER_QUOTES: ['js/admin-quotes.js', /Customer Quotes/],
