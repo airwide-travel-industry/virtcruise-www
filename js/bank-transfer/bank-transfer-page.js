@@ -46,16 +46,16 @@ async function renderHome() {
   const invoices = await repository.invoices();
   const outstanding = list(invoices).find(item => Number(item.outstanding?.amount || 0) > 0);
   const capability = await repository.capability(outstanding?.id);
-  if (!capability.selfServiceAvailable) {
+  let instructions = null;
+  try { instructions = outstanding ? await repository.instructions(outstanding.id) : null; } catch (error) { if (error.status !== 404) throw error; }
+  if (!instructions && !capability.selfServiceAvailable) {
     setPage(`${pageHeading('Contact Finance for payment instructions', 'Bank Transfer', 'Our Finance team will provide the approved payment instructions for your booking.')} ${manualPanel(capability)}`);
     bindManualCopy(); return;
   }
-  const reviews = await repository.reviews();
-  const currency = outstanding?.outstanding?.currency;
-  let instructions = null;
-  try { instructions = outstanding ? await repository.instructions(outstanding.id) : null; } catch (error) { if (error.status !== 404) throw error; }
+  const reviews = capability.selfServiceAvailable ? await repository.reviews() : [];
   const values = list(reviews);
-  setPage(`${pageHeading('Secure payment option', 'Pay by Bank Transfer', 'Transfer funds using the authoritative details below, then send proof for independent Finance verification.', `<a class="portal-button" href="${portalUrl('/bank-transfer/new/')}">Create review case</a>`)}
+  const action = capability.selfServiceAvailable ? `<a class="portal-button" href="${portalUrl('/bank-transfer/new/')}">Create review case</a>` : '';
+  setPage(`${pageHeading('Secure payment option', 'Pay by Bank Transfer', 'Transfer funds using the authoritative details below, then send proof for independent Finance verification.', action)}
     <section class="portal-panel transfer-warning" role="note"><strong>Uploading proof does not mean payment has been received.</strong><p>Finance will independently verify the funds. Payment is recorded only after approval, and your booking is confirmed separately.</p></section>
     ${instructions ? instructionPanel(instructions, outstanding, true) : '<section class="portal-panel"><h2>Bank instructions</h2><p>Contact Finance for approved payment instructions for this invoice.</p></section>'}
     <section class="portal-panel"><div class="panel-heading"><div><p class="portal-eyebrow">Your cases</p><h2>Recent transfer reviews</h2></div><a href="${portalUrl('/bank-transfer/status/')}">View all</a></div>${values.length ? `<div class="transfer-case-list">${values.slice(0,3).map(card).join('')}</div>` : emptyState({title:'No bank transfer reviews yet',message:'Create a review after making your transfer.'})}</section>`);

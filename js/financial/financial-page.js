@@ -228,7 +228,7 @@ async function renderInvoiceDetails() {
       </tbody></table></div>
       <dl class="financial-totals"><div><dt>Net</dt><dd>${amountDescription(invoice.net, 'Invoice net')}</dd></div><div><dt>Tax</dt><dd>${amountDescription(invoice.tax, 'Invoice tax')}</dd></div><div><dt>Total</dt><dd>${amountDescription(invoice.total, 'Invoice total')}</dd></div><div><dt>Amount paid</dt><dd>${amountDescription(invoice.allocated, 'Amount paid')}</dd></div><div class="total"><dt>Outstanding balance</dt><dd>${amountDescription(invoice.outstanding, 'Outstanding balance')}</dd></div></dl>
       <p class="financial-data-note">Issue dates, due dates, individual payment allocations and credit-note details are not included in the current customer API.</p>
-      <div class="form-actions"><a class="portal-button secondary" href="${portalUrl('/financial/invoices/')}">Back to invoices</a>${invoice.bookingReference ? `<a class="portal-button" href="${portalUrl('/bookings/')}">View booking ${escapeHtml(invoice.bookingReference)}</a>` : ''}</div>
+      <div class="form-actions"><a class="portal-button secondary" href="${portalUrl('/financial/invoices/')}">Back to invoices</a>${invoice.outstanding?.amount && Number(invoice.outstanding.amount) > 0 ? `<a class="portal-button" href="${portalUrl('/bank-transfer/')}">View bank-transfer payment instructions</a>` : ''}${invoice.bookingReference ? `<a class="portal-button" href="${portalUrl('/bookings/')}">View booking ${escapeHtml(invoice.bookingReference)}</a>` : ''}</div>
     </section>`);
 }
 

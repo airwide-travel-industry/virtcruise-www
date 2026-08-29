@@ -1,17 +1,438 @@
-import test,{before,after} from 'node:test'; import assert from 'node:assert/strict';
-import {createReadStream,existsSync,statSync} from 'node:fs'; import {createServer} from 'node:http'; import {extname,join,normalize} from 'node:path'; import {launchChromium} from './helpers/playwright-runtime.mjs';
-import {waitForApplicationReady} from './helpers/browser-acceptance.mjs';
-const root=process.cwd(),ids={customer:'10000000-0000-0000-0000-000000000001',booking:'20000000-0000-0000-0000-000000000001',invoice:'30000000-0000-0000-0000-000000000001',review:'40000000-0000-0000-0000-000000000001',proof:'50000000-0000-0000-0000-000000000001'};
-const viewports=[{name:'desktop',width:1440,height:900},{name:'tablet',width:768,height:1024},{name:'mobile',width:390,height:844}];let server,browser,baseUrl;
-const mime={'.css':'text/css','.html':'text/html','.js':'text/javascript','.png':'image/png'};const fileFor=url=>{const path=normalize(decodeURIComponent(new URL(url,'http://local').pathname)).replace(/^[/\\]+/,'');let file=join(root,path||'index.html');if(existsSync(file)&&statSync(file).isDirectory())file=join(file,'index.html');return file;};
-const instruction={bankAccountId:'60000000-0000-0000-0000-000000000001',bankName:'Test Bank',accountName:'Virtcruise Travels',accountNumber:'123456789',branchCode:'123456',swift:'TESTZAXX',currency:'ZAR',customerReference:'VC-INV1001',amountDue:'12500.00',issuedAt:'2026-08-01T10:00:00Z'};
-const invoice={id:ids.invoice,number:'INV-1001',bookingReference:'VC-1001',status:'ISSUED',outstanding:{amount:'12500.00',currency:'ZAR'}};const booking={id:ids.booking,bookingReference:'vc-1001',status:'DEPOSIT_PENDING'};
-const review={id:ids.review,bookingId:ids.booking,invoiceId:ids.invoice,currency:'ZAR',amount:'12500.00',bankAccount:'Customer account',transferReference:'VC-INV1001',proofStatus:'ACCEPTED',reviewStatus:'AWAITING_REVIEW',createdAt:'2026-08-01T10:00:00Z',updatedAt:'2026-08-01T10:05:00Z'};
-async function mock(page,{state='awaiting',existingReviews=[],manual=false}={}){const requests=[];await page.route('https://api.virtcruisetravels.com/**',async route=>{const req=route.request(),url=new URL(req.url());requests.push({method:req.method(),path:url.pathname,headers:req.headers(),body:req.postData()});const ok=data=>route.fulfill({contentType:'application/json',body:JSON.stringify({success:true,data})});if(url.pathname==='/api/v1/auth/session')return ok({authenticated:false,refreshable:true});if(url.pathname==='/api/v1/auth/refresh')return ok({accessToken:'h.eyJleHAiOjMwMDAwMDAwMDB9.s',user:{id:'90000000-0000-0000-0000-000000000001',customerId:ids.customer,email:'customer@test',givenName:'Casey',familyName:'Customer',roles:['ROLE_CUSTOMER'],permissions:[]}});if(url.pathname==='/api/v1/auth/csrf')return ok({token:'csrf',headerName:'X-XSRF-TOKEN'});if(url.pathname.endsWith('/capability'))return ok(manual?{mode:'MANUAL_FINANCE',selfServiceAvailable:false,reviewCaseCreationAllowed:false,proofUploadAllowed:false,heading:'Contact Finance for bank account information',message:'Our Finance team will provide the correct bank details for your booking.',phone:'+27 11 555 0100',email:'finance@example.com',operatingHours:'Weekdays 08:00-17:00',bookingReference:'VC-1001',invoiceReference:'INV-1001',currency:'ZAR'}:{mode:'SELF_SERVICE',selfServiceAvailable:true,reviewCaseCreationAllowed:true,proofUploadAllowed:true});if(url.pathname.endsWith('/instructions'))return ok(instruction);if(url.pathname==='/api/v1/financial/invoices')return ok({content:[invoice],page:0,size:100,totalElements:1,totalPages:1,first:true,last:true});if(url.pathname==='/api/v1/bookings'&&req.method()==='GET')return ok({content:[booking]});if(url.pathname===`/api/v1/bookings/${ids.booking}`)return ok({booking:state==='complete'?{...booking,status:'CONFIRMED'}:booking,timeline:[]});if(url.pathname==='/api/v1/bank-transfer/reviews'&&req.method()==='POST')return ok(review);if(url.pathname==='/api/v1/bank-transfer/reviews'&&req.method()==='GET')return ok({content:existingReviews});if(url.pathname===`/api/v1/bank-transfer/reviews/${ids.review}/request-replacement`&&req.method()==='POST')return ok({...review,reviewStatus:'AWAITING_REPLACEMENT'});if(url.pathname===`/api/v1/bank-transfer/reviews/${ids.review}`)return ok(state==='rejected'?{...review,reviewStatus:'REJECTED',decisionReason:null,customerSafeRejectionReason:'The uploaded image is unreadable.',resubmissionAllowed:true,resubmissionDeadline:'2026-08-08T10:00:00Z'}:state==='empty'?{...review,reviewStatus:'AWAITING_UPLOAD'}:review);if(url.pathname.endsWith('/proofs')&&req.method()==='GET')return ok(state==='empty'?[]:[{id:ids.proof,status:state==='rejected'?'REJECTED':'ACCEPTED',scanStatus:state==='rejected'?'REJECTED':'CLEAN',fileName:'proof.pdf',createdAt:'2026-08-01T10:04:00Z',acceptedAt:'2026-08-01T10:05:00Z'}]);if(url.pathname.endsWith('/proofs')&&req.method()==='POST')return ok({id:ids.proof,status:'ACCEPTED',scanStatus:'CLEAN'});if(url.pathname==='/api/v1/financial/payments')return ok({content:state==='complete'?[{reference:review.transferReference,status:'RECORDED'}]:[]});if(url.pathname==='/api/v1/financial/receipts')return ok({content:state==='complete'?[{number:'REC-1001',paymentReference:review.transferReference,status:'ISSUED',total:{amount:'12500.00',currency:'ZAR'}}]:[]});return route.fulfill({status:404,contentType:'application/json',body:'{}'});});return requests;}
-before(async()=>{server=createServer((req,res)=>{const file=fileFor(req.url);if(!existsSync(file)||!statSync(file).isFile())return res.writeHead(404).end();res.setHeader('Content-Type',mime[extname(file)]||'application/octet-stream');createReadStream(file).pipe(res);});await new Promise(r=>server.listen(0,'127.0.0.1',r));baseUrl=`http://127.0.0.1:${server.address().port}`;browser=await launchChromium({headless:true,args:['--no-sandbox']});});after(async()=>{await browser?.close();await new Promise(r=>server?.close(r));});
-for(const viewport of viewports)test(`${viewport.name} instructions are protected and responsive`,async()=>{const context=await browser.newContext({viewport});const page=await context.newPage();await mock(page);await page.goto(`${baseUrl}/bank-transfer/`,{waitUntil:'domcontentloaded'});await waitForApplicationReady(page);assert.equal(await page.getByText('123456789').isVisible(),true);assert.equal(await page.getByText(/Uploading proof does not mean payment/).isVisible(),true);assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),true);await context.close();});
-for(const viewport of viewports)test(`${viewport.name} manual Finance mode is safe and usable`,async()=>{const context=await browser.newContext({viewport});const page=await context.newPage(),requests=await mock(page,{manual:true});await page.goto(`${baseUrl}/bank-transfer/`,{waitUntil:'domcontentloaded'});await waitForApplicationReady(page);const body=await page.locator('body').innerText();assert.match(body,/Manual Finance Assistance/i);assert.match(body,/INV-1001/);assert.match(body,/ZAR/);assert.match(body,/No payment has been recorded/);assert.doesNotMatch(body,/Test Bank|123456789|Create review case|Upload proof|Proof received/);assert.equal(await page.locator('a[href="tel:+27 11 555 0100"]').isVisible(),true);assert.equal(await page.locator('a[href="mailto:finance@example.com"]').isVisible(),true);assert.equal(await page.getByRole('button',{name:'Copy reference'}).isVisible(),true);assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),true);assert.equal(requests.some(value=>value.path.endsWith('/instructions')),false);await context.close();});
-test('customer creates a partial review with server invoice and booking identifiers',async()=>{const context=await browser.newContext({viewport:viewports[0]});const page=await context.newPage(),requests=await mock(page);await page.goto(`${baseUrl}/bank-transfer/new/`,{waitUntil:'domcontentloaded'});await waitForApplicationReady(page);await page.getByLabel('Invoice').selectOption('0');await page.getByText('VC-INV1001',{exact:true}).waitFor();await page.getByLabel('Transfer amount').fill('4000.00');await page.getByLabel('Bank account used for transfer').fill('Customer account');await page.getByRole('button',{name:'Create review case'}).click();await page.waitForURL(/bank-transfer\/details/);const request=requests.find(r=>r.path==='/api/v1/bank-transfer/reviews'&&r.method==='POST');assert.equal(JSON.parse(request.body).bookingId,ids.booking);assert.equal(JSON.parse(request.body).invoiceId,ids.invoice);assert.equal(JSON.parse(request.body).amount,'4000.00');assert.ok(request.headers['idempotency-key']);await context.close();});
-test('upload says proof received, never payment received, and stores no bytes',async()=>{const context=await browser.newContext({viewport:viewports[2]});const page=await context.newPage(),requests=await mock(page,{state:'empty'});await page.goto(`${baseUrl}/bank-transfer/details/?id=${ids.review}`,{waitUntil:'domcontentloaded'});await waitForApplicationReady(page);await page.getByLabel('Choose proof file').setInputFiles({name:'proof.pdf',mimeType:'application/pdf',buffer:Buffer.from('%PDF-1.4')});await page.getByRole('button',{name:'Upload proof'}).click();await page.locator('[data-upload-state]').getByText(/Accepted. Your proof has been received/).waitFor();assert.equal(await page.getByText(/It does not mean payment received/).isVisible(),true);assert.ok(requests.find(r=>r.path.endsWith('/proofs')&&r.method==='POST'));const stored=await page.evaluate(()=>JSON.stringify({local:{...localStorage},session:{...sessionStorage}}));assert.doesNotMatch(stored,/%PDF|proof\.pdf/);await context.close();});
-test('rejection opens replacement safely and completed state shows receipt and booking',async()=>{const context=await browser.newContext({viewport:viewports[0]});let page=await context.newPage(),requests=await mock(page,{state:'rejected'});await page.goto(`${baseUrl}/bank-transfer/details/?id=${ids.review}`,{waitUntil:'domcontentloaded'});await waitForApplicationReady(page);const rejectedBody=await page.locator('body').innerText();assert.match(rejectedBody,/The uploaded image is unreadable\./);assert.doesNotMatch(rejectedBody,/internal finance/i);const replacementRequest=page.waitForRequest(request=>request.url().endsWith(`/api/v1/bank-transfer/reviews/${ids.review}/request-replacement`));await page.getByRole('button',{name:'Begin replacement upload'}).click();await replacementRequest;assert.ok(requests.find(r=>r.path.endsWith('/request-replacement')&&r.method==='POST'));await page.close();page=await context.newPage();await mock(page,{state:'complete'});await page.goto(`${baseUrl}/bank-transfer/details/?id=${ids.review}`,{waitUntil:'domcontentloaded'});await waitForApplicationReady(page);const completeBody=await page.locator('body').innerText();assert.match(completeBody,/REC-1001/);assert.match(completeBody,/CONFIRMED/);assert.match(completeBody,/Downloadable receipt will be available/);await context.close();});
-test('a second transfer for the same invoice receives a distinct reference',async()=>{const context=await browser.newContext({viewport:viewports[0]});const page=await context.newPage(),requests=await mock(page,{existingReviews:[review]});await page.goto(`${baseUrl}/bank-transfer/new/`,{waitUntil:'domcontentloaded'});await waitForApplicationReady(page);await page.getByLabel('Invoice').selectOption('0');await page.getByText('VC-INV1001-2',{exact:true}).waitFor();await page.getByLabel('Bank account used for transfer').fill('Customer account');await page.getByRole('button',{name:'Create review case'}).click();await page.waitForURL(/bank-transfer\/details/);const request=requests.find(r=>r.path==='/api/v1/bank-transfer/reviews'&&r.method==='POST');assert.equal(JSON.parse(request.body).transferReference,'VC-INV1001-2');await context.close();});
+import test, { before, after } from "node:test";
+import assert from "node:assert/strict";
+import { createReadStream, existsSync, statSync } from "node:fs";
+import { createServer } from "node:http";
+import { extname, join, normalize } from "node:path";
+import { launchChromium } from "./helpers/playwright-runtime.mjs";
+import { waitForApplicationReady } from "./helpers/browser-acceptance.mjs";
+const root = process.cwd(),
+  ids = {
+    customer: "10000000-0000-0000-0000-000000000001",
+    booking: "20000000-0000-0000-0000-000000000001",
+    invoice: "30000000-0000-0000-0000-000000000001",
+    review: "40000000-0000-0000-0000-000000000001",
+    proof: "50000000-0000-0000-0000-000000000001",
+  };
+const viewports = [
+  { name: "desktop", width: 1440, height: 900 },
+  { name: "tablet", width: 768, height: 1024 },
+  { name: "mobile", width: 390, height: 844 },
+];
+let server, browser, baseUrl;
+const mime = {
+  ".css": "text/css",
+  ".html": "text/html",
+  ".js": "text/javascript",
+  ".png": "image/png",
+};
+const fileFor = (url) => {
+  const path = normalize(
+    decodeURIComponent(new URL(url, "http://local").pathname),
+  ).replace(/^[/\\]+/, "");
+  let file = join(root, path || "index.html");
+  if (existsSync(file) && statSync(file).isDirectory())
+    file = join(file, "index.html");
+  return file;
+};
+const instruction = {
+  bankAccountId: "60000000-0000-0000-0000-000000000001",
+  bankName: "Test Bank",
+  accountName: "Virtcruise Travels",
+  accountNumber: "123456789",
+  branchCode: "123456",
+  swift: "TESTZAXX",
+  currency: "ZAR",
+  customerReference: "VC-INV1001",
+  amountDue: "12500.00",
+  issuedAt: "2026-08-01T10:00:00Z",
+};
+const invoice = {
+  id: ids.invoice,
+  number: "INV-1001",
+  bookingReference: "VC-1001",
+  status: "ISSUED",
+  outstanding: { amount: "12500.00", currency: "ZAR" },
+};
+const booking = {
+  id: ids.booking,
+  bookingReference: "vc-1001",
+  status: "DEPOSIT_PENDING",
+};
+const review = {
+  id: ids.review,
+  bookingId: ids.booking,
+  invoiceId: ids.invoice,
+  currency: "ZAR",
+  amount: "12500.00",
+  bankAccount: "Customer account",
+  transferReference: "VC-INV1001",
+  proofStatus: "ACCEPTED",
+  reviewStatus: "AWAITING_REVIEW",
+  createdAt: "2026-08-01T10:00:00Z",
+  updatedAt: "2026-08-01T10:05:00Z",
+};
+async function mock(
+  page,
+  { state = "awaiting", existingReviews = [], manual = false } = {},
+) {
+  const requests = [];
+  await page.route("https://api.virtcruisetravels.com/**", async (route) => {
+    const req = route.request(),
+      url = new URL(req.url());
+    requests.push({
+      method: req.method(),
+      path: url.pathname,
+      headers: req.headers(),
+      body: req.postData(),
+    });
+    const ok = (data) =>
+      route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({ success: true, data }),
+      });
+    if (url.pathname === "/api/v1/auth/session")
+      return ok({ authenticated: false, refreshable: true });
+    if (url.pathname === "/api/v1/auth/refresh")
+      return ok({
+        accessToken: "h.eyJleHAiOjMwMDAwMDAwMDB9.s",
+        user: {
+          id: "90000000-0000-0000-0000-000000000001",
+          customerId: ids.customer,
+          email: "customer@test",
+          givenName: "Casey",
+          familyName: "Customer",
+          roles: ["ROLE_CUSTOMER"],
+          permissions: [],
+        },
+      });
+    if (url.pathname === "/api/v1/auth/csrf")
+      return ok({ token: "csrf", headerName: "X-XSRF-TOKEN" });
+    if (url.pathname.endsWith("/capability"))
+      return ok(
+        manual
+          ? {
+              mode: "MANUAL_FINANCE",
+              selfServiceAvailable: false,
+              reviewCaseCreationAllowed: false,
+              proofUploadAllowed: false,
+              heading: "Contact Finance for bank account information",
+              message:
+                "Our Finance team will provide the correct bank details for your booking.",
+              phone: "+27 11 555 0100",
+              email: "finance@example.com",
+              operatingHours: "Weekdays 08:00-17:00",
+              bookingReference: "VC-1001",
+              invoiceReference: "INV-1001",
+              currency: "ZAR",
+            }
+          : {
+              mode: "SELF_SERVICE",
+              selfServiceAvailable: true,
+              reviewCaseCreationAllowed: true,
+              proofUploadAllowed: true,
+            },
+      );
+    if (url.pathname.endsWith("/instructions")) {
+      if (manual)
+        return route.fulfill({
+          status: 404,
+          contentType: "application/json",
+          body: '{"status":404}',
+        });
+      return ok(instruction);
+    }
+    if (url.pathname === "/api/v1/financial/invoices")
+      return ok({
+        content: [invoice],
+        page: 0,
+        size: 100,
+        totalElements: 1,
+        totalPages: 1,
+        first: true,
+        last: true,
+      });
+    if (url.pathname === "/api/v1/bookings" && req.method() === "GET")
+      return ok({ content: [booking] });
+    if (url.pathname === `/api/v1/bookings/${ids.booking}`)
+      return ok({
+        booking:
+          state === "complete" ? { ...booking, status: "CONFIRMED" } : booking,
+        timeline: [],
+      });
+    if (
+      url.pathname === "/api/v1/bank-transfer/reviews" &&
+      req.method() === "POST"
+    )
+      return ok(review);
+    if (
+      url.pathname === "/api/v1/bank-transfer/reviews" &&
+      req.method() === "GET"
+    )
+      return ok({ content: existingReviews });
+    if (
+      url.pathname ===
+        `/api/v1/bank-transfer/reviews/${ids.review}/request-replacement` &&
+      req.method() === "POST"
+    )
+      return ok({ ...review, reviewStatus: "AWAITING_REPLACEMENT" });
+    if (url.pathname === `/api/v1/bank-transfer/reviews/${ids.review}`)
+      return ok(
+        state === "rejected"
+          ? {
+              ...review,
+              reviewStatus: "REJECTED",
+              decisionReason: null,
+              customerSafeRejectionReason: "The uploaded image is unreadable.",
+              resubmissionAllowed: true,
+              resubmissionDeadline: "2026-08-08T10:00:00Z",
+            }
+          : state === "empty"
+            ? { ...review, reviewStatus: "AWAITING_UPLOAD" }
+            : review,
+      );
+    if (url.pathname.endsWith("/proofs") && req.method() === "GET")
+      return ok(
+        state === "empty"
+          ? []
+          : [
+              {
+                id: ids.proof,
+                status: state === "rejected" ? "REJECTED" : "ACCEPTED",
+                scanStatus: state === "rejected" ? "REJECTED" : "CLEAN",
+                fileName: "proof.pdf",
+                createdAt: "2026-08-01T10:04:00Z",
+                acceptedAt: "2026-08-01T10:05:00Z",
+              },
+            ],
+      );
+    if (url.pathname.endsWith("/proofs") && req.method() === "POST")
+      return ok({ id: ids.proof, status: "ACCEPTED", scanStatus: "CLEAN" });
+    if (url.pathname === "/api/v1/financial/payments")
+      return ok({
+        content:
+          state === "complete"
+            ? [{ reference: review.transferReference, status: "RECORDED" }]
+            : [],
+      });
+    if (url.pathname === "/api/v1/financial/receipts")
+      return ok({
+        content:
+          state === "complete"
+            ? [
+                {
+                  number: "REC-1001",
+                  paymentReference: review.transferReference,
+                  status: "ISSUED",
+                  total: { amount: "12500.00", currency: "ZAR" },
+                },
+              ]
+            : [],
+      });
+    return route.fulfill({
+      status: 404,
+      contentType: "application/json",
+      body: "{}",
+    });
+  });
+  return requests;
+}
+before(async () => {
+  server = createServer((req, res) => {
+    const file = fileFor(req.url);
+    if (!existsSync(file) || !statSync(file).isFile())
+      return res.writeHead(404).end();
+    res.setHeader(
+      "Content-Type",
+      mime[extname(file)] || "application/octet-stream",
+    );
+    createReadStream(file).pipe(res);
+  });
+  await new Promise((r) => server.listen(0, "127.0.0.1", r));
+  baseUrl = `http://127.0.0.1:${server.address().port}`;
+  browser = await launchChromium({ headless: true, args: ["--no-sandbox"] });
+});
+after(async () => {
+  await browser?.close();
+  await new Promise((r) => server?.close(r));
+});
+for (const viewport of viewports)
+  test(`${viewport.name} instructions are protected and responsive`, async () => {
+    const context = await browser.newContext({ viewport });
+    const page = await context.newPage();
+    await mock(page);
+    await page.goto(`${baseUrl}/bank-transfer/`, {
+      waitUntil: "domcontentloaded",
+    });
+    await waitForApplicationReady(page);
+    assert.equal(await page.getByText("123456789").isVisible(), true);
+    assert.equal(
+      await page.getByText(/Uploading proof does not mean payment/).isVisible(),
+      true,
+    );
+    assert.equal(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth + 1,
+      ),
+      true,
+    );
+    await context.close();
+  });
+for (const viewport of viewports)
+  test(`${viewport.name} manual Finance mode is safe and usable`, async () => {
+    const context = await browser.newContext({ viewport });
+    const page = await context.newPage(),
+      requests = await mock(page, { manual: true });
+    await page.goto(`${baseUrl}/bank-transfer/`, {
+      waitUntil: "domcontentloaded",
+    });
+    await waitForApplicationReady(page);
+    const body = await page.locator("body").innerText();
+    assert.match(body, /Manual Finance Assistance/i);
+    assert.match(body, /INV-1001/);
+    assert.match(body, /ZAR/);
+    assert.match(body, /No payment has been recorded/);
+    assert.doesNotMatch(body, /Test Bank|123456789|Create review case|Upload proof|Proof received/);
+    assert.equal(
+      await page.locator('a[href="tel:+27 11 555 0100"]').isVisible(),
+      true,
+    );
+    assert.equal(
+      await page.locator('a[href="mailto:finance@example.com"]').isVisible(),
+      true,
+    );
+    assert.equal(
+      await page.getByRole("button", { name: "Copy reference" }).isVisible(),
+      true,
+    );
+    assert.equal(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth + 1,
+      ),
+      true,
+    );
+    assert.equal(
+      requests.some((value) => value.path.endsWith("/instructions")),
+      true,
+    );
+    await context.close();
+  });
+test("customer creates a partial review with server invoice and booking identifiers", async () => {
+  const context = await browser.newContext({ viewport: viewports[0] });
+  const page = await context.newPage(),
+    requests = await mock(page);
+  await page.goto(`${baseUrl}/bank-transfer/new/`, {
+    waitUntil: "domcontentloaded",
+  });
+  await waitForApplicationReady(page);
+  await page.getByLabel("Invoice").selectOption("0");
+  await page.getByText("VC-INV1001", { exact: true }).waitFor();
+  await page.getByLabel("Transfer amount").fill("4000.00");
+  await page
+    .getByLabel("Bank account used for transfer")
+    .fill("Customer account");
+  await page.getByRole("button", { name: "Create review case" }).click();
+  await page.waitForURL(/bank-transfer\/details/);
+  const request = requests.find(
+    (r) => r.path === "/api/v1/bank-transfer/reviews" && r.method === "POST",
+  );
+  assert.equal(JSON.parse(request.body).bookingId, ids.booking);
+  assert.equal(JSON.parse(request.body).invoiceId, ids.invoice);
+  assert.equal(JSON.parse(request.body).amount, "4000.00");
+  assert.ok(request.headers["idempotency-key"]);
+  await context.close();
+});
+test("upload says proof received, never payment received, and stores no bytes", async () => {
+  const context = await browser.newContext({ viewport: viewports[2] });
+  const page = await context.newPage(),
+    requests = await mock(page, { state: "empty" });
+  await page.goto(`${baseUrl}/bank-transfer/details/?id=${ids.review}`, {
+    waitUntil: "domcontentloaded",
+  });
+  await waitForApplicationReady(page);
+  await page
+    .getByLabel("Choose proof file")
+    .setInputFiles({
+      name: "proof.pdf",
+      mimeType: "application/pdf",
+      buffer: Buffer.from("%PDF-1.4"),
+    });
+  await page.getByRole("button", { name: "Upload proof" }).click();
+  await page
+    .locator("[data-upload-state]")
+    .getByText(/Accepted. Your proof has been received/)
+    .waitFor();
+  assert.equal(
+    await page.getByText(/It does not mean payment received/).isVisible(),
+    true,
+  );
+  assert.ok(
+    requests.find((r) => r.path.endsWith("/proofs") && r.method === "POST"),
+  );
+  const stored = await page.evaluate(() =>
+    JSON.stringify({
+      local: { ...localStorage },
+      session: { ...sessionStorage },
+    }),
+  );
+  assert.doesNotMatch(stored, /%PDF|proof\.pdf/);
+  await context.close();
+});
+test("rejection opens replacement safely and completed state shows receipt and booking", async () => {
+  const context = await browser.newContext({ viewport: viewports[0] });
+  let page = await context.newPage(),
+    requests = await mock(page, { state: "rejected" });
+  await page.goto(`${baseUrl}/bank-transfer/details/?id=${ids.review}`, {
+    waitUntil: "domcontentloaded",
+  });
+  await waitForApplicationReady(page);
+  const rejectedBody = await page.locator("body").innerText();
+  assert.match(rejectedBody, /The uploaded image is unreadable\./);
+  assert.doesNotMatch(rejectedBody, /internal finance/i);
+  const replacementRequest = page.waitForRequest((request) =>
+    request
+      .url()
+      .endsWith(
+        `/api/v1/bank-transfer/reviews/${ids.review}/request-replacement`,
+      ),
+  );
+  await page.getByRole("button", { name: "Begin replacement upload" }).click();
+  await replacementRequest;
+  assert.ok(
+    requests.find(
+      (r) => r.path.endsWith("/request-replacement") && r.method === "POST",
+    ),
+  );
+  await page.close();
+  page = await context.newPage();
+  await mock(page, { state: "complete" });
+  await page.goto(`${baseUrl}/bank-transfer/details/?id=${ids.review}`, {
+    waitUntil: "domcontentloaded",
+  });
+  await waitForApplicationReady(page);
+  const completeBody = await page.locator("body").innerText();
+  assert.match(completeBody, /REC-1001/);
+  assert.match(completeBody, /CONFIRMED/);
+  assert.match(completeBody, /Downloadable receipt will be available/);
+  await context.close();
+});
+test("a second transfer for the same invoice receives a distinct reference", async () => {
+  const context = await browser.newContext({ viewport: viewports[0] });
+  const page = await context.newPage(),
+    requests = await mock(page, { existingReviews: [review] });
+  await page.goto(`${baseUrl}/bank-transfer/new/`, {
+    waitUntil: "domcontentloaded",
+  });
+  await waitForApplicationReady(page);
+  await page.getByLabel("Invoice").selectOption("0");
+  await page.getByText("VC-INV1001-2", { exact: true }).waitFor();
+  await page
+    .getByLabel("Bank account used for transfer")
+    .fill("Customer account");
+  await page.getByRole("button", { name: "Create review case" }).click();
+  await page.waitForURL(/bank-transfer\/details/);
+  const request = requests.find(
+    (r) => r.path === "/api/v1/bank-transfer/reviews" && r.method === "POST",
+  );
+  assert.equal(JSON.parse(request.body).transferReference, "VC-INV1001-2");
+  await context.close();
+});
