@@ -25,5 +25,9 @@ export function createBankTransferRepository() {
     approve(id,reason,key) { return mutate(`${BASE}/${encodeURIComponent(id)}/approve`,{method:'POST',body:{reason},idempotencyKey:key}); },
     reject(id,decision,key) { return mutate(`${BASE}/${encodeURIComponent(id)}/reject`,{method:'POST',body:decision,idempotencyKey:key}); },
     comment(id,comment,key) { return mutate(`${BASE}/${encodeURIComponent(id)}/comments`,{method:'POST',body:{comment},idempotencyKey:key},value => value); }
+    ,accounts() { return financeRequest('/api/v1/finance/bank-account-configurations'); }
+    ,createAccount(body) { return financeRequest('/api/v1/finance/bank-account-configurations',{method:'POST',body,idempotencyKey:crypto.randomUUID()}); }
+    ,updateAccount(id,body) { return financeRequest(`/api/v1/finance/bank-account-configurations/${encodeURIComponent(id)}`,{method:'PUT',body,idempotencyKey:crypto.randomUUID()}); }
+    ,deactivateAccount(id) { return financeRequest(`/api/v1/finance/bank-account-configurations/${encodeURIComponent(id)}/deactivate`,{method:'POST',idempotencyKey:crypto.randomUUID()}); }
   });
 }
