@@ -25,6 +25,14 @@ test('issued invoice renders immutable staff instructions and customer page uses
   assert.match(transfer, /Uploading proof does not mean payment/);
 });
 
+test('eligible legacy issued invoice exposes explicit recovery confirmation', () => {
+  assert.match(quotes, /No payment instructions have been issued for this invoice/);
+  assert.match(quotes, /data-legacy-bank-account/);
+  assert.match(quotes, /data-issue-payment/);
+  assert.match(quotes, /Issue bank-transfer instructions for this existing invoice/);
+  assert.match(quotes, /create immutable payment instructions/);
+});
+
 test('Finance Bank Accounts UI masks account numbers and supports lifecycle actions', () => {
   assert.match(bankAccounts, /const mask/);
   assert.match(bankAccounts, /Add Bank Account/);
