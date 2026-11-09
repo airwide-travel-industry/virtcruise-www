@@ -67,6 +67,7 @@ export function portalShell(user, active) {
   const roles = new Set(Array.isArray(user?.roles) ? user.roles : []);
   const permissions = new Set(Array.isArray(user?.permissions) ? user.permissions : []);
   const adminNavigation = [['dashboard', '/dashboard/', 'Administration']];
+  if (roles.has('ROLE_ADMIN')) adminNavigation.push(['staff', '/staff/', 'Staff']);
   if (roles.has('ROLE_CONTENT_EDITOR') || roles.has('ROLE_CONTENT_APPROVER') || roles.has('ROLE_ADMIN')) adminNavigation.push(['content-studio', '/content-studio/', 'Content Studio']);
   if (permissions.has('QUOTE_READ_ALL') || roles.has('ROLE_CONSULTANT') || roles.has('ROLE_ADMIN')) adminNavigation.push(['admin-quotes', '/admin/quotes/', 'Customer Quotes']);
   if (roles.has('ROLE_FINANCE') || roles.has('ROLE_ADMIN') || permissions.has('BANK_TRANSFER_REVIEW') || permissions.has('BANK_TRANSFER_ADMIN')) adminNavigation.push(['finance', '/finance/', 'Finance Operations']);

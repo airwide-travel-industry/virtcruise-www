@@ -74,6 +74,13 @@ function segmentsPanel(segments) {
   return `<section class="portal-panel"><h2>Trip segments</h2><ul class="admin-quote-timeline">${items}</ul></section>`;
 }
 
+async function assignmentPanel(quote) {
+  if (!currentUser?.roles?.includes('ROLE_ADMIN')) return '';
+  const staff = collection(await read('/api/v1/admin/users/staff'))
+    .filter(account => account.enabled && account.roles?.includes('ROLE_CONSULTANT'));
+  return sectionWrap('Consultant assignment', `<section class="portal-panel"><label class="admin-quote-field">Assigned consultant<select data-consultant-assignment><option value="">Unassigned</option>${staff.map(account => `<option value="${escapeHtml(account.id)}" ${account.id === quote.assignedConsultantId ? 'selected' : ''}>${escapeHtml(account.email)}</option>`).join('')}</select></label><button class="portal-button secondary" type="button" data-save-consultant-assignment>Save assignment</button><p role="status" data-assignment-message></p></section>`);
+}
+
 function acceptedCommercialSummary(quote) {
   if (status(quote.status) !== 'ACCEPTED') return '';
   const currency = quote.currency || '';
@@ -131,9 +138,16 @@ async function loadDetail(id) {
     const travelPlan = sectionWrap('Travel Plan', segmentsPanel(trip?.segments));
     const canPrepare = currentUser?.roles?.includes('ROLE_ADMIN') || currentUser?.permissions?.includes('QUOTE_CHANGE_STATUS');
     const quotation = canPrepare && ['SUBMITTED', 'SENT'].includes(status(quote.status)) ? sectionWrap('Prepare Quotation', `<section class="portal-panel admin-quotation"><p class="portal-eyebrow">Staff pricing</p><form data-quotation-form><div class="admin-quote-pricing-grid">${(quote.items || []).map(item => pricingRow(item, quote.currency)).join('')}</div><div class="admin-quote-footer-grid"><label class="admin-quote-field">Quotation Valid Until<input type="date" name="validUntil" value="${escapeHtml(quote.validUntil || '')}"></label><label class="admin-quote-field">Customer-visible Notes<textarea name="notes" rows="3">${escapeHtml(quote.notes || '')}</textarea></label></div><div class="admin-quote-total-row"><span class="vc-eyebrow">Quotation Total</span><strong data-quotation-total>${escapeHtml(quote.currency || '')} ${money(quoteGrandTotal(quote.items))}</strong></div><div class="admin-quote-actions"><button class="portal-button" type="submit">Save Quotation</button>${status(quote.status) === 'SUBMITTED' ? '<button class="portal-button secondary" type="button" data-issue-quotation>Send Quote to Customer</button>' : ''}<p role="status" data-quotation-message></p></div></form></section>`) : '';
-    document.querySelector('#portalPage').innerHTML = `${header}${hero}<div class="admin-quote-live">LIVE · existing quote pricing · staff protected</div>${commercialSummary}${invoicePanel(quote, linkedInvoice, bankAccounts, assignment, instruction)}${requestOverview}${travelPlan}${quotation}`;
+    let assignmentMarkup = '';
+    try { assignmentMarkup = await assignmentPanel(quote); } catch (error) { if (!(error instanceof AuthError && error.status === 403)) throw error; }
+    document.querySelector('#portalPage').innerHTML = `${header}${hero}<div class="admin-quote-live">LIVE · existing quote pricing · staff protected</div>${assignmentMarkup}${commercialSummary}${invoicePanel(quote, linkedInvoice, bankAccounts, assignment, instruction)}${requestOverview}${travelPlan}${quotation}`;
     bindQuotation(id);
     bindInvoice(id, quote, linkedInvoice);
+    document.querySelector('[data-save-consultant-assignment]')?.addEventListener('click', async event => {
+      const message = document.querySelector('[data-assignment-message]'); event.currentTarget.disabled = true;
+      try { await read(`/api/v1/quotes/${encodeURIComponent(id)}/assignment`, { method: 'PUT', body: JSON.stringify({ consultantId: document.querySelector('[data-consultant-assignment]')?.value || null }) }); await loadDetail(id); }
+      catch (error) { if (message) message.textContent = errorText(error); event.currentTarget.disabled = false; }
+    });
   } catch (error) { errorPage(error); }
 }
 
