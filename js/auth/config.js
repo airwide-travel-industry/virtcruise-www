@@ -1,4 +1,9 @@
-const PRODUCTION_API_BASE_URL = 'https://api.virtcruise.airwide.co.uk';
+// Only the explicitly approved production hosts use same-origin /api routing.
+// Keeping this same-origin preserves the Secure, SameSite=Lax refresh cookie.
+const APPROVED_SAME_ORIGIN_HOSTS = new Set(['virtcruise.airwide.co.uk', 'www.virtcruisetravels.com']);
+const PRODUCTION_API_BASE_URL = APPROVED_SAME_ORIGIN_HOSTS.has(window.location.hostname)
+  ? window.location.origin
+  : 'https://api.virtcruise.airwide.co.uk';
 const DEFAULT_LOCAL_API_BASE_URL = 'http://localhost:8080';
 
 const params = new URLSearchParams(window.location.search);
