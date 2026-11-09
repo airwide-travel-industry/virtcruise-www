@@ -14,7 +14,7 @@ const zip = `${stage}.zip`;
 const publicOrigin = profile.publicOrigin;
 const runtimeRoots = ['index.html', 'account', 'admin', 'auth', 'bank-transfer', 'bookings', 'content-studio',
   'css', 'dashboard', 'data', 'finance', 'financial', 'fonts', 'forgot-password', 'images', 'js',
-  'notifications', 'operational-readiness', 'packages', 'preferences', 'profile', 'quotes', 'register',
+  'notifications', 'operational-readiness', 'packages', 'preferences', 'profile', 'quotes', 'register', 'staff',
   'reset-password', 'signin', 'travellers', 'trips', 'verify-email', 'robots.txt', 'sitemap.xml'];
 
 function replaceExact(content, before, after, name) {
@@ -37,22 +37,11 @@ async function hardenProductionRuntime() {
     '// the production-beta build copies it with development runtime paths removed.'
   ));
   await transform('js/api-client.js', content => {
-    let result = replaceExact(content,
-`const DEFAULT_LOCAL_API_BASE_URL = 'http://localhost:8080';
-const requestedMode = new URLSearchParams(window.location.search).get('api');
-
-const apiMode = requestedMode === 'mock'
-  ? 'mock'
-  : requestedMode === 'local'
-    ? 'local'
-    : 'production';
-const apiBaseUrl = apiMode === 'production'
-  ? runtimeConfig.apiOrigin
-  : apiMode === 'local'
-    ? DEFAULT_LOCAL_API_BASE_URL
-    : '';`,
+    const runtimeSelection = /const apiMode = requestedMode === 'mock'[\s\S]*?const apiBaseUrl = apiMode === 'production'[\s\S]*?    : '';/;
+    let result = content.replace(runtimeSelection,
 `const apiMode = 'production';
-const apiBaseUrl = runtimeConfig.apiOrigin;`, 'api-client runtime selection');
+const apiBaseUrl = PRODUCTION_API_BASE_URL;`);
+    if (result === content) throw new Error('Production hardening input changed: api-client runtime selection');
     result = replaceExact(result,
 `  if (!apiBaseUrl) {
     throw new RepositoryError('The production API is disabled in explicit mock mode.', {
@@ -61,7 +50,7 @@ const apiBaseUrl = runtimeConfig.apiOrigin;`, 'api-client runtime selection');
     });
   }
 `, '', 'api-client disabled API branch');
-    result = replaceExact(result, `  source: apiMode === 'mock' ? 'mock' : apiMode,`,
+    result = replaceExact(result, `  source: apiMode === 'mock' ? 'mock' : apiMode`,
       `  source: apiMode,`, 'api-client package source');
     result = replaceExact(result,
 `  submitEnquiry(payload) {
@@ -73,27 +62,18 @@ const apiBaseUrl = runtimeConfig.apiOrigin;`, 'api-client runtime selection');
   },`, 'api-client development enquiry');
     return result;
   });
-  await transform('js/auth/config.js', content => replaceExact(content,
-`const DEFAULT_LOCAL_API_BASE_URL = 'http://localhost:8080';
-
-const params = new URLSearchParams(window.location.search);
-const requestedMode = params.get('api');
-const siteBasePath = new URL('../../', import.meta.url).pathname.replace(/\\/+$/, '');
-
-export const authRuntime = Object.freeze({
-  mode: requestedMode === 'local' ? 'local' : 'production',
-  apiBaseUrl: requestedMode === 'local'
-    ? DEFAULT_LOCAL_API_BASE_URL
-    : runtimeConfig.apiOrigin
-});`,
-`const siteBasePath = new URL('../../', import.meta.url).pathname.replace(/\\/+$/, '');
-
-export const authRuntime = Object.freeze({
+  await transform('js/auth/config.js', content => {
+    const runtimeSelection = /export const authRuntime = Object\.freeze\(\{[\s\S]*?\n\}\);/;
+    const result = content.replace(runtimeSelection,
+`export const authRuntime = Object.freeze({
   mode: 'production',
-  apiBaseUrl: runtimeConfig.apiOrigin
-});`, 'authentication runtime selection').replace(
-    `  if (requestedMode === 'local') url.searchParams.set('api', 'local');\n`, ''
-  ));
+  apiBaseUrl: PRODUCTION_API_BASE_URL
+});`).replace(
+      `  if (requestedMode === 'local') url.searchParams.set('api', 'local');\n`, ''
+    );
+    if (result === content) throw new Error('Production hardening input changed: authentication runtime selection');
+    return result;
+  });
   await transform('js/repositories/quote-repository.js', content => {
     let result = content.replace(`const mockApi = () => import('../mock-api.js');\n\n`, '');
     result = result.replaceAll(/      if \(mode === 'mock'\).*\n/g, '');
@@ -184,6 +164,7 @@ if (['reconciled-v21', 'finance-invoice-detail-route', 'customer-payment-instruc
     OPERATIONS: ['operational-readiness/index.html', /operational-readiness\.js/]
     ,ADMIN_QUOTE_LIST_ROUTE: ['admin/quotes/index.html', /admin-quotes\.js/]
     ,ADMIN_QUOTE_DETAIL_ROUTE: ['admin/quotes/details/index.html', /admin-quotes\.js/]
+    ,STAFF_WORKSPACE: ['staff/index.html', /admin-staff\.js/]
     ,CUSTOMER_BANK_TRANSFER: ['bank-transfer/index.html', /bank-transfer-page\.js/]
     ,CUSTOMER_PAYMENT_PROOF: ['js/bank-transfer/proof-upload.js', /openProofUpload/]
     ,RECEIPTS_PROOF_FAB: ['js/financial/financial-page.js', /proof-upload-fab.*Upload Proof of Payment/s]

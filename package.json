@@ -6,6 +6,7 @@
   "scripts": {
     "build:webdev": "node scripts/build-webdev-artifact.mjs",
     "build:production-beta": "node scripts/build-webdev-artifact.mjs --profile=production-beta",
+    "build:production-beta4": "node scripts/build-webdev-artifact.mjs --profile=production-beta4",
     "accept:web001a:branded-https": "node scripts/web001a-branded-https-acceptance.mjs",
     "test": "node --test tests/*.test.mjs",
     "test:navigation": "node --test tests/navigation-visibility.test.mjs",
