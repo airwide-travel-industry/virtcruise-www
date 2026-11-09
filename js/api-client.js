@@ -4,10 +4,16 @@ import { createOfflineQuoteQueue } from './repositories/offline-quote-queue.js';
 import { createPackageRepository } from './repositories/package-repository.js';
 import { createQuoteRepository } from './repositories/quote-repository.js';
 import { tokenManager } from './auth/token-manager.js';
-import { runtimeConfig } from './runtime-config.js';
 
+// Use same-origin /api routing only on the explicitly approved frontend hosts;
+// other origins retain the established API endpoint.
+const APPROVED_SAME_ORIGIN_HOSTS = new Set(['virtcruise.airwide.co.uk', 'www.virtcruisetravels.com']);
+const PRODUCTION_API_BASE_URL = APPROVED_SAME_ORIGIN_HOSTS.has(window.location.hostname)
+  ? window.location.origin
+  : 'https://api.virtcruise.airwide.co.uk';
 const DEFAULT_LOCAL_API_BASE_URL = 'http://localhost:8080';
 const requestedMode = new URLSearchParams(window.location.search).get('api');
+const runtimeConfig = globalThis.VIRTCRUISE_CONFIG || {};
 
 const apiMode = requestedMode === 'mock'
   ? 'mock'
@@ -15,9 +21,9 @@ const apiMode = requestedMode === 'mock'
     ? 'local'
     : 'production';
 const apiBaseUrl = apiMode === 'production'
-  ? runtimeConfig.apiOrigin
+  ? PRODUCTION_API_BASE_URL
   : apiMode === 'local'
-    ? DEFAULT_LOCAL_API_BASE_URL
+    ? String(runtimeConfig.localApiBaseUrl || DEFAULT_LOCAL_API_BASE_URL).replace(/\/+$/, '')
     : '';
 
 function userMessage(status, error, path) {
@@ -99,8 +105,7 @@ export async function apiRequest(path, options = {}) {
 const offlineQueue = createOfflineQuoteQueue();
 const packageRepository = createPackageRepository({
   apiBaseUrl,
-  source: apiMode === 'mock' ? 'mock' : apiMode,
-  dynamicCatalogueEnabled: runtimeConfig.dynamicCatalogueEnabled
+  source: apiMode === 'mock' ? 'mock' : apiMode
 });
 const quoteRepository = createQuoteRepository({
   request: apiRequest,
