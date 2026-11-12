@@ -9,6 +9,7 @@ const SAFE_MESSAGES = {
   FRESH_AUTHENTICATION_REQUIRED: 'Please sign in again before changing security settings.',
   OAUTH_PROVIDER_UNAVAILABLE: 'This sign-in provider is temporarily unavailable.',
   CONFLICT: 'That request conflicts with an existing account.',
+  EMAIL_ALREADY_IN_USE: 'This email address is already associated with an account. Use that account or choose a different email address.',
   VALIDATION_FAILED: 'Please review the highlighted information.',
   RATE_LIMIT_EXCEEDED: 'Too many attempts. Please wait a moment and try again.'
 };
